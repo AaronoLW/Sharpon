@@ -1,13 +1,17 @@
 using System;
 using Microsoft.Xna.Framework.Input;
 
-public class NewLineExCommand : IKeyCommand
+public class NewLineExCommand : KeyCommand
 {
-    public bool RequiresControl { get; } = true;
-    public bool Repeats { get; } = false;
-    public Keys AssignedKey { get; } = Keys.Enter;
+    public override bool RequiresControl { get; } = true;
+    public override bool RequiresShift { get; } = false;
+    public override bool Repeats { get; } = false;
+    public override Keys AssignedKey { get; } = Keys.Enter;
+    public override Action<UIElement> _customBehaviour { get; protected set; }
+
+    public NewLineExCommand(Action<UIElement> customBehaviour = null) => _customBehaviour = customBehaviour; 
     
-    public void Execute(UIElement uiElement)
+    protected override void DefaultBehaviour(UIElement uiElement)
     {
         for (int i = uiElement.CharIndex; i < uiElement.Text.Length; i++)
         {

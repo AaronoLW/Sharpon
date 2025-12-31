@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Input;
 using FontStashSharp;
 using System.IO;
 using System;
+using MonoGame.Extended;
+using System.Xml;
+using System.Runtime.CompilerServices;
 
 namespace Sharpon;
 
@@ -15,11 +18,14 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Color _backgroundColor = new Color(30, 30, 33);
+    private Color _fileDialogColor = new Color(40, 40, 43);
+    private Color _filePathDialogColor = new Color(50, 50, 53);
     private FontSystem _fontSystem;
     private string _fontFilePath;
     private int _previousFontSize;
 
     private static Editor _editor;
+    private static FileDialog _fileDialog;
 
     public Game1()
     {
@@ -43,7 +49,15 @@ public class Game1 : Game
         _fontSystem.AddFont(File.ReadAllBytes(_fontFilePath));
     
         _editor = new Editor(_uiSystem, new Vector2(30, 30), "yo\nyo2", _backgroundColor);
-        _editor.ReceiveTextInput = true;
+        _editor.ReceiveTextInput = false;
+        _editor.OpenFile("/media/TatzisUnterlagen/sharpon.txt");
+
+        Vector2 fileDialogPosition = Window.ClientBounds.Location.ToVector2() + Window.ClientBounds.Size.ToVector2() / 2 - new Vector2(100, 300);
+        _fileDialog = new FileDialog(_uiSystem, fileDialogPosition, "/", _fileDialogColor, _filePathDialogColor);
+        _fileDialog.SetCharIndex(1);
+
+        _fileDialog.OnClose += OnCloseFileDialog;
+        _fileDialog.OnEnter += OnEnterFileDialog;
     }
 
     protected override void Update(GameTime gameTime)
@@ -72,8 +86,30 @@ public class Game1 : Game
         Vector2 caretPosition = _editor.CalculateCaretPosition(_editor.CharIndex);
         _spriteBatch.DrawString(Font, "|", caretPosition, Color.White);
 
+        if (_fileDialog != null)
+        {
+            _fileDialog.Draw(_spriteBatch);
+        }
+
         _spriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    public static void DisableTextReceiving()
+    {
+        if (_editor != null) _editor.ReceiveTextInput = false;
+        //if (_fileDialog != null) _fileDialog.ReceiveTextInput = false;
+    }
+
+    private void OnCloseFileDialog()
+    {
+        DisableTextReceiving();
+        if (_editor != null) _editor.ReceiveTextInput = true;
+    }
+
+    private void OnEnterFileDialog()
+    {
+        if (_editor != null) _editor.OpenFile(_fileDialog.Text);
     }
 }

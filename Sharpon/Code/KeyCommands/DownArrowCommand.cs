@@ -1,12 +1,17 @@
+using System;
 using Microsoft.Xna.Framework.Input;
 
-public class DownArrowCommand : IKeyCommand
+public class DownArrowCommand : KeyCommand
 {
-    public bool RequiresControl { get; } = false;
-    public bool Repeats { get; } = true;
-    public Keys AssignedKey { get; } = Keys.Down;
+    public override bool RequiresControl { get; } = false;
+    public override bool RequiresShift { get; } = false;
+    public override bool Repeats { get; } = true;
+    public override Keys AssignedKey { get; } = Keys.Down;
+    public override Action<UIElement> _customBehaviour { get; protected set; }
 
-    public void Execute(UIElement uiElement)
+    public DownArrowCommand(Action<UIElement> customBehaviour = null) => _customBehaviour = customBehaviour; 
+
+    protected override void DefaultBehaviour(UIElement uiElement)
     {
         bool seenFirstNewLine = false;
         for (int i = uiElement.CharIndex; i < uiElement.Text.Length; i++)

@@ -6,21 +6,22 @@ using Microsoft.Xna.Framework.Input;
 
 public class KeybindHandler
 {
-    private Dictionary<IKeyCommand, KeyCommandInfo> _commands = new();
+    private Dictionary<KeyCommand, KeyCommandInfo> _commands = new();
 
-    public KeybindHandler(params IKeyCommand[] commands)
+    public KeybindHandler(params KeyCommand[] commands)
     {
-        foreach (IKeyCommand command in commands)
+        foreach (KeyCommand command in commands)
         {
             _commands[command] = new KeyCommandInfo(command.Repeats, command.AssignedKey);
         }
     }
 
-    public void Execute<T>(UIElement uiElement) where T : IKeyCommand
+    public void Execute<T>(UIElement uiElement) where T : KeyCommand
     {
         KeyboardState keyboardState = Keyboard.GetState();
 
-        IKeyCommand command = _commands.Keys.First(c => c.GetType().Equals(typeof(T)));
+        //IKeyCommand command = _commands.Keys.FirstOrDefault(c => c.GetType().Equals(typeof(T)));
+        KeyCommand command = _commands.Keys.OfType<T>().FirstOrDefault();
         if (command == null) return;
 
         _commands.TryGetValue(command, out KeyCommandInfo info);
@@ -28,7 +29,24 @@ public class KeybindHandler
         if (info.Repeats) info.RepeatCooldown = info.KeyHeld && info.DidSlowCooldown ? Settings.ArrowKeyBaseFastCooldown : Settings.ArrowKeyBaseCooldown;
         if (info.Repeats) info.DidSlowCooldown = true;
 
-        if (!command.RequiresControl && !keyboardState.IsKeyDown(Keys.LeftControl) || command.RequiresControl && keyboardState.IsKeyDown(Keys.LeftControl)) command?.Execute(uiElement);
+        if (!info.Repeats && info.KeyHeld) return;
+        if (!info.Repeats) info.KeyHeld = true;
+
+        if (command.RequiresControl && keyboardState.IsKeyDown(Keys.LeftControl)) 
+        { 
+            if (command.RequiresShift && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                command?.Execute(uiElement);
+                return;    
+            }
+            else if (!keyboardState.IsKeyDown(Keys.LeftShift)  && command.RequiresShift) return;
+
+            command?.Execute(uiElement);
+            return;
+        }
+        else if (!keyboardState.IsKeyDown(Keys.LeftControl) && command.RequiresControl) return;
+
+        command?.Execute(uiElement);
     }
 
     public void Update(GameTime gameTime)
@@ -36,7 +54,7 @@ public class KeybindHandler
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
         
         KeyboardState keyboardState = Keyboard.GetState();
-        foreach (KeyValuePair<IKeyCommand, KeyCommandInfo> keyValuePair in _commands)
+        foreach (KeyValuePair<KeyCommand, KeyCommandInfo> keyValuePair in _commands)
         {
             KeyCommandInfo info = keyValuePair.Value;
             if (info.Repeats)
@@ -52,6 +70,10 @@ public class KeybindHandler
                     info.DidSlowCooldown = false;
                     info.RepeatCooldown = 0;
                 }
+            }
+            else
+            {
+                if (!keyboardState.IsKeyDown(info.AssignedKey)) info.KeyHeld = false;
             }
         }
     }
