@@ -13,7 +13,11 @@ public class UISystem
         Keys.Left,
         Keys.Right,
         Keys.Up,
-        Keys.Down
+        Keys.Down,
+        Keys.P,
+        Keys.Tab,
+        Keys.Enter,
+        Keys.Escape
     };
 
     public UISystem(GameWindow gameWindow)

@@ -1,12 +1,17 @@
+using System;
 using Microsoft.Xna.Framework.Input;
 
-public class LeftArrowCommand : IKeyCommand
+public class LeftArrowCommand : KeyCommand
 {
-    public bool RequiresControl { get; } = false;
-    public bool Repeats { get; } = true;
-    public Keys AssignedKey { get; } = Keys.Left;
+    public override bool RequiresControl { get; } = false;
+    public override bool RequiresShift { get; } = false;
+    public override bool Repeats { get; } = true;
+    public override Keys AssignedKey { get; } = Keys.Left;
+    public override Action<UIElement> _customBehaviour { get; protected set; }
 
-    public void Execute(UIElement uiElement)
+    public LeftArrowCommand(Action<UIElement> customBehaviour = null) => _customBehaviour = customBehaviour; 
+
+    protected override void DefaultBehaviour(UIElement uiElement)
     {
         if (uiElement.CharIndex - 1 < 0) return;
         if (uiElement.Text[uiElement.CharIndex - 1] == '\n') return;

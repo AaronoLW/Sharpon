@@ -1,13 +1,17 @@
 using System;
 using Microsoft.Xna.Framework.Input;
 
-public class UpArrowCommand : IKeyCommand
+public class UpArrowCommand : KeyCommand
 {
-    public bool RequiresControl { get; } = false;
-    public bool Repeats { get; } = true;
-    public Keys AssignedKey { get; } = Keys.Up;
+    public override bool RequiresControl { get; } = false;
+    public override bool RequiresShift { get; } = false;
+    public override bool Repeats { get; } = true;
+    public override Keys AssignedKey { get; } = Keys.Up;
+    public override Action<UIElement> _customBehaviour { get; protected set; }
 
-    public void Execute(UIElement uiElement)
+    public UpArrowCommand(Action<UIElement> customBehaviour = null) => _customBehaviour = customBehaviour; 
+
+    protected override void DefaultBehaviour(UIElement uiElement)
     {
         for (int i = uiElement.CharIndex - 1; i > 0; i--)
         {

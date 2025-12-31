@@ -1,9 +1,12 @@
 using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Sharpon;
 
 public class Editor : UIElement
 {
+    private string _openedFilePath;
+
     public Editor(UISystem uiSystem, Vector2 position, string text, Color backgroundColor) : base(uiSystem, position, text, backgroundColor)
     {
         _keybindHandler = new KeybindHandler(new NewLineCommand(),
@@ -13,12 +16,32 @@ public class Editor : UIElement
                                              new LeftArrowCommand(),
                                              new RightArrowCommand(),
                                              new UpArrowCommand(),
-                                             new DownArrowCommand());
+                                             new DownArrowCommand(),
+                                             new TabCommand());
     }
     
-    public Vector2 CalculateCaretPosition(int charIndex)
+    public void OpenFile(string filePath)
     {
-        string[] lines = Text.Substring(0, charIndex).Split("\n");
-        return new Vector2(X + Game1.Font.MeasureString(lines[^1]).X - (Game1.Font.MeasureString("|").X / 2), Y + ((lines.Length - 1) * Settings.Spacing));
+        if (File.Exists(filePath))
+        {
+            try
+            {
+                using StreamReader streamReader = new(filePath);
+                string text = streamReader.ReadToEnd();
+                SetText(text);
+
+                _openedFilePath = filePath;
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("File could not be opened: ");
+                Console.WriteLine(e.Message);
+            }
+
+        }
+        else
+        {
+            Console.WriteLine("File doesnt exist " + filePath);
+        }
     }
 }

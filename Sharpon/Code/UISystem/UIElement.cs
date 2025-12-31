@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Sharpon;
 
 public abstract class UIElement
 {
@@ -57,18 +58,34 @@ public abstract class UIElement
         SetCharIndex(CharIndex + 1);
     }
 
+    public Vector2 CalculateCaretPosition(int charIndex)
+    {
+        string[] lines = Text.Substring(0, charIndex).Split("\n");
+        return new Vector2(X + Game1.Font.MeasureString(lines[^1]).X - (Game1.Font.MeasureString("|").X / 2), Y + ((lines.Length - 1) * Settings.Spacing));
+    }
+
     public void HandleMiscellaneousKey(Keys key)
     {
+        if (!ReceiveTextInput) return;
         if (key == Keys.Left) _keybindHandler.Execute<LeftArrowCommand>(this);
         if (key == Keys.Right) _keybindHandler.Execute<RightArrowCommand>(this);
         if (key == Keys.Up) _keybindHandler.Execute<UpArrowCommand>(this);
         if (key == Keys.Down) _keybindHandler.Execute<DownArrowCommand>(this);
+        if (key == Keys.P) _keybindHandler.Execute<OpenFileDialogCommand>(this);
+        if (key == Keys.Tab) _keybindHandler.Execute<TabCommand>(this);
+        if (key == Keys.Enter) _keybindHandler.Execute<EnterCommand>(this);
+        if (key == Keys.Escape) _keybindHandler.Execute<EscapeCommand>(this);
     }
     
     public void InsertTextAt(int charIndex, string text)
     {
         if (charIndex > Text.Length) throw new IndexOutOfRangeException("CharIndex is out of range of the existing text of " + GetType());
         Text = Text.Insert(charIndex, text);
+    }
+
+    public void SetText(string text)
+    {
+        Text = text;
     }
 
     public void RemoveTextAt(int charIndex, int length)
