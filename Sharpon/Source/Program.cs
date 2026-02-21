@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using SDL3;
 using Smash;
-using Smash.Graphics;
 using Smash.Input;
 
 internal static class Program
@@ -17,6 +16,19 @@ internal static class Program
 
         Sharpon application = new Sharpon();
         application.Start();
+
+        if (args.Length > 1 || args.Length < 1)
+        {
+            Sharpon.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sharpon.txt"), true);
+            Console.WriteLine("Loading sharpon.txt");
+        }
+        else
+        {
+            string path = Path.GetFullPath(args[0]);
+            
+            Sharpon.LoadFile(path);
+            Console.WriteLine($"Loading {Path.GetFileName(path)}");
+        }
 
         bool running = true;
         while (running)
