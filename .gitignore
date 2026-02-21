@@ -44,6 +44,7 @@ _ReSharper*/
 
 #Project files
 [Bb]uild/
+Sharpon-deb/
 
 #Subversion files
 .svn
