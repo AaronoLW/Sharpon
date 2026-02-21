@@ -6,7 +6,7 @@ public static class KeybindHandler
     private static Dictionary<SDL.Keycode, float> _keyCooldowns = new();
     private static Dictionary<SDL.Keycode, bool> _markedForFastCooldown = new();
 
-    private static readonly float _baseCooldown = 0.08f;
+    private static readonly float _baseCooldown = 0.11f;
     private static readonly float _baseFastCooldown = 0.03f;
 
     public static KeybindHandlerInfo HandleKeybinds(string initialText, int charIndex)
@@ -14,6 +14,7 @@ public static class KeybindHandler
         bool ctrlPressed = InputHandler.IsKeyDown(SDL.Keycode.LCtrl);
         bool enterPressed = InputHandler.IsKeyDown(SDL.Keycode.Return);
         bool backspacePressed = InputHandler.IsKeyDown(SDL.Keycode.Backspace);
+        bool tabPressed = InputHandler.IsKeyDown(SDL.Keycode.Tab);
 
         string newText = initialText;
         int newCharIndex = charIndex;
@@ -23,10 +24,23 @@ public static class KeybindHandler
 
         if (enterPressed)
         {
+            mayAddTextInput = false;
+
             if (TryCooldown(SDL.Keycode.Return))
             {
-                newText += "\n";
-                newCharIndex++;
+                editorCommand = EditorCommand.Enter;
+            }
+
+            goto returnText;
+        }
+
+        if (tabPressed)
+        {
+            mayAddTextInput = false;
+
+            if (TryCooldown(SDL.Keycode.Tab))
+            {
+                editorCommand = EditorCommand.Tab;
             }
 
             goto returnText;
@@ -48,14 +62,96 @@ public static class KeybindHandler
 
         if (ctrlPressed)
         {
+            mayAddTextInput = false;
+
             if (InputHandler.IsKeyPressed(SDL.Keycode.S))
             {
                 editorCommand = EditorCommand.SaveFile;
                 goto returnText;
             }
 
-            mayAddTextInput = false;
+            if (InputHandler.IsKeyDown(SDL.Keycode.Plus))
+            {
+                if (TryCooldown(SDL.Keycode.Plus))
+                {
+                    editorCommand = EditorCommand.ZoomIn;
+                }
+
+                goto returnText;
+            }
+
+            if (InputHandler.IsKeyDown(SDL.Keycode.Minus))
+            {
+               if (TryCooldown(SDL.Keycode.Minus))
+                {
+                    editorCommand = EditorCommand.ZoomOut;
+                }
+
+                goto returnText;
+            }
+
+            if (InputHandler.IsKeyDown(SDL.Keycode.LShift))
+            {
+                if (InputHandler.IsKeyPressed(SDL.Keycode.P))
+                {
+                    editorCommand = EditorCommand.ToggleFileDialog;
+                }
+            }
         }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Left))
+        {
+            if (TryCooldown(SDL.Keycode.Left))
+            {
+                if (newCharIndex - 1 > 0)
+                {
+                    if (newText[newCharIndex - 1] != '\n')
+                    {
+                        newCharIndex--;
+                    }
+                }
+            }
+
+            goto returnText;
+        }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Right))
+        {
+            if (TryCooldown(SDL.Keycode.Right))
+            {
+                if (newCharIndex < newText.Length)
+                {
+                    if (newText[newCharIndex] != '\n')
+                    {
+                        newCharIndex++;
+                    }
+                }
+
+            }
+
+            goto returnText;
+        }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Up))
+        {
+            if (TryCooldown(SDL.Keycode.Up))
+            {
+                editorCommand = EditorCommand.ArrowUp;
+            }
+
+            goto returnText;
+        }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Down))
+        {
+            if (TryCooldown(SDL.Keycode.Down))
+            {
+                editorCommand = EditorCommand.ArrowDown;
+            }
+
+            goto returnText;
+        }
+
 
         returnText:
             return new KeybindHandlerInfo(newText, newCharIndex, mayAddTextInput, editorCommand);
