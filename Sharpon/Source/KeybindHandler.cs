@@ -22,6 +22,15 @@ public static class KeybindHandler
         EditorCommand? editorCommand = null;
         bool mayAddTextInput = true;
 
+        if (InputHandler.IsKeyPressed(SDL.Keycode.Escape))
+        {
+            mayAddTextInput = false;
+
+            editorCommand = EditorCommand.Escape;
+
+            goto returnText;
+        }
+
         if (enterPressed)
         {
             mayAddTextInput = false;

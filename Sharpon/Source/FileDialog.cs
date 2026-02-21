@@ -27,6 +27,7 @@ public class FileDialog
 
     private Font _font = null!;
     private float _pointSize;
+    private readonly float _basePointSize;
     private float _previousPointSize;
 
     private string[] _filePaths = [];
@@ -45,6 +46,7 @@ public class FileDialog
         _font = Sharpon.GetOrCreateFont(_pointSize);
         _previousPointSize = _pointSize;
         _fileDialogPosition = new Vector2(1920, 100);
+        _basePointSize = Sharpon.PointSize - 4;
     }
 
     public void Update(double deltaTime)
@@ -78,13 +80,13 @@ public class FileDialog
                 {
                     int minPointSize = 12;
                 
-                    if (_pointSize - 3 <= minPointSize)
+                    if (_pointSize - 2 <= minPointSize)
                     {
                         _pointSize = minPointSize;
                     }
                     else
                     {
-                        _pointSize -= 3;
+                        _pointSize -= 2;
                     }
                 }
 
@@ -131,6 +133,11 @@ public class FileDialog
                             Opened = false;
                         }
                     }
+                }
+
+                if (keybindHandlerInfo.EditorCommand == EditorCommand.Escape)
+                {
+                    Opened = false;
                 }
             }
             else if (keybindHandlerInfo.MayAddTextInput)
@@ -188,7 +195,7 @@ public class FileDialog
 
 
 
-        _fileDialogWidth = Math.Max(_baseFileDialogPadding * (_pointSize / Settings.FONT_POINT_SIZE), _font.MeasureString(_text).X + 10);
+        _fileDialogWidth = Math.Max(_baseFileDialogPadding / (_basePointSize / _pointSize), _font.MeasureString(_text).X + 10);
 
 
         Vector2 preferredCaretPosition = GetCaretPosition();
@@ -198,11 +205,11 @@ public class FileDialog
         {
             bool isDirectory = Directory.Exists(_filePaths[_selectedFilePath]);
             
-            Vector2 preferredFilePathBounds = _font.MeasureString(Path.GetFileName(_filePaths[_selectedFilePath]) + (isDirectory ? "/" : "")) + new Vector2(_widthMargin) * 2;
+            Vector2 preferredFilePathBounds = _font.MeasureString(Path.GetFileName(_filePaths[_selectedFilePath]) + (isDirectory ? "/" : "")) + new Vector2(_widthMargin / (_basePointSize / _pointSize)) * 2;
             _selectedFilePathBounds = MathHelper.LerpVector(_selectedFilePathBounds, preferredFilePathBounds, Settings.FILE_DIALOG_SPEED * (float)deltaTime);
 
             float lineSpacing = _pointSize + 8;
-            Vector2 preferredFilePathPosition = _fileDialogPosition + new Vector2(_widthMargin) + new Vector2(0, _pointSize * 2) + new Vector2(0, _selectedFilePath * lineSpacing) - new Vector2(_widthMargin) - new Vector2(0, _filePathsYOffset);
+            Vector2 preferredFilePathPosition = _fileDialogPosition + new Vector2(_widthMargin) + new Vector2(0, _pointSize * 2) + new Vector2(0, _selectedFilePath * lineSpacing) - new Vector2(_widthMargin / (_basePointSize / _pointSize)) - new Vector2(0, _filePathsYOffset);
             _selectedFilePathPosition = MathHelper.LerpVector(_selectedFilePathPosition, preferredFilePathPosition, Settings.FILE_DIALOG_SPEED * (float)deltaTime);
 
             float scrollSpeed = 30;
@@ -222,12 +229,12 @@ public class FileDialog
 
     public void Render(Renderer renderer)
     {
-        Rectangle backgroundRectangle = new Rectangle(_fileDialogPosition - new Vector2(_widthMargin), new Vector2(_fileDialogWidth, 30) + new Vector2(_widthMargin) * 2);
+        Rectangle backgroundRectangle = new Rectangle(_fileDialogPosition - new Vector2(_widthMargin), new Vector2(_fileDialogWidth, 30 / (_basePointSize / _pointSize)) + new Vector2(_widthMargin) * 2);
         renderer.RenderFilledRectangle(backgroundRectangle, _backgroundColor);
 
-        renderer.RenderFilledRectangle(new Rectangle(_caretPosition, Settings.CARET_WIDTH, _font.PointSize), Color.RoyalBlue);
+        renderer.RenderFilledRectangle(new Rectangle(_caretPosition, Settings.CARET_WIDTH / (_basePointSize / _pointSize), _font.PointSize), Color.RoyalBlue);
 
-        Vector2 textPosition = _fileDialogPosition + new Vector2(_widthMargin);
+        Vector2 textPosition = _fileDialogPosition + new Vector2(_widthMargin) / (_basePointSize / _pointSize);
         renderer.RenderText(_font, _text, textPosition, Color.White);
 
         if (!hasAccesToFilePath)
@@ -239,7 +246,7 @@ public class FileDialog
         float lineSpacing = _pointSize + 8;
         Vector2 baseFilePathPosition = textPosition + new Vector2(0, _pointSize * 2 - _filePathsYOffset);
 
-        SDL.Rect clipRect = new Rectangle(textPosition + new Vector2(0, _pointSize * 2) - new Vector2(_widthMargin, _widthMargin + 4), _window.Width - baseFilePathPosition.X, _window.Height).ToSDLRect();
+        SDL.Rect clipRect = new Rectangle(textPosition + new Vector2(0, _pointSize * 2) - new Vector2(_widthMargin + 1, _widthMargin + 4), _window.Width - baseFilePathPosition.X, _window.Height).ToSDLRect();
         SDL.SetRenderClipRect(renderer.Handle, clipRect);
 
         for (int i = 0; i < _filePaths.Length; i++)
@@ -268,6 +275,6 @@ public class FileDialog
 
     private Vector2 GetCaretPosition()
     {
-        return _fileDialogPosition + new Vector2(_font.MeasureString(_text.Substring(0, _charIndex)).X + _widthMargin, 2 + _widthMargin);
+        return _fileDialogPosition + new Vector2(_font.MeasureString(_text.Substring(0, _charIndex)).X + _widthMargin / (_basePointSize / _pointSize), _widthMargin / (_basePointSize / _pointSize));
     }
 }

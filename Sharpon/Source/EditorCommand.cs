@@ -7,5 +7,6 @@ public enum EditorCommand
     ArrowUp,
     ArrowDown,
     Tab,
-    Enter
+    Enter,
+    Escape
 }
