@@ -8,5 +8,6 @@ public enum EditorCommand
     ArrowDown,
     Tab,
     Enter,
-    Escape
+    Escape,
+    DeleteLine,
 }

@@ -8,4 +8,5 @@ public static class Settings
     public static readonly Color BACKGROUND_COLOR = Color.FromArgb(255, 30, 30, 33);
     public static readonly Color FILE_DIALOG_BACKGROUND_COLOR = Color.FromArgb(255, 20, 20, 23);
     public static readonly int CARET_WIDTH = 2;
+    public static readonly float LINESPACING = 8;
 }
