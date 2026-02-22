@@ -106,18 +106,23 @@ public static class KeybindHandler
                     editorCommand = EditorCommand.ToggleFileDialog;
                 }
             }
+
+            if (InputHandler.IsKeyDown(SDL.Keycode.X))
+            {
+                if (TryCooldown(SDL.Keycode.X))
+                {
+                    editorCommand = EditorCommand.DeleteLine;
+                }
+            }
         }
 
         if (InputHandler.IsKeyDown(SDL.Keycode.Left))
         {
             if (TryCooldown(SDL.Keycode.Left))
             {
-                if (newCharIndex - 1 > 0)
+                if (newCharIndex > 0)
                 {
-                    if (newText[newCharIndex - 1] != '\n')
-                    {
-                        newCharIndex--;
-                    }
+                    newCharIndex--;
                 }
             }
 
@@ -128,14 +133,10 @@ public static class KeybindHandler
         {
             if (TryCooldown(SDL.Keycode.Right))
             {
-                if (newCharIndex < newText.Length)
+                if (newCharIndex != newText.Length)
                 {
-                    if (newText[newCharIndex] != '\n')
-                    {
-                        newCharIndex++;
-                    }
+                    newCharIndex++;
                 }
-
             }
 
             goto returnText;

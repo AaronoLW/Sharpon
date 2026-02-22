@@ -149,6 +149,25 @@ public class Sharpon : Application
                         keybindHandlerInfo.EditorCommand = EditorCommand.ArrowDown;
                 }
 
+                if (keybindHandlerInfo.EditorCommand == EditorCommand.DeleteLine)
+                {
+                    if (_text.Length > 0)
+                    {
+                        int endOfLine = GetEndOfCurrentLine();
+
+                        for (int i = endOfLine; i > -1; i--)
+                        {
+                            if (GetCharAtIndex(i) == '\n' || i == 0)
+                            {
+                                _text = _text.Remove(i, endOfLine - i);
+                                _charIndex = GetEndOfCurrentLine();
+
+                                break;
+                            } 
+                        }
+                    }
+                }
+
                 if (keybindHandlerInfo.EditorCommand == EditorCommand.Enter)
                 {
                     _text = _text.Insert(_charIndex, "\n");
@@ -175,11 +194,11 @@ public class Sharpon : Application
         _renderer.Clear(Settings.BACKGROUND_COLOR);
 
         Font font = GetOrCreateFont(PointSize);
-        Font smallFont = GetOrCreateFont(PointSize - 8);
+        Font smallFont = GetOrCreateFont(PointSize - Settings.LINESPACING);
 
         string[] lines = BreakupTextToLines(_text);
         
-        float lineSpacing = PointSize + 6;
+        float lineSpacing = PointSize + Settings.LINESPACING;
 
         for (int i = 0; i < lines.Length; i++)
         {
@@ -200,6 +219,12 @@ public class Sharpon : Application
 
         Vector2 filePathTextPosition = fpsTextPosition - new Vector2(smallFont.MeasureString(_filePath).X + 30, 0);
         _renderer.RenderText(smallFont, _filePath, filePathTextPosition, Color.White);
+
+        _renderer.RenderText(smallFont, _charIndex.ToString(), new Vector2(300, 100), Color.White);
+        _renderer.RenderText(smallFont, GetCharAtIndex(_charIndex).ToString() ?? "", new Vector2(300, 130), Color.White);
+        _renderer.RenderText(smallFont, GetLineIndexFromCharIndex().ToString(), new Vector2(300, 160), Color.White);
+        _renderer.RenderText(smallFont, _text.Length.ToString(), new Vector2(300, 190), Color.White);
+        _renderer.RenderText(smallFont, GetEndOfCurrentLine().ToString(), new Vector2(300, 220), Color.White);
 
         _fileDialog.Render(_renderer);
 
@@ -229,7 +254,7 @@ public class Sharpon : Application
         }
         else
         {
-            Font newFont = _sharponReference.LoadFont(Path.Combine("Fonts", "Rubik-Medium.ttf"), pointSize);
+            Font newFont = _sharponReference.LoadFont(Path.Combine("Fonts", "Rubik-Regular.ttf"), pointSize);
             _fonts.Add(pointSize, newFont);
             return _fonts[pointSize];
         }
@@ -247,6 +272,18 @@ public class Sharpon : Application
         }
     }
 
+    private int GetEndOfCurrentLine()
+    {
+        if (_text.Length == 0) return 0;
+
+        for (int i = _charIndex; i < _text.Length; i++)
+        {
+            if (GetCharAtIndex(i) == '\n') return i;
+        }
+
+        return _text.Length;
+    }
+
     private Vector2 GetPreferredCaretPosition()
     {
         Font font = GetOrCreateFont(PointSize);
@@ -254,10 +291,11 @@ public class Sharpon : Application
         int lineIndex = GetLineIndexFromCharIndex();
         int lineCharIndex = GetCharIndexOnLine();
 
-        float lineSpacing = PointSize + 6;
+        float lineSpacing = PointSize + Settings.LINESPACING;
 
         string[] lines = BreakupTextToLines(_text);
-        return EditorPosition + new Vector2(font.MeasureString(lines[lineIndex].Substring(0, lineCharIndex)).X - Settings.CARET_WIDTH / 2, lineSpacing * lineIndex + 2);
+
+        return EditorPosition + new Vector2(lines[lineIndex].Length > 0 ? font.MeasureString(lines[lineIndex].Substring(0, lineCharIndex)).X : 0 - Settings.CARET_WIDTH / 2, lineSpacing * lineIndex + 2);
     }
 
     private int GetCharIndexOnLine()
@@ -277,13 +315,18 @@ public class Sharpon : Application
     private int GetLineIndexFromCharIndex()
     {
         int lineAmount = 0;
-        for (int i = _charIndex - 1; i > 0; i--)
+        for (int i = _charIndex - 1; i > -1; i--)
         {
-            if (_text[i] == '\n') lineAmount++;
+            if (GetCharAtIndex(i) == '\n') lineAmount++;
         }
 
-        if (lineAmount == 0) return 0;
         return lineAmount;
+    }
+
+    private char? GetCharAtIndex(int charIndex)
+    {
+        if (charIndex == _text.Length) return null;
+        return _text[charIndex];
     }
 
     public static string LoadFile(string filePath, bool createIfMissing = false)
