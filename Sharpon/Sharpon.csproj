@@ -13,9 +13,9 @@
   </ItemGroup>
   	
   <ItemGroup>
-    <Content Include="Fonts\**\*">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    <Content Include="Assets\**\*">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 
