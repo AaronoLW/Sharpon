@@ -75,7 +75,7 @@ public class App : Application
 
     public override void Render() 
     {
-        _renderer.Clear(Color.FromArgb(25, 25, 25));
+        _renderer.Clear(Color.FromArgb(25, 25, 28));
 
         string[] lines = _text.Split("\n");
         for (int i = 0; i < lines.Length; i++)
@@ -88,8 +88,8 @@ public class App : Application
 
         _renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3), 2 * ScaleFactor, PointSize), Color.RoyalBlue);
 
-        string fpsText = $"Fps: {(int)_fps}";
-        _renderer.RenderText(Font, fpsText, new Vector2(_window.Width - Font.MeasureString(fpsText).X - 20, 20), Color.White);
+        //string fpsText = $"Fps: {(int)_fps}";
+        //_renderer.RenderText(Font, fpsText, new Vector2(_window.Width - Font.MeasureString(fpsText).X - 20, 20), Color.White);
 
         _renderer.RenderPresent();
     }

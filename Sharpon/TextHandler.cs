@@ -107,34 +107,31 @@ public static class TextHandler
             }
         }
 
-        if (InputHandler.IsKeyDown(SDL.Keycode.Return))
+        if (InputHandler.IsKeyDown(SDL.Keycode.Return) && TryPress(SDL.Keycode.Return, REPEAT_RATE))
         {
-            if (TryPress(SDL.Keycode.Return, REPEAT_RATE))
+            stringBuilder.Insert(newCharIndex, "\n");
+            newCharIndex++;
+        }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Tab) && TryPress(SDL.Keycode.Tab))
+        {
+            stringBuilder.Insert(newCharIndex, "    ");
+            newCharIndex += 4;
+        }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Right) && TryPress(SDL.Keycode.Right))
+        {
+            if (newCharIndex + 1 <= stringBuilder.Length)
             {
-                stringBuilder.Insert(newCharIndex, "\n");
                 newCharIndex++;
             }
         }
 
-        if (InputHandler.IsKeyDown(SDL.Keycode.Right))
+        if (InputHandler.IsKeyDown(SDL.Keycode.Left) && TryPress(SDL.Keycode.Left))
         {
-            if (TryPress(SDL.Keycode.Right))
+            if (newCharIndex > 0)
             {
-                if (newCharIndex + 1 <= stringBuilder.Length)
-                {
-                    newCharIndex++;
-                }
-            }
-        }
-
-        if (InputHandler.IsKeyDown(SDL.Keycode.Left))
-        {
-            if (TryPress(SDL.Keycode.Left))
-            {
-                if (newCharIndex > 0)
-                {
-                    newCharIndex--;
-                }
+                newCharIndex--;
             }
         }
 
@@ -191,13 +188,14 @@ public static class TextHandler
         int charAmount = 0;
         bool haltForSpace = true;
 
+        if (newCharIndex == 0) return 0;
         if (stringBuilder.Length == 0) return 0;
         if (stringBuilder[newCharIndex - 1 < 0 ? 0 : newCharIndex - 1] == ' ') haltForSpace = false;
 
         for (int i = newCharIndex; i > -1; i--)
         {
             if (i > stringBuilder.Length - 1) continue;
-            if (i == 0) { charAmount++; break; }
+            if (i == 0) { charAmount = newCharIndex; break; }
             
             charAmount++;
 
@@ -209,6 +207,8 @@ public static class TextHandler
                 stringBuilder[i - 1] == '"' ||
                 stringBuilder[i - 1] == '[' ||
                 stringBuilder[i - 1] == '{' ||
+                stringBuilder[i - 1] == '.' ||
+                stringBuilder[i - 1] == ',' ||
                 stringBuilder[i - 1] == '\n')
             break;
         }
