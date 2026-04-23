@@ -14,7 +14,7 @@ public class App : Application
     public static int PointSize = BASE_POINT_SIZE;
     public static Font Font => AssetManager.GetFont("JetBrainsMono-Bold", PointSize);
 
-    private Vector2 _editorStartPos = new Vector2(40);
+    private Vector2 _editorStartPos = new Vector2(60, 40);
     private Vector2 _caretPosition;
 
     private Window _window;
@@ -84,6 +84,7 @@ public class App : Application
             if (textPosition.Y > _window.Height) break;
 
             _renderer.RenderText(Font, lines[i], textPosition, Color.White);
+            _renderer.RenderText(Font, i.ToString(), new Vector2(50 - Font.MeasureString(i.ToString()).X, textPosition.Y), Color.Gray);
         }
 
         _renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3), 2 * ScaleFactor, PointSize), Color.RoyalBlue);
