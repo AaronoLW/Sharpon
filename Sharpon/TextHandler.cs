@@ -191,6 +191,7 @@ public static class TextHandler
         int charAmount = 0;
         bool haltForSpace = true;
 
+        if (stringBuilder.Length == 0) return 0;
         if (stringBuilder[newCharIndex - 1 < 0 ? 0 : newCharIndex - 1] == ' ') haltForSpace = false;
 
         for (int i = newCharIndex; i > -1; i--)
