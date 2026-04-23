@@ -82,13 +82,21 @@ public static class TextHandler
             {
                 if (newCharIndex > 0)
                 {
-                    if (stringBuilder[newCharIndex] == ')' && stringBuilder[newCharIndex - 1] == '(' ||
-                        stringBuilder[newCharIndex] == '}' && stringBuilder[newCharIndex - 1] == '{' ||
-                        stringBuilder[newCharIndex] == '"' && stringBuilder[newCharIndex - 1] == '"' ||
-                        stringBuilder[newCharIndex] == ']' && stringBuilder[newCharIndex - 1] == '[')
+                    if (newCharIndex < stringBuilder.Length)
                     {
-                        stringBuilder.Remove(newCharIndex - 1, 2);
-                        newCharIndex--;
+                        if (stringBuilder[newCharIndex] == ')' && stringBuilder[newCharIndex - 1] == '(' ||
+                            stringBuilder[newCharIndex] == '}' && stringBuilder[newCharIndex - 1] == '{' ||
+                            stringBuilder[newCharIndex] == '"' && stringBuilder[newCharIndex - 1] == '"' ||
+                            stringBuilder[newCharIndex] == ']' && stringBuilder[newCharIndex - 1] == '[')
+                        {
+                            stringBuilder.Remove(newCharIndex - 1, 2);
+                            newCharIndex--;
+                        }
+                        else
+                        {
+                            stringBuilder.Remove(newCharIndex - 1, 1);
+                            newCharIndex--;
+                        }
                     }
                     else
                     {
@@ -128,6 +136,11 @@ public static class TextHandler
                     newCharIndex--;
                 }
             }
+        }
+
+        if (InputHandler.IsKeyDown(SDL.Keycode.Down) && TryPress(SDL.Keycode.Down))
+        {
+            newCharIndex = JumpDown(stringBuilder, newCharIndex);
         }
 
         return new TextInputInfo()
@@ -183,24 +196,51 @@ public static class TextHandler
         for (int i = newCharIndex; i > -1; i--)
         {
             if (i > stringBuilder.Length - 1) continue;
-            if (i <= 0) break;
+            if (i == 0) { charAmount++; break; }
             
+            charAmount++;
+
             if (stringBuilder[i - 1] == ' ' && haltForSpace) break;
             if (stringBuilder[i - 1] != ' ' && !haltForSpace) break;
 
-            charAmount++;
 
             if (stringBuilder[i - 1] == '(' ||
                 stringBuilder[i - 1] == '"' ||
                 stringBuilder[i - 1] == '[' ||
                 stringBuilder[i - 1] == '{' ||
                 stringBuilder[i - 1] == '\n')
+            break;
+        }
+
+        return charAmount;
+    }
+
+    private static int JumpDown(StringBuilder stringBuilder, int newCharIndex)
+    {
+        bool seenNewLine = false;
+
+        for (int i = newCharIndex; i < stringBuilder.Length; i++)
+        {
+            if (stringBuilder[i] == '\n')
             {
-                if (i != newCharIndex) charAmount--;
+                if (!seenNewLine)
+                {
+                    seenNewLine = true;
+                }
+                else
+                {
+                    newCharIndex = i;
+                    break;
+                }
+            }
+
+            if (i == stringBuilder.Length - 1)
+            {
+                newCharIndex = i + 1;
                 break;
             }
         }
 
-        return charAmount;
+        return newCharIndex;
     }
 }
