@@ -202,7 +202,6 @@ public static class TextHandler
             if (stringBuilder[i - 1] == ' ' && haltForSpace) break;
             if (stringBuilder[i - 1] != ' ' && !haltForSpace) break;
 
-
             if (stringBuilder[i - 1] == '(' ||
                 stringBuilder[i - 1] == '"' ||
                 stringBuilder[i - 1] == '[' ||
