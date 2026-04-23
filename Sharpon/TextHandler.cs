@@ -28,6 +28,19 @@ public static class TextHandler
                 textInputOperation = TextInputOperation.DecreasePointSize;
             }
 
+            if (InputHandler.IsKeyDown(SDL.Keycode.Backspace) && TryPress(SDL.Keycode.Backspace))
+            {
+                int jumpCharAmount = JumpLeft(stringBuilder, newCharIndex);
+                stringBuilder.Remove(newCharIndex - jumpCharAmount, jumpCharAmount);
+                newCharIndex -= jumpCharAmount;
+            }
+
+            if (InputHandler.IsKeyDown(SDL.Keycode.Left) && TryPress(SDL.Keycode.Left))
+            {
+                int jumpCharAmount = JumpLeft(stringBuilder, newCharIndex);
+                newCharIndex -= jumpCharAmount;
+            }
+
             return new TextInputInfo()
             {
                 NewText = stringBuilder.ToString(),
@@ -39,16 +52,50 @@ public static class TextHandler
 
         if (InputHandler.TextInput != null)
         {
-            stringBuilder.Append(InputHandler.TextInput);
+            stringBuilder.Insert(newCharIndex, InputHandler.TextInput);
             newCharIndex += InputHandler.TextInput.Length;
+
+            if (InputHandler.TextInput == "(")
+            {
+                stringBuilder.Insert(newCharIndex, ")");
+            }
+
+            if (InputHandler.TextInput == "{")
+            {
+                stringBuilder.Insert(newCharIndex, "}");
+            }
+
+            if (InputHandler.TextInput == "[")
+            {
+                stringBuilder.Insert(newCharIndex, "]");
+            }
+
+            if (InputHandler.TextInput.ToCharArray().First() == '"')
+            {
+                stringBuilder.Insert(newCharIndex, '"');
+            }
         }
 
         if (InputHandler.IsKeyDown(SDL.Keycode.Backspace))
         {
             if (TryPress(SDL.Keycode.Backspace) && stringBuilder.Length > 0)
             {
-                stringBuilder.Remove(stringBuilder.Length - 1, 1);
-                newCharIndex--;
+                if (newCharIndex > 0)
+                {
+                    if (stringBuilder[newCharIndex] == ')' && stringBuilder[newCharIndex - 1] == '(' ||
+                        stringBuilder[newCharIndex] == '}' && stringBuilder[newCharIndex - 1] == '{' ||
+                        stringBuilder[newCharIndex] == '"' && stringBuilder[newCharIndex - 1] == '"' ||
+                        stringBuilder[newCharIndex] == ']' && stringBuilder[newCharIndex - 1] == '[')
+                    {
+                        stringBuilder.Remove(newCharIndex - 1, 2);
+                        newCharIndex--;
+                    }
+                    else
+                    {
+                        stringBuilder.Remove(newCharIndex - 1, 1);
+                        newCharIndex--;
+                    }
+                }
             }
         }
 
@@ -56,7 +103,7 @@ public static class TextHandler
         {
             if (TryPress(SDL.Keycode.Return, REPEAT_RATE))
             {
-                stringBuilder.Append("\n");
+                stringBuilder.Insert(newCharIndex, "\n");
                 newCharIndex++;
             }
         }
@@ -124,5 +171,36 @@ public static class TextHandler
             _repeatDelay.Add(keycode, REPEAT_RATE);
             return true;
         }
+    }
+
+    private static int JumpLeft(StringBuilder stringBuilder, int newCharIndex)
+    {
+        int charAmount = 0;
+        bool haltForSpace = true;
+
+        if (stringBuilder[newCharIndex - 1 < 0 ? 0 : newCharIndex - 1] == ' ') haltForSpace = false;
+
+        for (int i = newCharIndex; i > -1; i--)
+        {
+            if (i > stringBuilder.Length - 1) continue;
+            if (i <= 0) break;
+            
+            if (stringBuilder[i - 1] == ' ' && haltForSpace) break;
+            if (stringBuilder[i - 1] != ' ' && !haltForSpace) break;
+
+            charAmount++;
+
+            if (stringBuilder[i - 1] == '(' ||
+                stringBuilder[i - 1] == '"' ||
+                stringBuilder[i - 1] == '[' ||
+                stringBuilder[i - 1] == '{' ||
+                stringBuilder[i - 1] == '\n')
+            {
+                if (i != newCharIndex) charAmount--;
+                break;
+            }
+        }
+
+        return charAmount;
     }
 }

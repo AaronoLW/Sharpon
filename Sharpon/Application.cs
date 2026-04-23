@@ -35,6 +35,7 @@ public class App : Application
         AssetManager.LoadFont(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", "JetBrainsMono-Bold.ttf"));
 
         _renderer.SetVSyncEnabled(false);
+        _text = File.ReadAllText("/media/SDL3/Sharpon/Sharpon/Application.cs");
     }
 
     public override void Update(double deltaTime) 
@@ -77,7 +78,11 @@ public class App : Application
     {
         _renderer.Clear(Color.FromArgb(25, 25, 25));
 
-        _renderer.RenderText(Font, _text, _editorStartPos, Color.White);
+        string[] lines = _text.Split("\n");
+        for (int i = 0; i < lines.Length; i++)
+        {
+            _renderer.RenderText(Font, lines[i], _editorStartPos + new Vector2(0, (PointSize + 7) * i), Color.White);
+        }
 
         _renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3), 2 * ScaleFactor, PointSize), Color.RoyalBlue);
 
