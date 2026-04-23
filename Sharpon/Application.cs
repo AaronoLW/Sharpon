@@ -35,7 +35,7 @@ public class App : Application
         AssetManager.LoadFont(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", "JetBrainsMono-Bold.ttf"));
 
         _renderer.SetVSyncEnabled(false);
-        _text = File.ReadAllText("/media/SDL3/Sharpon/Sharpon/Application.cs");
+        //_text = File.ReadAllText("/media/SDL3/Sharpon/Sharpon/Application.cs");
     }
 
     public override void Update(double deltaTime) 
