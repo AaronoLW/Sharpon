@@ -131,14 +131,59 @@ public static class TextHandler
 
         if (InputHandler.IsKeyDown(SDL.Keycode.Return) && TryPress(SDL.Keycode.Return, REPEAT_RATE))
         {
+            bool brackets = false;
+
+            if (newCharIndex > 0 && newCharIndex < stringBuilder.Length)
+            {
+                if (stringBuilder[newCharIndex - 1] == '{' && stringBuilder[newCharIndex] == '}')
+                {
+                    brackets = true;
+                }
+            }
+
+            if (brackets)
+            {
+                stringBuilder.Remove(newCharIndex - 1, 2);
+                newCharIndex--;
+            }
+
             int firstLetter = GetFirstLetterOnLine(stringBuilder, newCharIndex);
             stringBuilder.Insert(newCharIndex, "\n");
             newCharIndex++;
 
-            for (int i = 0; i < firstLetter; i++)
+            if (brackets)
             {
-                stringBuilder.Insert(newCharIndex, " ");
-                newCharIndex++;
+                for (int i = 0; i < firstLetter; i++)
+                {
+                    stringBuilder.Insert(newCharIndex, " ");
+                    newCharIndex++;
+                }
+
+                stringBuilder.Insert(newCharIndex, "{\n");
+                newCharIndex += 2;
+
+                for (int i = 0; i < firstLetter + 4; i++)
+                {
+                    stringBuilder.Insert(newCharIndex, " ");
+                    newCharIndex++;
+                }
+
+                stringBuilder.Insert(newCharIndex, "\n");
+
+                for (int i = 0; i < firstLetter; i++)
+                {
+                    stringBuilder.Insert(newCharIndex + 1, " ");
+                }
+
+                stringBuilder.Insert(newCharIndex + firstLetter + 1, "}");
+            }
+            else
+            {
+                for (int i = 0; i < firstLetter; i++)
+                {
+                    stringBuilder.Insert(newCharIndex, " ");
+                    newCharIndex++;
+                }
             }
 
         }
@@ -227,14 +272,15 @@ public static class TextHandler
         if (stringBuilder.Length == 0) return 0;
         if (stringBuilder[newCharIndex - 1 < 0 ? 0 : newCharIndex - 1] == ' ') haltForSpace = false;
 
+        if (newCharIndex == stringBuilder.Length) charAmount++;
+
         for (int i = newCharIndex; i > -1; i--)
         {
             if (i > stringBuilder.Length - 1) continue;
             if (i == 0) { charAmount = newCharIndex; break; }
             
-            charAmount++;
 
-            if (stringBuilder[i - 1] == '\n' && i != newCharIndex) { charAmount--; break; }
+            if (stringBuilder[i - 1] == '\n' && i != newCharIndex) break;
 
             if (stringBuilder[i - 1] == ' ' && haltForSpace) break;
             if (stringBuilder[i - 1] != ' ' && !haltForSpace) break;
@@ -245,8 +291,11 @@ public static class TextHandler
                 stringBuilder[i - 1] == '{' ||
                 stringBuilder[i - 1] == '.' ||
                 stringBuilder[i - 1] == ',' )
-            break;
+            {
+                if (i != newCharIndex) break;
+            }
 
+            charAmount++;
         }
 
         return charAmount;
@@ -340,7 +389,7 @@ public static class TextHandler
     {
         int amount = 0;
 
-        for (int i = newCharIndex; i > -1; i--)
+        for (int i = newCharIndex - 1; i > -1; i--)
         {
             if (i == stringBuilder.Length) continue;
             if (stringBuilder[i] == '\n') return amount;
