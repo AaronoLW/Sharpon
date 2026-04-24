@@ -1,3 +1,4 @@
+using System.Reflection.PortableExecutable;
 using System.Text;
 using SDL3;
 using Smash.Input;
@@ -140,6 +141,11 @@ public static class TextHandler
             newCharIndex = JumpDown(stringBuilder, newCharIndex);
         }
 
+        if (InputHandler.IsKeyDown(SDL.Keycode.Up) && TryPress(SDL.Keycode.Up))
+        {
+            newCharIndex = JumpUp(stringBuilder, newCharIndex);
+        }
+
         return new TextInputInfo()
         {
             NewText = stringBuilder.ToString(),
@@ -192,6 +198,8 @@ public static class TextHandler
         if (stringBuilder.Length == 0) return 0;
         if (stringBuilder[newCharIndex - 1 < 0 ? 0 : newCharIndex - 1] == ' ') haltForSpace = false;
 
+        if (newCharIndex == stringBuilder.Length) charAmount++;
+
         for (int i = newCharIndex; i > -1; i--)
         {
             if (i > stringBuilder.Length - 1) continue;
@@ -208,8 +216,10 @@ public static class TextHandler
                 stringBuilder[i - 1] == '{' ||
                 stringBuilder[i - 1] == '.' ||
                 stringBuilder[i - 1] == ',' ||
-                stringBuilder[i - 1] == '\n')
+                stringBuilder[i - 1] == '\n' )
             break;
+
+            if (stringBuilder[i] == '\n') { charAmount--; }
         }
 
         return charAmount;
@@ -242,5 +252,18 @@ public static class TextHandler
         }
 
         return newCharIndex;
+    }
+
+    private static int JumpUp(StringBuilder stringBuilder, int newCharIndex)
+    {
+        for (int i = newCharIndex - 1; i > 0; i--)
+        {
+            if (stringBuilder[i] == '\n')
+            {
+                return i;
+            }
+        }
+
+        return 0;
     }
 }
