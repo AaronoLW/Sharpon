@@ -42,6 +42,12 @@ public static class TextHandler
                 newCharIndex -= jumpCharAmount;
             }
 
+            if (InputHandler.IsKeyDown(SDL.Keycode.Right) && TryPress(SDL.Keycode.Right))
+            {
+                int jumpCharAmount = JumpRight(stringBuilder, newCharIndex);
+                newCharIndex += jumpCharAmount;
+            }
+
             return new TextInputInfo()
             {
                 NewText = stringBuilder.ToString(),
@@ -198,8 +204,6 @@ public static class TextHandler
         if (stringBuilder.Length == 0) return 0;
         if (stringBuilder[newCharIndex - 1 < 0 ? 0 : newCharIndex - 1] == ' ') haltForSpace = false;
 
-        if (newCharIndex == stringBuilder.Length) charAmount++;
-
         for (int i = newCharIndex; i > -1; i--)
         {
             if (i > stringBuilder.Length - 1) continue;
@@ -220,6 +224,38 @@ public static class TextHandler
             break;
 
             if (stringBuilder[i] == '\n') { charAmount--; }
+        }
+
+        return charAmount;
+    }
+
+    private static int JumpRight(StringBuilder stringBuilder, int newCharIndex)
+    {
+        int charAmount = 0;
+        bool haltForSpace = true;
+
+        if (stringBuilder.Length == 0) return 0;
+        if (newCharIndex == stringBuilder.Length) return 0;
+        if (stringBuilder[newCharIndex + 1] == ' ') haltForSpace = false;
+
+        if (stringBuilder[newCharIndex] == ' ') { charAmount++; newCharIndex++; }
+        if (stringBuilder[newCharIndex] == '\n') { return 1; }
+
+        for (int i = newCharIndex; i < stringBuilder.Length; i++)
+        {
+            if (stringBuilder[i] == ' ' && haltForSpace) break;
+            if (stringBuilder[i] != ' ' && !haltForSpace) break;
+
+            if (stringBuilder[i] == ')' ||
+                stringBuilder[i] == '"' ||
+                stringBuilder[i] == ']' ||
+                stringBuilder[i] == '}' ||
+                stringBuilder[i] == '.' ||
+                stringBuilder[i] == ',' ||
+                stringBuilder[i] == '\n' )
+            break;
+
+            charAmount++;
         }
 
         return charAmount;
