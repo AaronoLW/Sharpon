@@ -16,7 +16,7 @@ public class App : Application
     public static Font Font => AssetManager.GetFont("JetBrainsMono-Bold", PointSize);
 
     private Vector2 _editorStartPos = new Vector2(60, 40);
-    private Vector2 _caretPosition;
+    private Vector2 _caretPosition = new(1);
 
     private Window _window;
     private Renderer _renderer;
