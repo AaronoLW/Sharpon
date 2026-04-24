@@ -8,6 +8,7 @@ public class App : Application
     public const int BASE_POINT_SIZE = 20;
 
     private const int CARET_SPEED = 67;
+    private const int LINE_SPACING = 6;
 
     public static float ScaleFactor => (float)PointSize / (float)BASE_POINT_SIZE;
 
@@ -80,7 +81,7 @@ public class App : Application
         string[] lines = _text.Split("\n");
         for (int i = 0; i < lines.Length; i++)
         {
-            Vector2 textPosition = _editorStartPos + new Vector2(0, (PointSize + 7) * i);
+            Vector2 textPosition = _editorStartPos + new Vector2(0, (PointSize + LINE_SPACING) * i);
             if (textPosition.Y > _window.Height) break;
 
             _renderer.RenderText(Font, lines[i], textPosition, Color.White);
@@ -111,7 +112,7 @@ public class App : Application
 
                 string textBeforeCaret = lines[i].Substring(0, charIndexInLine);
                 float x = Font.MeasureString(textBeforeCaret).X;
-                float y = Font.MeasureString("|").Y * (lineIndex + 1);
+                float y = (PointSize + LINE_SPACING) * (lineIndex + 1);
 
                 return new Vector2(x, y);
             }
