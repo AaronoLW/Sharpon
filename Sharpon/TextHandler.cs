@@ -48,6 +48,21 @@ public static class TextHandler
                 newCharIndex += jumpCharAmount;
             }
 
+            if (InputHandler.IsKeyDown(SDL.Keycode.Return) && TryPress(SDL.Keycode.Return))
+            {
+                int endOfLine = GetEndOfCurrentLine(stringBuilder, newCharIndex);
+                int firstLetter = GetFirstLetterOnLine(stringBuilder, newCharIndex);
+
+                stringBuilder.Insert(endOfLine, '\n');
+                newCharIndex = endOfLine + 1;
+
+                for (int i = 0; i < firstLetter; i++)
+                {
+                    stringBuilder.Insert(newCharIndex, " ");
+                    newCharIndex++;
+                }
+            }
+
             return new TextInputInfo()
             {
                 NewText = stringBuilder.ToString(),
@@ -116,8 +131,16 @@ public static class TextHandler
 
         if (InputHandler.IsKeyDown(SDL.Keycode.Return) && TryPress(SDL.Keycode.Return, REPEAT_RATE))
         {
+            int firstLetter = GetFirstLetterOnLine(stringBuilder, newCharIndex);
             stringBuilder.Insert(newCharIndex, "\n");
             newCharIndex++;
+
+            for (int i = 0; i < firstLetter; i++)
+            {
+                stringBuilder.Insert(newCharIndex, " ");
+                newCharIndex++;
+            }
+
         }
 
         if (InputHandler.IsKeyDown(SDL.Keycode.Tab) && TryPress(SDL.Keycode.Tab))
@@ -211,6 +234,8 @@ public static class TextHandler
             
             charAmount++;
 
+            if (stringBuilder[i - 1] == '\n' && i != newCharIndex) { charAmount--; break; }
+
             if (stringBuilder[i - 1] == ' ' && haltForSpace) break;
             if (stringBuilder[i - 1] != ' ' && !haltForSpace) break;
 
@@ -219,11 +244,9 @@ public static class TextHandler
                 stringBuilder[i - 1] == '[' ||
                 stringBuilder[i - 1] == '{' ||
                 stringBuilder[i - 1] == '.' ||
-                stringBuilder[i - 1] == ',' ||
-                stringBuilder[i - 1] == '\n' )
+                stringBuilder[i - 1] == ',' )
             break;
 
-            if (stringBuilder[i] == '\n') { charAmount--; }
         }
 
         return charAmount;
@@ -301,5 +324,37 @@ public static class TextHandler
         }
 
         return 0;
+    }
+
+    private static int GetEndOfCurrentLine(StringBuilder stringBuilder, int newCharIndex)
+    {
+        for (int i = newCharIndex; i < stringBuilder.Length; i++)
+        {
+            if (stringBuilder[i] == '\n') return i;
+        }
+
+        return stringBuilder.Length;
+    }
+
+    private static int GetFirstLetterOnLine(StringBuilder stringBuilder, int newCharIndex)
+    {
+        int amount = 0;
+
+        for (int i = newCharIndex; i > -1; i--)
+        {
+            if (i == stringBuilder.Length) continue;
+            if (stringBuilder[i] == '\n') return amount;
+            
+            if (stringBuilder[i] != ' ')
+            {
+                amount = 0;
+            }
+            else
+            {
+                amount++;
+            }
+        }
+
+        return amount;
     }
 }
