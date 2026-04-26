@@ -16,16 +16,15 @@ public static class FileDialog
     public static float DialogY;
     public static Vector2 DialogPosition => new Vector2(DialogX, DialogY);
 
-    private static string _text = "/";
-    private static int _charIndex = 1;
+    private static string _text = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/";
+    private static int _charIndex = _text.Length;
 
     private static Vector2 _caretPosition = new();
 
     private static bool _ignoreClose = false;
 
-    private static string[] _systemEntries = Directory.GetFileSystemEntries(_text);
+    private static Dictionary<string, float> _systemEntries = new();
     private static int _selectedIndex = 0;
-    private static float _selectedEntryOffset = 0;
 
     private const int MAX_ENTRY_OFFSET = 30;
 
@@ -71,10 +70,9 @@ public static class FileDialog
 
                 if (textInputInfo.TextInputOperation == TextInputOperation.JumpDown)
                 {
-                    if (_selectedIndex + 1 < _systemEntries.Length)
+                    if (_selectedIndex + 1 < _systemEntries.Keys.Count)
                     {
                         _selectedIndex++;
-                        _selectedEntryOffset = 0;
                     }
                 }
 
@@ -83,7 +81,6 @@ public static class FileDialog
                     if (_selectedIndex - 1 >= 0)
                     {
                         _selectedIndex--;
-                        _selectedEntryOffset = 0;
                     }
                 }
 
@@ -98,10 +95,10 @@ public static class FileDialog
 
                 if (textInputInfo.TextInputOperation == TextInputOperation.Tab)
                 {
-                    if (_selectedIndex < _systemEntries.Length)
+                    if (_selectedIndex < _systemEntries.Keys.Count)
                     {
-                        _text = _systemEntries[_selectedIndex];
-                        if (Directory.Exists(_systemEntries[_selectedIndex])) _text += "/";
+                        _text = _systemEntries.ElementAt(_selectedIndex).Key;
+                        if (Directory.Exists(_systemEntries.ElementAt(_selectedIndex).Key)) _text += "/";
                     
                         _charIndex = _text.Length;
                         RefreshEntries();
@@ -118,6 +115,24 @@ public static class FileDialog
                 {
                     if (_charIndex + 1 <= _text.Length)
                         _charIndex++;
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.NewLine)
+                {
+                    if (_selectedIndex < _systemEntries.Keys.Count)
+                    {
+                        if (File.Exists(_text))
+                        {
+                            Opened = false;
+                            App.LoadFile(_text);
+                        }
+                        else if (Directory.Exists(_systemEntries.ElementAt(_selectedIndex).Key))
+                        {
+                            _text = _systemEntries.ElementAt(_selectedIndex).Key + "/";
+                            _charIndex = _text.Length;
+                            RefreshEntries();
+                        }
+                    }
                 }
             }
 
@@ -137,9 +152,16 @@ public static class FileDialog
             _caretPosition = MathHelper.LerpVector(_caretPosition, preferredCaretPosition, App.CARET_SPEED * (float)deltaTime);
         }
 
-        if (_selectedEntryOffset != MAX_ENTRY_OFFSET)
+        foreach (var entry in _systemEntries)
         {
-            _selectedEntryOffset = MathHelper.Lerp(_selectedEntryOffset, MAX_ENTRY_OFFSET, 20 * (float)deltaTime);
+            if (_systemEntries.ElementAt(_selectedIndex).Key == entry.Key)
+            {
+                _systemEntries[entry.Key] = MathHelper.Lerp(_systemEntries[entry.Key], MAX_ENTRY_OFFSET, 30 * (float)deltaTime);
+            }
+            else if (_systemEntries[entry.Key] > 0)
+            {
+                _systemEntries[entry.Key] = MathHelper.Lerp(_systemEntries[entry.Key], 0, 25 * (float)deltaTime);
+            }
         }
     }
 
@@ -151,22 +173,23 @@ public static class FileDialog
         renderer.RenderText(App.Font, _text, textPosition, Color.White);
 
         Vector2 entryStartPosition = DialogPosition + new Vector2(0, DIALOG_HEIGHT);
-        for (int i = 0; i < _systemEntries.Length; i++)
+        for (int i = 0; i < _systemEntries.Keys.Count; i++)
         {
             Vector2 position = entryStartPosition + new Vector2(0, DIALOG_HEIGHT / 1.5f * i);
 
             Vector2 entryTextPosition = position + new Vector2(App.PointSize / 4);
 
-            string fileText = Path.GetFileName(_systemEntries[i]);
-            if (Directory.Exists(_systemEntries[i])) fileText += "/";
+            string fileText = Path.GetFileName(_systemEntries.ElementAt(i).Key);
+            if (Directory.Exists(_systemEntries.ElementAt(i).Key)) fileText += "/";
+            entryTextPosition.X -= _systemEntries.ElementAt(i).Value;
 
             if (i == _selectedIndex)
             {
                 fileText = fileText.Insert(0, "-> ");
-                entryTextPosition.X -= _selectedEntryOffset + App.Font.MeasureString("-> ").X;
+                entryTextPosition.X -=  + App.Font.MeasureString("-> ").X;
             } 
 
-            renderer.RenderText(App.Font, fileText, entryTextPosition, Directory.Exists(_systemEntries[i]) ? Color.RoyalBlue : Color.White);
+            renderer.RenderText(App.Font, fileText, entryTextPosition, Directory.Exists(_systemEntries.ElementAt(i).Key) ? Color.RoyalBlue : Color.White);
         }
 
         if (Opened)
@@ -175,11 +198,19 @@ public static class FileDialog
         }
     }
 
-    public static void Open()
+    public static void Open(string? currentDirectory)
     {
         Opened = true;
         _ignoreClose = true;
         _selectedIndex = 0;
+
+        if (currentDirectory != null)  
+        {
+            _text = currentDirectory + "/";
+            _charIndex = _text.Length;
+        }
+
+        RefreshEntries();
     }
 
     private static Vector2 GetPreferredCaretPosition()
@@ -217,7 +248,15 @@ public static class FileDialog
             }
 
             string[] entries = Directory.GetFileSystemEntries(directory);
-            _systemEntries = entries.Where(e => e.Length >= _text.Length && e.Substring(0, _text.Length) == _text).ToArray();
+            _systemEntries.Clear();
+
+            foreach (string entry in entries)
+            {
+                if (entry.Length >= _text.Length && entry.Substring(0, _text.Length).ToLower() == _text.ToLower())
+                {
+                    _systemEntries.Add(entry, 0);
+                }
+            }
         }
     }
 }
