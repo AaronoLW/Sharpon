@@ -1,4 +1,3 @@
-using System.Reflection.PortableExecutable;
 using System.Text;
 using SDL3;
 using Smash.Input;
@@ -308,7 +307,7 @@ public static class TextHandler
 
         if (stringBuilder.Length == 0) return 0;
         if (newCharIndex == stringBuilder.Length) return 0;
-        if (stringBuilder[newCharIndex + 1] == ' ') haltForSpace = false;
+        if (newCharIndex + 1 < stringBuilder.Length && stringBuilder[newCharIndex + 1] == ' ') haltForSpace = false;
 
         if (stringBuilder[newCharIndex] == ' ') { charAmount++; newCharIndex++; }
         if (stringBuilder[newCharIndex] == '\n') { return 1; }
@@ -318,14 +317,17 @@ public static class TextHandler
             if (stringBuilder[i] == ' ' && haltForSpace) break;
             if (stringBuilder[i] != ' ' && !haltForSpace) break;
 
-            if (stringBuilder[i] == ')' ||
-                stringBuilder[i] == '"' ||
-                stringBuilder[i] == ']' ||
-                stringBuilder[i] == '}' ||
-                stringBuilder[i] == '.' ||
-                stringBuilder[i] == ',' ||
-                stringBuilder[i] == '\n' )
-            break;
+            if (i != newCharIndex)
+            {
+                if (stringBuilder[i] == ')' ||
+                    stringBuilder[i] == '"' ||
+                    stringBuilder[i] == ']' ||
+                    stringBuilder[i] == '}' ||
+                    stringBuilder[i] == '.' ||
+                    stringBuilder[i] == ',' ||
+                    stringBuilder[i] == '\n' )
+                break;
+            }
 
             charAmount++;
         }
