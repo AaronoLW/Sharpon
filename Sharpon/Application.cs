@@ -18,13 +18,15 @@ public class App : Application
     public static float WindowWidth => _window.Width;
     public static float WindowHeight =>  _window.Height;
 
+    public static string LoadedFilePath { get; private set; } = "";
+
     private Vector2 _editorStartPos = new Vector2(60, 40);
     private Vector2 _caretPosition = new(1);
 
     private static Window _window = null!;
     private Renderer _renderer;
 
-    private string _text = "";
+    private static string _text = "";
     private int _charIndex = 0;
 
     private float _elapsedTime;
@@ -74,7 +76,7 @@ public class App : Application
 
                 if (textInfo.TextInputOperation == TextInputOperation.ToggleFileDialog)
                 {
-                    FileDialog.Open();
+                    FileDialog.Open(Path.GetDirectoryName(LoadedFilePath));
                 }
 
                 if (textInfo.TextInputOperation == TextInputOperation.DeleteWord)
@@ -170,6 +172,13 @@ public class App : Application
         //_renderer.RenderText(Font, fpsText, new Vector2(_window.Width - Font.MeasureString(fpsText).X - 20, 20), Color.White);
 
         _renderer.RenderPresent();
+    }
+
+    public static void LoadFile(string filePath)
+    {
+        LoadedFilePath = filePath;
+        string fileContent = File.ReadAllText(filePath);
+        _text = fileContent;
     }
 
     private Vector2 GetCaretPosition()
