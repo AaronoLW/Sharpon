@@ -1,0 +1,223 @@
+using Smash.Graphics;
+using Smash;
+using Color = System.Drawing.Color;
+using System.Numerics;
+using Smash.Input;
+using SDL3;
+
+public static class FileDialog
+{
+    public static float DIALOG_WIDHT => Math.Max(400 * App.ScaleFactor, App.Font.MeasureString(_text).X + App.PointSize * 1.5f);
+    public static float DIALOG_HEIGHT => 50 * App.ScaleFactor;
+
+    public static bool Opened = false;
+
+    public static float DialogX;
+    public static float DialogY;
+    public static Vector2 DialogPosition => new Vector2(DialogX, DialogY);
+
+    private static string _text = "/";
+    private static int _charIndex = 1;
+
+    private static Vector2 _caretPosition = new();
+
+    private static bool _ignoreClose = false;
+
+    private static string[] _systemEntries = Directory.GetFileSystemEntries(_text);
+    private static int _selectedIndex = 0;
+    private static float _selectedEntryOffset = 0;
+
+    private const int MAX_ENTRY_OFFSET = 30;
+
+    public static void Update(double deltaTime)
+    {
+        if (Opened)
+        {
+            TextInputInfo textInputInfo = TextHandler.Handle(_text, _charIndex);
+
+            string previousText = _text;
+            _text = textInputInfo.NewText;
+            _charIndex = textInputInfo.NewCharIndex;
+
+            if (previousText != _text) RefreshEntries();
+
+
+            if (textInputInfo.TextInputOperation != null)
+            {
+                if (textInputInfo.TextInputOperation == TextInputOperation.ToggleFileDialog && !_ignoreClose)
+                {
+                    Opened = false;
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.DeleteWord)
+                {
+                    int jumpCharAmount = TextOperation.JumpLeft(_text, _charIndex);
+                    _text = _text.Remove(_charIndex - jumpCharAmount, jumpCharAmount);
+                    _charIndex -= jumpCharAmount;
+                    RefreshEntries();
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.JumpLeft)
+                {
+                    int jumpCharAmount = TextOperation.JumpLeft(_text, _charIndex);
+                    _charIndex -= jumpCharAmount;
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.JumpRight)
+                {
+                    int jumpCharAmount = TextOperation.JumpRight(_text, _charIndex);
+                    _charIndex += jumpCharAmount;
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.JumpDown)
+                {
+                    if (_selectedIndex + 1 < _systemEntries.Length)
+                    {
+                        _selectedIndex++;
+                        _selectedEntryOffset = 0;
+                    }
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.JumpUp)
+                {
+                    if (_selectedIndex - 1 >= 0)
+                    {
+                        _selectedIndex--;
+                        _selectedEntryOffset = 0;
+                    }
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.DeleteCharacter)
+                {
+                    int deleteCharAmount = TextOperation.DeleteCharacter(_text, _charIndex);
+                    if (deleteCharAmount > 1) _charIndex++;
+                    _text = _text.Remove(_charIndex - deleteCharAmount, deleteCharAmount);
+                    _charIndex -= deleteCharAmount;
+                    RefreshEntries();
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.Tab)
+                {
+                    if (_selectedIndex < _systemEntries.Length)
+                    {
+                        _text = _systemEntries[_selectedIndex];
+                        if (Directory.Exists(_systemEntries[_selectedIndex])) _text += "/";
+                    
+                        _charIndex = _text.Length;
+                        RefreshEntries();
+                    }
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.MoveLeft)
+                {
+                    if (_charIndex > 0)
+                        _charIndex--;
+                }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.MoveRight)
+                {
+                    if (_charIndex + 1 <= _text.Length)
+                        _charIndex++;
+                }
+            }
+
+            if (_ignoreClose) _ignoreClose = false;
+        }
+
+        Vector2 preferredDialogPosition = GetPreferredDialogPosition();
+        if (DialogPosition != preferredDialogPosition)
+        {
+            DialogX = MathHelper.Lerp(DialogX, preferredDialogPosition.X, 30 * (float)deltaTime);
+            DialogY = MathHelper.Lerp(DialogY, preferredDialogPosition.Y, 30 * (float)deltaTime);
+        }
+
+        Vector2 preferredCaretPosition = GetPreferredCaretPosition();
+        if (_caretPosition != preferredCaretPosition)
+        {
+            _caretPosition = MathHelper.LerpVector(_caretPosition, preferredCaretPosition, App.CARET_SPEED * (float)deltaTime);
+        }
+
+        if (_selectedEntryOffset != MAX_ENTRY_OFFSET)
+        {
+            _selectedEntryOffset = MathHelper.Lerp(_selectedEntryOffset, MAX_ENTRY_OFFSET, 20 * (float)deltaTime);
+        }
+    }
+
+    public static void Render(Renderer renderer)
+    {
+        renderer.RenderFilledRectangle(new Rectangle(DialogPosition, DIALOG_WIDHT, DIALOG_HEIGHT), Color.FromArgb(40, 40, 40));
+
+        Vector2 textPosition = DialogPosition + new Vector2(App.PointSize / 2);
+        renderer.RenderText(App.Font, _text, textPosition, Color.White);
+
+        Vector2 entryStartPosition = DialogPosition + new Vector2(0, DIALOG_HEIGHT);
+        for (int i = 0; i < _systemEntries.Length; i++)
+        {
+            Vector2 position = entryStartPosition + new Vector2(0, DIALOG_HEIGHT / 1.5f * i);
+
+            Vector2 entryTextPosition = position + new Vector2(App.PointSize / 4);
+
+            string fileText = Path.GetFileName(_systemEntries[i]);
+            if (Directory.Exists(_systemEntries[i])) fileText += "/";
+
+            if (i == _selectedIndex)
+            {
+                fileText = fileText.Insert(0, "-> ");
+                entryTextPosition.X -= _selectedEntryOffset + App.Font.MeasureString("-> ").X;
+            } 
+
+            renderer.RenderText(App.Font, fileText, entryTextPosition, Directory.Exists(_systemEntries[i]) ? Color.RoyalBlue : Color.White);
+        }
+
+        if (Opened)
+        {
+            renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3), 2 * App.ScaleFactor, App.PointSize), Color.RoyalBlue);
+        }
+    }
+
+    public static void Open()
+    {
+        Opened = true;
+        _ignoreClose = true;
+        _selectedIndex = 0;
+    }
+
+    private static Vector2 GetPreferredCaretPosition()
+    {
+        return DialogPosition + new Vector2(App.Font.MeasureString(_text.Substring(0, _charIndex)).X, 0) + new Vector2(App.PointSize / 2);
+    }
+
+    private static Vector2 GetPreferredDialogPosition()
+    {
+        if (Opened)
+        {
+            return new Vector2(App.WindowWidth - DIALOG_WIDHT, 80);
+        }
+        else
+        {
+            return new Vector2(App.WindowWidth + 100, 80);
+        }
+    }
+
+    private static void RefreshEntries()
+    {
+        string? directory = Path.GetDirectoryName(_text);
+        _selectedIndex = 0;
+
+        if (directory == null)
+        {
+            _systemEntries = [];
+        }
+        else
+        {
+            if (!Directory.Exists(directory))
+            {
+                _systemEntries = [];
+                return;
+            }
+
+            string[] entries = Directory.GetFileSystemEntries(directory);
+            _systemEntries = entries.Where(e => e.Length >= _text.Length && e.Substring(0, _text.Length) == _text).ToArray();
+        }
+    }
+}

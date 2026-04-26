@@ -1,5 +1,16 @@
 public enum TextInputOperation
 {
     IncreasePointSize,
-    DecreasePointSize
+    DecreasePointSize,
+    ToggleFileDialog,
+    JumpUp,
+    JumpLeft,
+    JumpRight,
+    JumpDown,
+    DeleteWord,
+    DeleteCharacter,
+    NewLine,
+    Tab,
+    MoveRight,
+    MoveLeft
 }
