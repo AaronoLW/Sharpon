@@ -27,7 +27,7 @@ public class App : Application
     private Renderer _renderer;
 
     private static string _text = "";
-    private int _charIndex = 0;
+    private static int _charIndex = 0;
 
     private float _elapsedTime;
     private double _fps;
@@ -138,6 +138,11 @@ public class App : Application
                     if (_charIndex + 1 <= _text.Length)
                         _charIndex++;
                 }
+
+                if (textInfo.TextInputOperation == TextInputOperation.SaveFile)
+                {
+                    SaveFile();
+                }
             }
         }
 
@@ -146,7 +151,7 @@ public class App : Application
         Vector2 preferredCaretPosition = GetCaretPosition();
         if (_caretPosition != preferredCaretPosition)
         {
-            _caretPosition = MathHelper.LerpVector(_caretPosition, preferredCaretPosition + _editorStartPos, CARET_SPEED * (float)deltaTime);
+            _caretPosition = MathHelper.LerpVector(_caretPosition, preferredCaretPosition, CARET_SPEED * (float)deltaTime);
         }
     }
 
@@ -166,6 +171,11 @@ public class App : Application
 
         _renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3), 2 * ScaleFactor, PointSize), Color.RoyalBlue);
 
+        if (LoadedFilePath != string.Empty)
+        {
+            _renderer.RenderText(Font, LoadedFilePath, new Vector2(_window.Width - Font.MeasureString(LoadedFilePath).X - 20, 20), Color.White);
+        }
+
         FileDialog.Render(_renderer);
 
         //string fpsText = $"Fps: {(int)_fps}";
@@ -179,6 +189,15 @@ public class App : Application
         LoadedFilePath = filePath;
         string fileContent = File.ReadAllText(filePath);
         _text = fileContent;
+        _charIndex = 0;
+    }
+
+    private static void SaveFile()
+    {
+        if (FileDialog.Opened) return;
+        if (LoadedFilePath == string.Empty) return;
+
+        File.WriteAllText(LoadedFilePath, _text);
     }
 
     private Vector2 GetCaretPosition()
@@ -199,7 +218,7 @@ public class App : Application
                 float x = Font.MeasureString(textBeforeCaret).X;
                 float y = (PointSize + LINE_SPACING) * (lineIndex + 1);
 
-                return new Vector2(x, y);
+                return new Vector2(x, y) + _editorStartPos;
             }
 
             charAmount += lineLength + 1;

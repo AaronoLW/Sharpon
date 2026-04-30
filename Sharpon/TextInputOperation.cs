@@ -12,5 +12,6 @@ public enum TextInputOperation
     NewLine,
     Tab,
     MoveRight,
-    MoveLeft
+    MoveLeft,
+    SaveFile
 }

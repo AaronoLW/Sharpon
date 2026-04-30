@@ -31,6 +31,7 @@ public static class TextOperation
                 stringBuilder[i - 1] == '{' ||
                 stringBuilder[i - 1] == '.' ||
                 stringBuilder[i - 1] == '/' ||
+                stringBuilder[i - 1] == '<' ||
                 stringBuilder[i - 1] == ',' )
             {
                 if (i != newCharIndex) break;
@@ -67,6 +68,7 @@ public static class TextOperation
                     stringBuilder[i] == '}' ||
                     stringBuilder[i] == '.' ||
                     stringBuilder[i] == ',' ||
+                    stringBuilder[i] == '>' ||
                     stringBuilder[i] == '\n' )
                 break;
             }
