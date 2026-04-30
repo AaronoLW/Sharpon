@@ -25,6 +25,7 @@ public static class FileDialog
 
     private static Dictionary<string, float> _systemEntries = new();
     private static int _selectedIndex = 0;
+    private static float _scroll;
 
     private const int MAX_ENTRY_OFFSET = 30;
 
@@ -163,6 +164,8 @@ public static class FileDialog
                 _systemEntries[entry.Key] = MathHelper.Lerp(_systemEntries[entry.Key], 0, 25 * (float)deltaTime);
             }
         }
+
+        _scroll = MathHelper.Lerp(_scroll, Math.Max((DIALOG_HEIGHT / 1.5f * _selectedIndex) - ((App.WindowHeight - DialogY / 2) / 2), 0), 50 * (float)deltaTime);
     }
 
     public static void Render(Renderer renderer)
@@ -177,7 +180,8 @@ public static class FileDialog
         {
             Vector2 position = entryStartPosition + new Vector2(0, DIALOG_HEIGHT / 1.5f * i);
 
-            Vector2 entryTextPosition = position + new Vector2(App.PointSize / 4);
+            Vector2 entryTextPosition = position + new Vector2(App.PointSize / 4) - new Vector2(0, _scroll);
+            if (entryTextPosition.Y < DialogY + DIALOG_HEIGHT || entryTextPosition.Y > App.WindowHeight) continue;
 
             string fileText = Path.GetFileName(_systemEntries.ElementAt(i).Key);
             if (Directory.Exists(_systemEntries.ElementAt(i).Key)) fileText += "/";
