@@ -13,5 +13,6 @@ public enum TextInputOperation
     Tab,
     MoveRight,
     MoveLeft,
-    SaveFile
+    SaveFile,
+    PasteClipboard
 }

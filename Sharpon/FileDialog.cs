@@ -135,6 +135,13 @@ public static class FileDialog
                         }
                     }
                 }
+
+                if (textInputInfo.TextInputOperation == TextInputOperation.PasteClipboard)
+                {
+                    string clipboardText = SDL.GetClipboardText();
+                    _text = _text.Insert(_charIndex, clipboardText);
+                    _charIndex += clipboardText.Length;
+                }
             }
 
             if (_ignoreClose) _ignoreClose = false;
