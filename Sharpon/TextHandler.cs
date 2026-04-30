@@ -49,12 +49,14 @@ public static class TextHandler
                 //}
             }
 
-            if (InputHandler.IsKeyDown(SDL.Keycode.LShift))
+            if (InputHandler.IsKeyPressed(SDL.Keycode.S))
             {
-                if (InputHandler.IsKeyPressed(SDL.Keycode.P))
-                {
-                    textInputOperation = TextInputOperation.ToggleFileDialog;
-                }
+                textInputOperation = TextInputOperation.SaveFile;
+            } 
+
+            if (InputHandler.IsKeyPressed(SDL.Keycode.P))
+            {
+                textInputOperation = TextInputOperation.ToggleFileDialog;
             }
 
             return new TextInputInfo()

@@ -213,7 +213,7 @@ public static class FileDialog
         RefreshEntries();
     }
 
-    private static Vector2 GetPreferredCaretPosition()
+    public static Vector2 GetPreferredCaretPosition()
     {
         return DialogPosition + new Vector2(App.Font.MeasureString(_text.Substring(0, _charIndex)).X, 0) + new Vector2(App.PointSize / 2);
     }
