@@ -59,6 +59,11 @@ public static class TextHandler
                 textInputOperation = TextInputOperation.ToggleFileDialog;
             }
 
+            if (InputHandler.IsKeyPressed(SDL.Keycode.V))
+            {
+                textInputOperation = TextInputOperation.PasteClipboard;
+            }
+
             return new TextInputInfo()
             {
                 NewText = stringBuilder.ToString(),

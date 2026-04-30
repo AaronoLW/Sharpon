@@ -1,4 +1,5 @@
 using System.Numerics;
+using SDL3;
 using Smash;
 using Smash.Graphics;
 using Color = System.Drawing.Color;
@@ -150,6 +151,13 @@ public class App : Application
                 if (textInfo.TextInputOperation == TextInputOperation.SaveFile)
                 {
                     SaveFile();
+                }
+
+                if (textInfo.TextInputOperation == TextInputOperation.PasteClipboard)
+                {
+                    string clipboardText = SDL.GetClipboardText();
+                    _text = _text.Insert(_charIndex, clipboardText);
+                    _charIndex += clipboardText.Length;
                 }
             }
         }
