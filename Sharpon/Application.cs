@@ -32,6 +32,8 @@ public class App : Application
     private float _elapsedTime;
     private double _fps;
 
+    private float _scroll;
+
     public App() 
     {
         CreateWindowAndRenderer("Sharpon", 800, 600, out _window, out _renderer);
@@ -159,6 +161,8 @@ public class App : Application
         {
             _caretPosition = MathHelper.LerpVector(_caretPosition, preferredCaretPosition, CARET_SPEED * (float)deltaTime);
         }
+
+        _scroll = MathHelper.Lerp(_scroll, Math.Max(_caretPosition.Y - _window.Height / 2, 0), 50 * (float)deltaTime);
     }
 
     public override void Render() 
@@ -168,14 +172,14 @@ public class App : Application
         string[] lines = _text.Split("\n");
         for (int i = 0; i < lines.Length; i++)
         {
-            Vector2 textPosition = _editorStartPos + new Vector2(0, (PointSize + LINE_SPACING) * i);
-            if (textPosition.Y > _window.Height) break;
+            Vector2 textPosition = _editorStartPos + new Vector2(0, (PointSize + LINE_SPACING) * i - _scroll);
+            if (textPosition.Y > _window.Height || textPosition.Y < -PointSize) continue;
 
             _renderer.RenderText(Font, lines[i], textPosition, Color.White);
             _renderer.RenderText(Font, i.ToString(), new Vector2(50 - Font.MeasureString(i.ToString()).X, textPosition.Y), Color.Gray);
         }
 
-        _renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3), 2 * ScaleFactor, PointSize), Color.RoyalBlue);
+        _renderer.RenderFilledRectangle(new Rectangle(_caretPosition + new Vector2(-1, 3) - new Vector2(0, _scroll), 2 * ScaleFactor, PointSize), Color.RoyalBlue);
 
         if (LoadedFilePath != string.Empty)
         {
