@@ -41,7 +41,13 @@ public class App : Application
         AssetManager.LoadFont(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", "JetBrainsMono-Bold.ttf"));
 
         _renderer.SetVSyncEnabled(false);
-        //_text = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/sharpon_test.txt");
+
+        string lastOpenedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Sharpon", "LastOpenedFile.txt");
+        if (File.Exists(lastOpenedFilePath))
+        {
+            string lastOpenedFile = File.ReadAllText(lastOpenedFilePath);
+            if (File.Exists(lastOpenedFile)) LoadFile(lastOpenedFile);
+        }
     }
 
     public override void Update(double deltaTime) 
@@ -190,6 +196,14 @@ public class App : Application
         string fileContent = File.ReadAllText(filePath);
         _text = fileContent;
         _charIndex = 0;
+
+        string sharponPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Sharpon");
+        if (!Directory.Exists(sharponPath))
+        {
+            Directory.CreateDirectory(sharponPath);
+        }
+
+        File.WriteAllText(Path.Combine(sharponPath, "LastOpenedFile.txt"), filePath);
     }
 
     private static void SaveFile()
