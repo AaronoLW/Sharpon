@@ -136,6 +136,16 @@ public static class FileDialog
                     }
                 }
 
+                if (textInputInfo.TextInputOperation == TextInputOperation.ForceNewLine)
+                {
+                    if (!File.Exists(_text) && !Directory.Exists(_text))
+                    {
+                        using (var fileStream = File.Create(_text)) { }
+                        Opened = false;
+                        App.LoadFile(_text);
+                    }
+                }
+
                 if (textInputInfo.TextInputOperation == TextInputOperation.PasteClipboard)
                 {
                     string clipboardText = SDL.GetClipboardText();
