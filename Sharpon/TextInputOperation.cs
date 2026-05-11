@@ -10,9 +10,10 @@ public enum TextInputOperation
     DeleteWord,
     DeleteCharacter,
     NewLine,
+    ForceNewLine,
     Tab,
     MoveRight,
     MoveLeft,
     SaveFile,
-    PasteClipboard
+    PasteClipboard,
 }

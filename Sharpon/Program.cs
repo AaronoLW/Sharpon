@@ -7,7 +7,13 @@ internal static class Program
     {
         SmashEngine.Init();
 
-        Application application = new App();
+        string? initialFile = null;
+        if (args.Length == 1)
+        {
+            initialFile = Path.GetFullPath(args[0]);
+        }
+
+        Application application = new App(initialFile);
         application.Start();
 
         InputHandler.StartPollingTextInput();

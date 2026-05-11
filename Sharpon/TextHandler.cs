@@ -36,6 +36,8 @@ public static class TextHandler
 
             if (InputHandler.IsKeyDown(SDL.Keycode.Return) && TryPress(SDL.Keycode.Return))
             {
+                textInputOperation = TextInputOperation.ForceNewLine;
+                
                 //int endOfLine = GetEndOfCurrentLine(stringBuilder, newCharIndex);
                 //int firstLetter = GetFirstLetterOnLine(stringBuilder, newCharIndex);
 

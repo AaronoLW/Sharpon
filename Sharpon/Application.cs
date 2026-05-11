@@ -35,7 +35,7 @@ public class App : Application
 
     private float _scroll;
 
-    public App() 
+    public App(string? initialFile = null) 
     {
         CreateWindowAndRenderer("Sharpon", 800, 600, out _window, out _renderer);
         _window.SetWindowResizable(true);
@@ -45,11 +45,26 @@ public class App : Application
 
         _renderer.SetVSyncEnabled(false);
 
-        string lastOpenedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Sharpon", "LastOpenedFile.txt");
-        if (File.Exists(lastOpenedFilePath))
+        if (initialFile == null)
         {
-            string lastOpenedFile = File.ReadAllText(lastOpenedFilePath);
-            if (File.Exists(lastOpenedFile)) LoadFile(lastOpenedFile);
+            string lastOpenedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Sharpon", "LastOpenedFile.txt");
+            if (File.Exists(lastOpenedFilePath))
+            {
+                string lastOpenedFile = File.ReadAllText(lastOpenedFilePath);
+                if (File.Exists(lastOpenedFile)) LoadFile(lastOpenedFile);
+            }
+        }
+        else
+        {
+            if (File.Exists(initialFile))
+            {
+                LoadFile(initialFile);
+            }
+
+            if (Directory.Exists(initialFile))
+            {
+                FileDialog.Open(initialFile);
+            }
         }
     }
 
