@@ -9,6 +9,8 @@ internal static class Program
         Application application = new App();
         application.Start();
 
+        Input.StartPollingTextInput();
+
         while (!application.ApplicationShouldClose())
         {
             SmashEngine.Update();
