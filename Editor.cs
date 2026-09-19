@@ -7,116 +7,50 @@ using Color = System.Drawing.Color;
 
 public class Editor(string initialText = "")
 {
-    public string Text { get; private set; } = initialText;
-    public int CharIndex = initialText.Length;
+    private readonly TextDocument _document = new(initialText, initialText.Length);
 
     private static readonly Vector2 Offset = new(20);
 
     public void Update(double deltaTime)
     {
-        StringBuilder stringBuilder = new(Text);
-        if (Input.TextInput != null)
+        if (Program.TextInput != null)
         {
-            stringBuilder.Append(Input.TextInput);
-            CharIndex += Input.TextInput.Length;
+            _document.Insert(Program.TextInput);
         }
 
-        if (Input.IsKeyPressed(SDL.Keycode.Backspace))
+        if (Program.IsKeyDown(SDL.Keycode.Backspace))
         {
-            if (CharIndex > 0)
-            {
-                stringBuilder.Remove(CharIndex - 1, 1);
-                CharIndex--;
-            }
+            _document.TryRemoveBackwards(1);
         }
 
-        if (Input.IsKeyPressed(SDL.Keycode.Return))
+        if (Program.IsKeyDown(SDL.Keycode.Return))
         {
-            stringBuilder.Append('\n');
-            CharIndex++;
+            _document.Insert('\n');
         }
 
-        if (Input.IsKeyPressed(SDL.Keycode.Left))
+        if (Program.IsKeyDown(SDL.Keycode.Left))
         {
-            if (CharIndex > 0)
-                CharIndex--;
+            if (_document.CharIndex > 0)
+                _document.CharIndex--;
         }
 
-        if (Input.IsKeyPressed(SDL.Keycode.Right))
+        if (Program.IsKeyDown(SDL.Keycode.Right))
         {
-            if (CharIndex < Text.Length)
-                CharIndex++;
+            if (_document.CharIndex < _document.Text.Length)
+                _document.CharIndex++;
         }
 
-        Text = stringBuilder.ToString();
+        if (Program.IsKeyDown(SDL.Keycode.Tab))
+        {
+            _document.Insert("    ");
+        }
     }
 
     public void Render(Renderer renderer)
     {
-        renderer.RenderText(App.Font, App.POINT_SIZE, Text, Offset, Color.White);
+        renderer.RenderText(App.Font, App.POINT_SIZE, _document.Text, Offset, Color.White);
 
-        Rectangle caret = new(GetCaretPosition(), 2, App.POINT_SIZE);
+        Rectangle caret = new(_document.GetCaretPosition(Offset), 2, App.POINT_SIZE);
         renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-    }
-
-    private Vector2 GetCaretPosition()
-    {
-        Vector2 textSize = new(0, App.Font.MeasureString(Text[0..CharIndex], App.POINT_SIZE).Y);
-
-        if (CharIndex > 0 && Text[CharIndex - 1] != '\n')
-        {
-            textSize.Y -= App.Font.MeasureString("W", App.POINT_SIZE).Y;
-        }
-
-        string selectedLine = GetSelectedLineUntilCaret();
-        textSize.X = App.Font.MeasureString(selectedLine, App.POINT_SIZE).X;
-
-        if (selectedLine == "\n")
-        {
-            textSize.X -= App.Font.MeasureString("\n", App.POINT_SIZE).X;
-        }
-
-        return Offset + textSize;
-    }
-
-    //private int GetLineIndex()
-    //{
-    //    if (Text.Length == 0) return 0;
-
-    //    int newLineCount = 0;
-    //    for (int i = 0; i < CharIndex; i++)
-    //    {
-    //        if (Text[i] == '\n')
-    //            newLineCount++;
-    //    }
-
-    //    return newLineCount;
-    //}
-
-    private string GetSelectedLineUntilCaret()
-    {
-        if (Text.Length == 0) return "";
-
-        int startIndex = 0;
-        for (int i = CharIndex - 1; i > 0; i--)
-        {
-            if (Text[i] == '\n')
-            {
-                startIndex = i;
-                break;
-            }
-        }
-
-        int endIndex = CharIndex;
-        //for (int i = CharIndex; i < Text.Length; i++)
-        //{
-        //    if (Text[i] == '\n')
-        //    {
-        //        endIndex = i;
-        //        break;
-        //    }
-        //}
-
-        return Text[startIndex..endIndex];
     }
 }
