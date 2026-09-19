@@ -1,3 +1,4 @@
+using SDL3;
 using SmashFramework;
 
 using Color = System.Drawing.Color;
@@ -19,6 +20,7 @@ public class App : Application
     public App()
     {
         CreateWindowAndRenderer("Sharpon!", 800, 600, out _window, out _renderer);
+        SDL.StartTextInput(_window.Handle);
 
         AssetManager.SetAssetRootDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"));
         AssetManager.LoadFont("Rubik-Regular.ttf");
@@ -28,7 +30,7 @@ public class App : Application
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
-        _editor = new("Waassuzp katzi");
+        _editor = new("Text der zum testen gedacht ist");
     }
 
     public override void Update(double deltaTime)
@@ -49,6 +51,7 @@ public class App : Application
     {
         _window.Dispose();
         _renderer.Dispose();
+        SDL.StopTextInput(_window.Handle);
         AssetManager.Dispose();
     }
 }
