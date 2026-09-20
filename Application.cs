@@ -1,3 +1,4 @@
+using System.Numerics;
 using SDL3;
 using SmashFramework;
 
@@ -8,18 +9,27 @@ public class App : Application
     public const string FONT_NAME = "Rubik-Regular";
     public const int POINT_SIZE = 24;
 
+    public const int DEFAULT_PADDING = 20;
+
+    private const int INITIAL_WINDOW_WIDTH = 800;
+    private const int INITIAL_WINDOW_HEIGHT = 600;
+
+    public static int WindowWidth = INITIAL_WINDOW_WIDTH;
+    public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
+    public static Vector2 WindowSize => new(WindowWidth, WindowHeight);
+
     public static Font Font = null!;
 
     public static readonly Color BackgroundColor = Color.FromArgb(255, 20, 20, 20);
 
-    private readonly Window _window;
-    private readonly Renderer _renderer;
+    private static Window _window = null!;
+    private static Renderer _renderer = null!;
 
     private readonly Editor _editor;
 
     public App(string? initialFilePath)
     {
-        CreateWindowAndRenderer("Sharpon!", 800, 600, out _window, out _renderer);
+        CreateWindowAndRenderer("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, out _window, out _renderer);
         _window.SetWindowResizable(true);
         SDL.StartTextInput(_window.Handle);
 
@@ -54,5 +64,11 @@ public class App : Application
         _renderer.Dispose();
         SDL.StopTextInput(_window.Handle);
         AssetManager.Dispose();
+    }
+
+    public void SetWindowSize(int width, int height)
+    {
+        WindowWidth = width;
+        WindowHeight = height;
     }
 }

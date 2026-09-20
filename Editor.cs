@@ -6,17 +6,17 @@ using Color = System.Drawing.Color;
 
 public class Editor
 {
-    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)";
+    private readonly TextDocument _document;
+    private readonly FileManager _fileManager;
 
-    private TextDocument _document = null!;
-    private string? _filePath;
-
-    private static readonly Vector2 Offset = new(20);
+    private static readonly Vector2 Offset = new(App.DEFAULT_PADDING);
 
     public Editor(string? initialFilePath)
     {
         Console.WriteLine($"Trying to open initial file at: {initialFilePath ?? "null"}");
-        TryOpenFile(initialFilePath);
+
+        _fileManager = new();
+        _document = _fileManager.OpenFile(initialFilePath);
     }
 
     public void Update(double deltaTime)
@@ -58,25 +58,11 @@ public class Editor
     {
         renderer.RenderText(App.Font, App.POINT_SIZE, _document.Text, Offset, Color.White);
 
+        Vector2 filePathTextSize = App.Font.MeasureString(_fileManager.DisplayPath, App.POINT_SIZE);
+        Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
+        renderer.RenderText(App.Font, App.POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
+
         Rectangle caret = new(_document.GetCaretPosition(Offset), 2, App.POINT_SIZE);
         renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-    }
-
-    private void TryOpenFile(string? filePath)
-    {
-        if (filePath == null)
-        {
-            _filePath = null;
-            _document = new(DEFAULT_TEXT);
-            return;
-        }
-
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException($"Couldn't find file at: {filePath}");
-        }
-
-        _document = new(File.ReadAllText(filePath));
-        _filePath = filePath;
     }
 }
