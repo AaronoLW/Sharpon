@@ -1,15 +1,23 @@
 using System.Numerics;
-using System.Text;
 using SDL3;
 using SmashFramework;
 
 using Color = System.Drawing.Color;
 
-public class Editor(string initialText = "")
+public class Editor
 {
-    private readonly TextDocument _document = new(initialText, initialText.Length);
+    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)";
+
+    private TextDocument _document = null!;
+    private string? _filePath;
 
     private static readonly Vector2 Offset = new(20);
+
+    public Editor(string? initialFilePath)
+    {
+        Console.WriteLine($"Trying to open initial file at: {initialFilePath ?? "null"}");
+        TryOpenFile(initialFilePath);
+    }
 
     public void Update(double deltaTime)
     {
@@ -52,5 +60,23 @@ public class Editor(string initialText = "")
 
         Rectangle caret = new(_document.GetCaretPosition(Offset), 2, App.POINT_SIZE);
         renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+    }
+
+    private void TryOpenFile(string? filePath)
+    {
+        if (filePath == null)
+        {
+            _filePath = null;
+            _document = new(DEFAULT_TEXT);
+            return;
+        }
+
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException($"Couldn't find file at: {filePath}");
+        }
+
+        _document = new(File.ReadAllText(filePath));
+        _filePath = filePath;
     }
 }

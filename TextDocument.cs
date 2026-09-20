@@ -65,4 +65,15 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
 
         return Text[startIndex..CharIndex];
     }
+
+    public static TextDocument FromFile(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException($"Couldn't find file at {filePath}");
+        }
+
+        string fileContent = File.ReadAllText(filePath);
+        return new(fileContent, 0);
+    }
 }
