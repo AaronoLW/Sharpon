@@ -17,7 +17,7 @@ internal static class Program
             return;
         }
 
-        Application application = new App(args.Length > 0 ? args[0] : null);
+        App application = new(args.Length > 0 ? args[0] : null);
         application.Start();
 
         bool running = true;
@@ -44,6 +44,11 @@ internal static class Program
                 if (e.Type == (uint)SDL.EventType.TextInput)
                 {
                     TextInput = Marshal.PtrToStringUTF8(e.Text.Text);
+                }
+
+                if (e.Type == (uint)SDL.EventType.WindowResized)
+                {
+                    application.SetWindowSize(e.Window.Data1, e.Window.Data2);
                 }
 
                 Input.Event(e);
