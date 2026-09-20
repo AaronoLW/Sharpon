@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using SDL3;
 using SmashFramework;
@@ -47,6 +48,18 @@ public class Editor
             if (Program.TextInput != null)
             {
                 _document.Insert(Program.TextInput);
+
+                char? insert = null;
+                if (Program.TextInput == "{") insert = '}';
+                if (Program.TextInput == "(") insert = ')';
+                if (Program.TextInput == "\"") insert = '"';
+                if (Program.TextInput == "[") insert = ']';
+
+                if (insert != null)
+                {
+                    _document.Insert((char)insert);
+                    _document.CharIndex--;
+                }
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Backspace))
