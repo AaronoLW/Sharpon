@@ -13,11 +13,8 @@
     <PackageReference Include="SmashFramework" Version="1.2.1" />
   </ItemGroup>
 
-  <ItemGroup>
-  	<Content Include="Assets\**\*">
-   	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-   	<CopyToPublishDirectory>Always</CopyToPublishDirectory>
-   </Content>
-  </ItemGroup>
+  <Target Name="GenerateAssets" BeforeTargets="BeforeBuild">
+  	<Exec Command="./generate_assets.sh" />
+  </Target>
 
 </Project>
