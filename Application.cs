@@ -33,7 +33,12 @@ public class App : Application
         _window.SetWindowResizable(true);
         SDL.StartTextInput(_window.Handle);
 
-        AssetManager.SetAssetRootDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"));
+        AssetManager.SetAssetRootDirectory(Path.GetTempPath());
+        using (FileStream fileStream = File.Create(Path.Combine(Path.GetTempPath(), "Rubik-Regular.ttf")))
+        {
+            fileStream.Write(AssetsGenerated.Font);
+        }
+
         AssetManager.LoadFont("Rubik-Regular.ttf");
 
         Font = AssetManager.Get<Font>(FONT_NAME);
