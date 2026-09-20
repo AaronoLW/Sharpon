@@ -5,8 +5,6 @@ using Color = System.Drawing.Color;
 
 public class App : Application
 {
-    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)";
-
     public const string FONT_NAME = "Rubik-Regular";
     public const int POINT_SIZE = 24;
 
@@ -33,15 +31,7 @@ public class App : Application
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
-        string initialText = DEFAULT_TEXT;
-        if (initialFilePath != null)
-        {
-            string fullFilePath = Path.GetFullPath(initialFilePath);
-            initialText = File.Exists(fullFilePath) ? File.ReadAllText(fullFilePath) : DEFAULT_TEXT;
-            Console.WriteLine($"Opening file at: {fullFilePath}");
-        }
-
-        _editor = new(initialText);
+        _editor = new(initialFilePath);
     }
 
     public override void Update(double deltaTime)
