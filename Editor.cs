@@ -32,6 +32,11 @@ public class Editor
             {
                 _document.TryRemoveBackwards(_document.FindLengthOfLastWord());
             }
+
+            if (Program.IsKeyDown(SDL.Keycode.Left))
+            {
+                _document.CharIndex -= _document.FindLengthOfLastWord();
+            }
         }
         else
         {
