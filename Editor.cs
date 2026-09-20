@@ -21,36 +21,46 @@ public class Editor
 
     public void Update(double deltaTime)
     {
-        if (Program.TextInput != null)
+        if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
-            _document.Insert(Program.TextInput);
+            if (Program.IsKeyDown(SDL.Keycode.S))
+            {
+                _fileManager.SaveFile(_document);
+            }
         }
-
-        if (Program.IsKeyDown(SDL.Keycode.Backspace))
+        else
         {
-            _document.TryRemoveBackwards(1);
-        }
+            if (Program.TextInput != null)
+            {
+                _document.Insert(Program.TextInput);
+            }
 
-        if (Program.IsKeyDown(SDL.Keycode.Return))
-        {
-            _document.Insert('\n');
-        }
+            if (Program.IsKeyDown(SDL.Keycode.Backspace))
+            {
+                _document.TryRemoveBackwards(1);
+            }
 
-        if (Program.IsKeyDown(SDL.Keycode.Left))
-        {
-            if (_document.CharIndex > 0)
-                _document.CharIndex--;
-        }
+            if (Program.IsKeyDown(SDL.Keycode.Return))
+            {
+                _document.Insert('\n');
+            }
 
-        if (Program.IsKeyDown(SDL.Keycode.Right))
-        {
-            if (_document.CharIndex < _document.Text.Length)
-                _document.CharIndex++;
-        }
+            if (Program.IsKeyDown(SDL.Keycode.Left))
+            {
+                if (_document.CharIndex > 0)
+                    _document.CharIndex--;
+            }
 
-        if (Program.IsKeyDown(SDL.Keycode.Tab))
-        {
-            _document.Insert("    ");
+            if (Program.IsKeyDown(SDL.Keycode.Right))
+            {
+                if (_document.CharIndex < _document.Text.Length)
+                    _document.CharIndex++;
+            }
+
+            if (Program.IsKeyDown(SDL.Keycode.Tab))
+            {
+                _document.Insert("    ");
+            }
         }
     }
 

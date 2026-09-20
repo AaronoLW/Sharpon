@@ -21,4 +21,18 @@ public struct FileManager()
         Path = filePath;
         return new(File.ReadAllText(filePath), 0);
     }
+
+    public void SaveFile(TextDocument document)
+    {
+        if (Path == null)
+        {
+            Console.WriteLine("Couldn't save file (no file opened)");
+        }
+        else
+        {
+            File.WriteAllText(Path, document.Text);
+            Console.WriteLine("Saved File!");
+        }
+
+    }
 }
