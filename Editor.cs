@@ -27,6 +27,11 @@ public class Editor
             {
                 _fileManager.SaveFile(_document);
             }
+
+            if (Program.IsKeyDown(SDL.Keycode.Backspace))
+            {
+                _document.TryRemoveBackwards(_document.FindLengthOfLastWord());
+            }
         }
         else
         {

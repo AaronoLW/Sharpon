@@ -10,7 +10,7 @@ public struct FileManager()
         if (filePath == null)
         {
             Path = null;
-            return new(DEFAULT_TEXT);
+            return new(DEFAULT_TEXT, DEFAULT_TEXT.Length);
         }
 
         if (!File.Exists(filePath))
@@ -19,7 +19,8 @@ public struct FileManager()
         }
 
         Path = filePath;
-        return new(File.ReadAllText(filePath), 0);
+        string fileContent = File.ReadAllText(filePath);
+        return new(fileContent, fileContent.Length);
     }
 
     public void SaveFile(TextDocument document)

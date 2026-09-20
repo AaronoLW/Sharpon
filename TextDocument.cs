@@ -49,6 +49,53 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
         return offset + textSize;
     }
 
+    public int FindLengthOfLastWord()
+    {
+        if (CharIndex == 0)
+            return 0;
+
+        bool word = true;
+
+        if (Text[CharIndex - 1] == '\n')
+            return 1;
+
+        if (char.IsWhiteSpace(Text[CharIndex - 1]))
+            word = false;
+
+        int skipAmount = 0;
+
+        if (CharIndex > 1 && !char.IsWhiteSpace(Text[CharIndex - 2]))
+        {
+            word = true;
+            skipAmount++;
+        }
+
+
+        int length = 0;
+        for (int i = CharIndex; i > 1; i--)
+        {
+            if (skipAmount > 0)
+            {
+                skipAmount--;
+                length++;
+                continue;
+            }
+
+            if (char.IsWhiteSpace(Text[i - 1]) && word)
+            {
+                return length;
+            }
+            else if (!char.IsWhiteSpace(Text[i - 1]) && !word)
+            {
+                return length;
+            }
+
+            length++;
+        }
+
+        return CharIndex;
+    }
+
     private string GetSelectedLineUntilCaret()
     {
         if (Text.Length == 0) return "";
