@@ -11,7 +11,13 @@ internal static class Program
     {
         SmashEngine.Init();
 
-        Application application = new App();
+        if (args.Length > 1)
+        {
+            Console.WriteLine("Too many arguments");
+            return;
+        }
+
+        Application application = new App(args.Length > 0 ? args[0] : null);
         application.Start();
 
         bool running = true;
