@@ -58,7 +58,7 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
         {
             if (Text[i] == '\n')
             {
-                startIndex = i;
+                startIndex = i + 1;
                 break;
             }
         }
