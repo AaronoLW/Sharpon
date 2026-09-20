@@ -6,10 +6,14 @@ using Color = System.Drawing.Color;
 
 public class Editor
 {
+    private const float CARET_SPEED = 40f;
+
     private readonly TextDocument _document;
     private readonly FileManager _fileManager;
 
-    private static readonly Vector2 Offset = new(App.DEFAULT_PADDING);
+    private readonly Vector2 Offset = new(App.DEFAULT_PADDING);
+
+    private Vector2 _caretPosition = new();
 
     public Editor(string? initialFilePath)
     {
@@ -72,6 +76,12 @@ public class Editor
                 _document.Insert("    ");
             }
         }
+
+        Vector2 caretPosition = _document.GetCaretPosition(Offset);
+        if (_caretPosition != caretPosition)
+        {
+            _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
+        }
     }
 
     public void Render(Renderer renderer)
@@ -82,7 +92,7 @@ public class Editor
         Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
         renderer.RenderText(App.Font, App.POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
 
-        Rectangle caret = new(_document.GetCaretPosition(Offset), 2, App.POINT_SIZE);
+        Rectangle caret = new(_caretPosition, 2, App.POINT_SIZE);
         renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
     }
 }
