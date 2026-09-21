@@ -20,7 +20,7 @@ public class App : Application
 
     public static Font Font = null!;
 
-    public static readonly Color BackgroundColor = Color.FromArgb(255, 20, 20, 20);
+    public static readonly Color BackgroundColor = Color.FromArgb(255, 20, 20, 25);
 
     private static Window _window = null!;
     private static Renderer _renderer = null!;
