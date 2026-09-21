@@ -8,6 +8,7 @@ public class App : Application
 {
     public const string FONT_NAME = "Rubik-Regular";
     public const int POINT_SIZE = 24;
+    public const int SMALL_POINT_SIZE = 18;
 
     public const int DEFAULT_PADDING = 20;
 
