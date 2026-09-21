@@ -101,9 +101,9 @@ public class Editor
     {
         renderer.RenderText(App.Font, App.POINT_SIZE, _document.Text, Offset, Color.White);
 
-        Vector2 filePathTextSize = App.Font.MeasureString(_fileManager.DisplayPath, App.POINT_SIZE);
+        Vector2 filePathTextSize = App.Font.MeasureString(_fileManager.DisplayPath, App.SMALL_POINT_SIZE);
         Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
-        renderer.RenderText(App.Font, App.POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
+        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
 
         Rectangle caret = new(_caretPosition, 2, App.POINT_SIZE);
         renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
