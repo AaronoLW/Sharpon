@@ -106,6 +106,9 @@ public class Editor
         for (int i = 0; i < lines.Length; i++)
         {
             Vector2 linePosition = Position + new Vector2(0, i * LINE_SPACING);
+            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
+                break;
+
             renderer.RenderText(App.Font, App.POINT_SIZE, lines[i], linePosition, Color.White);
         }
 
