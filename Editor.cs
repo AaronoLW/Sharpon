@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using SDL3;
 using SmashFramework;
@@ -12,7 +11,7 @@ public class Editor
     private readonly TextDocument _document;
     private readonly FileManager _fileManager;
 
-    private readonly Vector2 Offset = new(App.DEFAULT_PADDING);
+    private readonly Vector2 Offset = new(App.DEFAULT_PADDING, App.DEFAULT_PADDING * 3);
 
     private Vector2 _caretPosition = new();
 
