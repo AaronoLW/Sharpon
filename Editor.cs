@@ -8,10 +8,12 @@ public class Editor
 {
     private const float CARET_SPEED = 40f;
 
+    private const int TOP_BAR_HEIGHT = 50;
+
     private readonly TextDocument _document;
     private readonly FileManager _fileManager;
 
-    private readonly Vector2 Offset = new(App.DEFAULT_PADDING, App.DEFAULT_PADDING * 3);
+    private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
 
     private Vector2 _caretPosition = new();
 
@@ -89,7 +91,7 @@ public class Editor
             }
         }
 
-        Vector2 caretPosition = _document.GetCaretPosition(Offset);
+        Vector2 caretPosition = _document.GetCaretPosition(Position);
         if (_caretPosition != caretPosition)
         {
             _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
@@ -98,13 +100,16 @@ public class Editor
 
     public void Render(Renderer renderer)
     {
-        renderer.RenderText(App.Font, App.POINT_SIZE, _document.Text, Offset, Color.White);
-
-        Vector2 filePathTextSize = App.Font.MeasureString(_fileManager.DisplayPath, App.SMALL_POINT_SIZE);
-        Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
-        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
+        renderer.RenderText(App.Font, App.POINT_SIZE, _document.Text, Position, Color.White);
 
         Rectangle caret = new(_caretPosition, 2, App.POINT_SIZE);
         renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+
+        renderer.RenderFilledRectangle(new(0, 0, App.WindowWidth, TOP_BAR_HEIGHT), App.BackgroundColor);
+        renderer.RenderLine(new(0, TOP_BAR_HEIGHT), new(App.WindowWidth, TOP_BAR_HEIGHT), App.VeryLightColor);
+
+        Vector2 filePathTextSize = App.Font.MeasureString(_fileManager.DisplayPath, App.SMALL_POINT_SIZE);
+        Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
+        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
     }
 }
