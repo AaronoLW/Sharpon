@@ -31,12 +31,10 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
 
     public Vector2 GetCaretPosition(Vector2 offset)
     {
-        Vector2 textSize = new(0, App.Font.MeasureString(Text[0..CharIndex], App.POINT_SIZE).Y);
+        //Vector2 textSize = new(0, App.Font.MeasureString(Text[0..CharIndex].Count('\n'), App.POINT_SIZE).Y);
 
-        if (CharIndex > 0 && Text[CharIndex - 1] != '\n')
-        {
-            textSize.Y -= App.Font.MeasureString("W", App.POINT_SIZE).Y;
-        }
+        int lineCount = Text.AsSpan()[0..CharIndex].Count('\n');
+        Vector2 textSize = new(0, Editor.LINE_SPACING * lineCount);
 
         string selectedLine = GetSelectedLineUntilCaret();
         textSize.X = App.Font.MeasureString(selectedLine, App.POINT_SIZE).X;
