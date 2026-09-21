@@ -13,8 +13,4 @@
     <PackageReference Include="SmashFramework" Version="1.2.2" />
   </ItemGroup>
 
-  <Target Name="GenerateAssets" BeforeTargets="BeforeBuild">
-  	<Exec Command="./generate_assets.sh" />
-  </Target>
-
 </Project>
