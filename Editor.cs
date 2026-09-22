@@ -11,13 +11,15 @@ public class Editor
 
     private const int MIN_POINT_SIZE = 4;
 
+    private const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
+
     private readonly TextDocument _document;
     private readonly FileManager _fileManager;
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
 
     private int _pointSize = App.POINT_SIZE;
-    private float _lineSpacing => _pointSize + 4;
+    private float _lineSpacing => _pointSize + LINE_SPACING_POINT_SIZE_INCREASE;
 
     private EditorStyle _editorStyle => new(_pointSize, _lineSpacing);
 
