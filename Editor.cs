@@ -42,17 +42,17 @@ public class Editor
 
             if (Program.IsKeyDown(SDL.Keycode.Backspace))
             {
-                _document.TryRemoveBackwards(_document.FindLengthOfLastWord());
+                _document.TryRemoveBackwards(_document.GetJumpBackLength());
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Left))
             {
-                _document.CharIndex -= _document.FindLengthOfLastWord();
+                _document.CharIndex -= _document.GetJumpBackLength();
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Right))
             {
-                _document.CharIndex += _document.FindLengthOfNextWord();
+                _document.CharIndex += _document.GetJumpForwardLength();
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Plus))
