@@ -49,7 +49,7 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         return offset + textSize;
     }
 
-    public int FindLengthOfLastWord()
+    public int GetJumpBackLength()
     {
         if (CharIndex == 0)
             return 0;
@@ -81,7 +81,7 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         return CharIndex;
     }
 
-    public int FindLengthOfNextWord()
+    public int GetJumpForwardLength()
     {
         if (CharIndex == Text.Length)
             return 0;
