@@ -1,7 +1,5 @@
 public struct FileManager()
 {
-    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)";
-
     public string? Path { get; private set; } = null;
     public readonly string DisplayPath => Path ?? "No file opened";
 
@@ -10,7 +8,7 @@ public struct FileManager()
         if (filePath == null)
         {
             Path = null;
-            return new(DEFAULT_TEXT, DEFAULT_TEXT.Length);
+            return new(null, 0);
         }
 
         if (!File.Exists(filePath))

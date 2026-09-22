@@ -1,14 +1,16 @@
 using System.Text;
 using System.Numerics;
 
-public class TextDocument(string initialText = "", int initialCharIndex = 0)
+public class TextDocument(string? initialText, int initialCharIndex = 0)
 {
+    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)\n";
+
     public string Text => _stringBuilder.ToString();
     public int CharIndex = initialCharIndex;
 
     public int LineCharIndex => CharIndex - GetLineStartIndex();
 
-    private readonly StringBuilder _stringBuilder = new(initialText);
+    private readonly StringBuilder _stringBuilder = new(initialText ?? DEFAULT_TEXT);
 
     public void Insert(string text)
     {
@@ -33,8 +35,6 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
 
     public Vector2 GetCaretPosition(Vector2 offset, EditorStyle style)
     {
-        //Vector2 textSize = new(0, App.Font.MeasureString(Text[0..CharIndex].Count('\n'), App.POINT_SIZE).Y);
-
         int lineCount = Text.AsSpan()[0..CharIndex].Count('\n');
         Vector2 textSize = new(0, style.LineSpacing * lineCount);
 
@@ -121,6 +121,9 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
 
         CharIndex++;
         CharIndex += startIndex;
+
+        if (CharIndex > Text.Length)
+            CharIndex = Text.Length;
     }
 
     private int GetLineLength()
