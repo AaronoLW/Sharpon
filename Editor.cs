@@ -50,6 +50,11 @@ public class Editor
                 _document.CharIndex -= _document.FindLengthOfLastWord();
             }
 
+            if (Program.IsKeyDown(SDL.Keycode.Right))
+            {
+                _document.CharIndex += _document.FindLengthOfNextWord();
+            }
+
             if (Program.IsKeyDown(SDL.Keycode.Plus))
             {
                 _pointSize++;

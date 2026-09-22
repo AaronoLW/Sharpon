@@ -3,7 +3,7 @@ using System.Numerics;
 
 public class TextDocument(string? initialText, int initialCharIndex = 0)
 {
-    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)\n";
+    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)\ndwjdhjawkdaw\ndawkjdjawkdjaw\ndwakldjawdkla";
 
     public string Text => _stringBuilder.ToString();
     public int CharIndex = initialCharIndex;
@@ -54,46 +54,64 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         if (CharIndex == 0)
             return 0;
 
-        bool word = true;
+        bool foundWord = true;
+
+        if (char.IsWhiteSpace(Text[CharIndex - 1]))
+            foundWord = false;
 
         if (Text[CharIndex - 1] == '\n')
             return 1;
 
-        if (char.IsWhiteSpace(Text[CharIndex - 1]))
-            word = false;
-
-        int skipAmount = 0;
-
-        if (CharIndex > 1 && !char.IsWhiteSpace(Text[CharIndex - 2]))
-        {
-            word = true;
-            skipAmount++;
-        }
-
-
         int length = 0;
         for (int i = CharIndex; i > 1; i--)
         {
-            if (skipAmount > 0)
+            if (char.IsWhiteSpace(Text[i - 1]))
             {
-                skipAmount--;
-                length++;
-                continue;
+                if (foundWord)
+                    return length;
             }
-
-            if (char.IsWhiteSpace(Text[i - 1]) && word)
+            else
             {
-                return length;
-            }
-            else if (!char.IsWhiteSpace(Text[i - 1]) && !word)
-            {
-                return length;
+                foundWord = true;
             }
 
             length++;
         }
 
         return CharIndex;
+    }
+
+    public int FindLengthOfNextWord()
+    {
+        if (CharIndex == Text.Length)
+            return 0;
+
+        bool foundWord = true;
+        if (char.IsWhiteSpace(Text[CharIndex]))
+        {
+            foundWord = false;
+        }
+
+        if (Text[CharIndex] == '\n')
+            return 1;
+
+        int length = 0;
+        for (int i = CharIndex; i < Text.Length; i++)
+        {
+            if (char.IsWhiteSpace(Text[i]))
+            {
+                if (foundWord)
+                    return length;
+            }
+            else
+            {
+                foundWord = true;
+            }
+
+            length++;
+        }
+
+        return length;
     }
 
     public void MoveUp()
