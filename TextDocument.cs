@@ -6,6 +6,8 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
     public string Text => _stringBuilder.ToString();
     public int CharIndex = initialCharIndex;
 
+    public int LineCharIndex => CharIndex - GetLineStartIndex();
+
     private readonly StringBuilder _stringBuilder = new(initialText);
 
     public void Insert(string text)
@@ -94,10 +96,62 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
         return CharIndex;
     }
 
+    public void MoveUp()
+    {
+        int startIndex = LineCharIndex;
+
+        if (startIndex == CharIndex)
+        {
+            CharIndex = 0;
+            return;
+        }
+
+        CharIndex -= startIndex + 1;
+        CharIndex = GetLineStartIndex() + startIndex;
+    }
+
+    public void MoveDown()
+    {
+        int startIndex = LineCharIndex;
+
+        CharIndex = GetLineStartIndex() + GetLineLength();
+
+        if (CharIndex == Text.Length)
+            return;
+
+        CharIndex++;
+        CharIndex += startIndex;
+    }
+
+    private int GetLineLength()
+    {
+        int startIndex = GetLineStartIndex();
+
+        int length = 0;
+        for (int i = startIndex; i < Text.Length; i++)
+        {
+            if (Text[i] == '\n')
+            {
+                return length;
+            }
+
+            length++;
+        }
+
+        return length;
+    }
+
     private string GetSelectedLineUntilCaret()
     {
         if (Text.Length == 0) return "";
 
+        int startIndex = GetLineStartIndex();
+
+        return Text[startIndex..CharIndex];
+    }
+
+    private int GetLineStartIndex()
+    {
         int startIndex = 0;
         for (int i = CharIndex - 1; i > 0; i--)
         {
@@ -108,7 +162,7 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
             }
         }
 
-        return Text[startIndex..CharIndex];
+        return startIndex;
     }
 
     public static TextDocument FromFile(string filePath)

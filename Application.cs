@@ -7,7 +7,7 @@ using Color = System.Drawing.Color;
 public class App : Application
 {
     public const string FONT_NAME = "Roboto-Regular";
-    public const int POINT_SIZE = 24;
+    public const int POINT_SIZE = 22;
     public const int SMALL_POINT_SIZE = 18;
 
     public const int DEFAULT_PADDING = 20;

@@ -91,6 +91,16 @@ public class Editor
             {
                 _document.Insert("    ");
             }
+
+            if (Program.IsKeyDown(SDL.Keycode.Up))
+            {
+                _document.MoveUp();
+            }
+
+            if (Program.IsKeyDown(SDL.Keycode.Down))
+            {
+                _document.MoveDown();
+            }
         }
 
         Vector2 caretPosition = _document.GetCaretPosition(Position);
