@@ -23,7 +23,7 @@ public class App : Application
 
     public static readonly Color BackgroundColor = Color.FromArgb(255, 20, 20, 25);
     public static readonly Color LightColor = Color.FromArgb(255, 18, 18, 23);
-    public static readonly Color VeryLightColor = Color.FromArgb(255, 45, 45, 50);
+    public static readonly Color VeryLightColor = Color.FromArgb(255, 50, 50, 55);
 
     private static Window _window = null!;
     private static Renderer _renderer = null!;
