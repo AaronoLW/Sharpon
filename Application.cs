@@ -6,7 +6,7 @@ using Color = System.Drawing.Color;
 
 public class App : Application
 {
-    public const string FONT_NAME = "Roboto-Regular";
+    public const string FONT_NAME = "Iosevka-Regular";
     public const int POINT_SIZE = 22;
     public const int SMALL_POINT_SIZE = 18;
 
@@ -36,16 +36,11 @@ public class App : Application
         _window.SetWindowResizable(true);
         SDL.StartTextInput(_window.Handle);
 
-        AssetManager.SetAssetRootDirectory(Path.GetTempPath());
-
-        using (FileStream fileStream = File.Create(Path.Combine(Path.GetTempPath(), "Rubik-Regular.ttf")))
-            fileStream.Write(AssetsGenerated.FontRubik);
-
-        using (FileStream fileStream = File.Create(Path.Combine(Path.GetTempPath(), "Roboto-Regular.ttf")))
-            fileStream.Write(AssetsGenerated.FontRoboto);
+        AssetManager.SetAssetRootDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"));
 
         AssetManager.LoadFont("Rubik-Regular.ttf");
         AssetManager.LoadFont("Roboto-Regular.ttf");
+        AssetManager.LoadFont("Iosevka-Regular.ttf");
 
         Font = AssetManager.Get<Font>(FONT_NAME);
 
