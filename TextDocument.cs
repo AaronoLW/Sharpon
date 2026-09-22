@@ -31,19 +31,19 @@ public class TextDocument(string initialText = "", int initialCharIndex = 0)
         }
     }
 
-    public Vector2 GetCaretPosition(Vector2 offset)
+    public Vector2 GetCaretPosition(Vector2 offset, EditorStyle style)
     {
         //Vector2 textSize = new(0, App.Font.MeasureString(Text[0..CharIndex].Count('\n'), App.POINT_SIZE).Y);
 
         int lineCount = Text.AsSpan()[0..CharIndex].Count('\n');
-        Vector2 textSize = new(0, Editor.LINE_SPACING * lineCount);
+        Vector2 textSize = new(0, style.LineSpacing * lineCount);
 
         string selectedLine = GetSelectedLineUntilCaret();
-        textSize.X = App.Font.MeasureString(selectedLine, App.POINT_SIZE).X;
+        textSize.X = App.Font.MeasureString(selectedLine, style.PointSize).X;
 
         if (selectedLine == "\n")
         {
-            textSize.X -= App.Font.MeasureString("\n", App.POINT_SIZE).X;
+            textSize.X -= App.Font.MeasureString("\n", style.PointSize).X;
         }
 
         return offset + textSize;
