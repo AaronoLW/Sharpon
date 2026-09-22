@@ -6,16 +6,20 @@ using Color = System.Drawing.Color;
 
 public class Editor
 {
-    public const float LINE_SPACING = App.POINT_SIZE + 4;
-
     private const float CARET_SPEED = 40f;
-
     private const int TOP_BAR_HEIGHT = 50;
+
+    private const int MIN_POINT_SIZE = 4;
 
     private readonly TextDocument _document;
     private readonly FileManager _fileManager;
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
+
+    private int _pointSize = App.POINT_SIZE;
+    private float _lineSpacing => _pointSize + 4;
+
+    private EditorStyle _editorStyle => new(_pointSize, _lineSpacing);
 
     private Vector2 _caretPosition = new();
 
@@ -44,6 +48,17 @@ public class Editor
             if (Program.IsKeyDown(SDL.Keycode.Left))
             {
                 _document.CharIndex -= _document.FindLengthOfLastWord();
+            }
+
+            if (Program.IsKeyDown(SDL.Keycode.Plus))
+            {
+                _pointSize++;
+            }
+
+            if (Program.IsKeyDown(SDL.Keycode.Minus))
+            {
+                if (_pointSize > MIN_POINT_SIZE)
+                    _pointSize--;
             }
         }
         else
@@ -103,7 +118,7 @@ public class Editor
             }
         }
 
-        Vector2 caretPosition = _document.GetCaretPosition(Position);
+        Vector2 caretPosition = _document.GetCaretPosition(Position, _editorStyle);
         if (_caretPosition != caretPosition)
         {
             _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
@@ -115,16 +130,16 @@ public class Editor
         string[] lines = _document.Text.Split('\n');
         for (int i = 0; i < lines.Length; i++)
         {
-            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, i * LINE_SPACING));
+            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, i * _lineSpacing));
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
 
-            renderer.RenderText(App.Font, App.POINT_SIZE, lines[i], linePosition, Color.White);
+            renderer.RenderText(App.Font, _pointSize, lines[i], linePosition, Color.White);
         }
 
         // Caret
         {
-            Rectangle caret = new(_caretPosition, 2, App.POINT_SIZE);
+            Rectangle caret = new(_caretPosition, 2, _pointSize);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
 
