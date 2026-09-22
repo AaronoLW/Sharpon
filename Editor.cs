@@ -116,6 +116,16 @@ public class Editor
             {
                 _document.MoveDown();
             }
+
+            if (Program.IsKeyDown(SDL.Keycode.End))
+            {
+                _document.CharIndex = _document.GetLineStartIndex() + _document.GetLineLength();
+            }
+
+            if (Program.IsKeyDown(SDL.Keycode.Home))
+            {
+                _document.CharIndex = _document.GetLineStartIndex();
+            }
         }
 
         Vector2 caretPosition = _document.GetCaretPosition(Position, _editorStyle);
