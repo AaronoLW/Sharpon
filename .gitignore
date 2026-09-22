@@ -1,3 +1,5 @@
 bin
 obj
 AssetsGenerated.cs
+create_release.sh
+build
