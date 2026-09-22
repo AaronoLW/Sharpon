@@ -3,7 +3,7 @@ using System.Numerics;
 
 public class TextDocument(string? initialText, int initialCharIndex = 0)
 {
-    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)\n djkawdjawdkjawdjkawdawjdawjdklawjdaklwdjawkjdjawkldjawkldjawkldjaw";
+    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)\n";
 
     public string Text => _stringBuilder.ToString();
     public int CharIndex = initialCharIndex;
@@ -133,7 +133,7 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
             CharIndex = Text.Length;
     }
 
-    private int GetLineLength()
+    public int GetLineLength()
     {
         int startIndex = GetLineStartIndex();
 
@@ -160,7 +160,7 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         return Text[startIndex..CharIndex];
     }
 
-    private int GetLineStartIndex()
+    public int GetLineStartIndex()
     {
         int startIndex = 0;
         for (int i = CharIndex - 1; i > 0; i--)
