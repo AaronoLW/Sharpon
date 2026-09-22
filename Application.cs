@@ -6,8 +6,8 @@ using Color = System.Drawing.Color;
 
 public class App : Application
 {
-    public const string FONT_NAME = "Iosevka-Regular";
-    public const int POINT_SIZE = 22;
+    public const string FONT_NAME = "Iosevka-Medium";
+    public const int POINT_SIZE = 21;
     public const int SMALL_POINT_SIZE = 18;
 
     public const int DEFAULT_PADDING = 20;
@@ -40,6 +40,7 @@ public class App : Application
 
         AssetManager.LoadFont("Rubik-Regular.ttf");
         AssetManager.LoadFont("Roboto-Regular.ttf");
+        AssetManager.LoadFont("Iosevka-Medium.ttf");
         AssetManager.LoadFont("Iosevka-Regular.ttf");
 
         Font = AssetManager.Get<Font>(FONT_NAME);

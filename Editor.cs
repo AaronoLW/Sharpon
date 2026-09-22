@@ -115,7 +115,7 @@ public class Editor
         string[] lines = _document.Text.Split('\n');
         for (int i = 0; i < lines.Length; i++)
         {
-            Vector2 linePosition = Position + new Vector2(0, i * LINE_SPACING);
+            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, i * LINE_SPACING));
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
 
