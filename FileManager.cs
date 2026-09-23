@@ -12,13 +12,13 @@ public struct FileManager()
         }
 
         string fullPath = System.IO.Path.GetFullPath(filePath);
+        Path = fullPath;
 
         if (!File.Exists(fullPath))
         {
-            throw new FileNotFoundException($"Couldn't find file at: {fullPath}");
+            return new("", 0);
         }
 
-        Path = fullPath;
         string fileContent = File.ReadAllText(fullPath);
         return new(fileContent, fileContent.Length);
     }
