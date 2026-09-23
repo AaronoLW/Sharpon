@@ -75,6 +75,20 @@ public class KeybindHandler
             case TextAction.GoToEndOfLine:
                 document.CharIndex = document.GetLineStartIndex() + document.GetLineLength();
                 break;
+
+            case TextAction.DeleteCharacterForward:
+                if (document.CharIndex != document.Text.Length)
+                {
+                    document.CharIndex++;
+                    document.TryRemoveBackwards(1);
+                }
+                break;
+
+            case TextAction.DeleteWordForward:
+                int length = document.GetJumpForwardLength();
+                document.CharIndex += length;
+                document.TryRemoveBackwards(length);
+                break;
         }
     }
 }

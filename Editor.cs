@@ -43,6 +43,8 @@ public class Editor
         _keybindHandler.Register(new(SDL.Keycode.Tab, TextAction.InsertTab, false));
         _keybindHandler.Register(new(SDL.Keycode.End, TextAction.GoToEndOfLine, false));
         _keybindHandler.Register(new(SDL.Keycode.Home, TextAction.GoToStartOfLine, false));
+        _keybindHandler.Register(new(SDL.Keycode.Delete, TextAction.DeleteCharacterForward, false));
+        _keybindHandler.Register(new(SDL.Keycode.Delete, TextAction.DeleteWordForward, true));
 
     }
 
