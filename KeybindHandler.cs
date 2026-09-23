@@ -3,90 +3,78 @@ using SmashFramework;
 
 public class KeybindHandler
 {
+    private List<Keybind> _keybinds = [];
+
+    public void Register(Keybind keybind)
+    {
+        _keybinds.Add(keybind);
+    }
+
     public void HandleKeybinds(TextDocument document)
     {
-        if (Input.IsKeyDown(SDL.Keycode.LCtrl))
+        foreach (Keybind keybind in _keybinds)
         {
-            if (Program.IsKeyDown(SDL.Keycode.Backspace))
+            if (Program.IsKeyDown(keybind.Key))
             {
-                document.TryRemoveBackwards(document.GetJumpBackLength());
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Left))
-            {
-                document.CharIndex -= document.GetJumpBackLength();
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Right))
-            {
-                document.CharIndex += document.GetJumpForwardLength();
+                if ((keybind.RequiresCtrl && Input.IsKeyDown(SDL.Keycode.LCtrl)) || !keybind.RequiresCtrl)
+                    ApplyTextAction(document, keybind.Action);
             }
         }
-        else
+    }
+
+    private void ApplyTextAction(TextDocument document, TextAction action)
+    {
+        switch (action)
         {
-            if (Program.TextInput != null)
-            {
-                document.Insert(Program.TextInput);
-
-                char? insert = null;
-                if (Program.TextInput == "{") insert = '}';
-                if (Program.TextInput == "(") insert = ')';
-                if (Program.TextInput == "\"") insert = '"';
-                if (Program.TextInput == "[") insert = ']';
-
-                if (insert != null)
-                {
-                    document.Insert((char)insert);
-                    document.CharIndex--;
-                }
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Backspace))
-            {
+            case TextAction.DeleteCharacter:
                 document.TryRemoveBackwards(1);
-            }
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Return))
-            {
-                document.Insert('\n');
-            }
+            case TextAction.DeleteWord:
+                document.TryRemoveBackwards(document.GetJumpBackLength());
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Left))
-            {
+            case TextAction.MoveLeft:
                 if (document.CharIndex > 0)
                     document.CharIndex--;
-            }
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Right))
-            {
+            case TextAction.MoveRight:
                 if (document.CharIndex < document.Text.Length)
                     document.CharIndex++;
-            }
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Tab))
-            {
-                document.Insert("    ");
-            }
+            case TextAction.JumpLeft:
+                document.CharIndex -= document.GetJumpBackLength();
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Up))
-            {
+            case TextAction.JumpRight:
+                document.CharIndex += document.GetJumpForwardLength();
+                break;
+
+            case TextAction.MoveUp:
                 document.MoveUp();
-            }
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Down))
-            {
+            case TextAction.MoveDown:
                 document.MoveDown();
-            }
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.End))
-            {
-                document.CharIndex = document.GetLineStartIndex() + document.GetLineLength();
-            }
+            case TextAction.InsertNewline:
+                document.Insert('\n');
+                break;
 
-            if (Program.IsKeyDown(SDL.Keycode.Home))
-            {
+            case TextAction.InsertTab:
+                document.Insert("    ");
+                break;
+
+            case TextAction.GoToStartOfLine:
                 document.CharIndex = document.GetLineStartIndex();
-            }
+                break;
+
+            case TextAction.GoToEndOfLine:
+                document.CharIndex = document.GetLineStartIndex() + document.GetLineLength();
+                break;
         }
     }
 }
