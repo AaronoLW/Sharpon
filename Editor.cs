@@ -30,22 +30,6 @@ public class Editor
     {
         _fileManager = new();
         _document = _fileManager.OpenFile(initialFilePath);
-
-        _keybindHandler.Register(new(SDL.Keycode.Left, TextAction.MoveLeft, false));
-        _keybindHandler.Register(new(SDL.Keycode.Right, TextAction.MoveRight, false));
-        _keybindHandler.Register(new(SDL.Keycode.Up, TextAction.MoveUp, false));
-        _keybindHandler.Register(new(SDL.Keycode.Down, TextAction.MoveDown, false));
-        _keybindHandler.Register(new(SDL.Keycode.Left, TextAction.JumpLeft, true));
-        _keybindHandler.Register(new(SDL.Keycode.Right, TextAction.JumpRight, true));
-        _keybindHandler.Register(new(SDL.Keycode.Backspace, TextAction.DeleteCharacter, false));
-        _keybindHandler.Register(new(SDL.Keycode.Backspace, TextAction.DeleteWord, true));
-        _keybindHandler.Register(new(SDL.Keycode.Return, TextAction.InsertNewline, false));
-        _keybindHandler.Register(new(SDL.Keycode.Tab, TextAction.InsertTab, false));
-        _keybindHandler.Register(new(SDL.Keycode.End, TextAction.GoToEndOfLine, false));
-        _keybindHandler.Register(new(SDL.Keycode.Home, TextAction.GoToStartOfLine, false));
-        _keybindHandler.Register(new(SDL.Keycode.Delete, TextAction.DeleteCharacterForward, false));
-        _keybindHandler.Register(new(SDL.Keycode.Delete, TextAction.DeleteWordForward, true));
-
     }
 
     public void Update(double deltaTime)
