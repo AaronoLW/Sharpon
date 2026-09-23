@@ -11,5 +11,7 @@ public enum TextAction
     InsertNewline,
     InsertTab,
     GoToEndOfLine,
-    GoToStartOfLine
+    GoToStartOfLine,
+    DeleteCharacterForward,
+    DeleteWordForward,
 }
