@@ -145,7 +145,11 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
             return;
 
         CharIndex++;
-        CharIndex += startIndex;
+
+        if (startIndex > GetLineLength())
+            CharIndex += GetLineLength();
+        else
+            CharIndex += startIndex;
 
         if (CharIndex > Text.Length)
             CharIndex = Text.Length;
