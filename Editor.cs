@@ -27,8 +27,6 @@ public class Editor
 
     public Editor(string? initialFilePath)
     {
-        Console.WriteLine($"Trying to open initial file at: {initialFilePath ?? "null"}");
-
         _fileManager = new();
         _document = _fileManager.OpenFile(initialFilePath);
     }
