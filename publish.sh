@@ -1,3 +1,4 @@
+rm -rf build/Linux
 mkdir -p build/Linux
 
 dotnet publish
