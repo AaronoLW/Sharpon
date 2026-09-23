@@ -15,6 +15,7 @@ public class Editor
 
     private readonly TextDocument _document;
     private readonly FileManager _fileManager;
+    private readonly KeybindHandler _keybindHandler = new();
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
 
@@ -33,26 +34,13 @@ public class Editor
 
     public void Update(double deltaTime)
     {
+        _keybindHandler.HandleKeybinds(_document);
+
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
             if (Program.IsKeyDown(SDL.Keycode.S))
             {
                 _fileManager.SaveFile(_document);
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Backspace))
-            {
-                _document.TryRemoveBackwards(_document.GetJumpBackLength());
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Left))
-            {
-                _document.CharIndex -= _document.GetJumpBackLength();
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Right))
-            {
-                _document.CharIndex += _document.GetJumpForwardLength();
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Plus))
@@ -64,72 +52,6 @@ public class Editor
             {
                 if (_pointSize > MIN_POINT_SIZE)
                     _pointSize--;
-            }
-        }
-        else
-        {
-            if (Program.TextInput != null)
-            {
-                _document.Insert(Program.TextInput);
-
-                char? insert = null;
-                if (Program.TextInput == "{") insert = '}';
-                if (Program.TextInput == "(") insert = ')';
-                if (Program.TextInput == "\"") insert = '"';
-                if (Program.TextInput == "[") insert = ']';
-
-                if (insert != null)
-                {
-                    _document.Insert((char)insert);
-                    _document.CharIndex--;
-                }
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Backspace))
-            {
-                _document.TryRemoveBackwards(1);
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Return))
-            {
-                _document.Insert('\n');
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Left))
-            {
-                if (_document.CharIndex > 0)
-                    _document.CharIndex--;
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Right))
-            {
-                if (_document.CharIndex < _document.Text.Length)
-                    _document.CharIndex++;
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Tab))
-            {
-                _document.Insert("    ");
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Up))
-            {
-                _document.MoveUp();
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Down))
-            {
-                _document.MoveDown();
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.End))
-            {
-                _document.CharIndex = _document.GetLineStartIndex() + _document.GetLineLength();
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Home))
-            {
-                _document.CharIndex = _document.GetLineStartIndex();
             }
         }
 
