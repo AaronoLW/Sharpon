@@ -13,11 +13,14 @@ public class Editor
 
     private const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
+    private const int SCROLL_SPEED_AMPLIFIER = 20;
+
     private readonly TextDocument _document;
     private readonly PathManager _pathManager;
     private readonly KeybindHandler _keybindHandler = new();
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
+    private float _scroll;
 
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + LINE_SPACING_POINT_SIZE_INCREASE;
@@ -53,6 +56,11 @@ public class Editor
 
         _keybindHandler.HandleKeybinds(_document);
 
+        if (Input.ScrollWheelDelta != 0)
+        {
+            _scroll -= Input.ScrollWheelDelta * SCROLL_SPEED_AMPLIFIER;
+        }
+
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
             if (Program.IsKeyDown(SDL.Keycode.S))
@@ -72,7 +80,8 @@ public class Editor
             }
         }
 
-        Vector2 caretPosition = _document.GetCaretPosition(Position, _editorStyle);
+        Vector2 documentOffset = Position with { Y = Position.Y - _scroll };
+        Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _editorStyle);
         if (_caretPosition != caretPosition)
         {
             _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
@@ -82,9 +91,11 @@ public class Editor
     public void Render(Renderer renderer)
     {
         string[] lines = _document.Text.Split('\n');
-        for (int i = 0; i < lines.Length; i++)
+
+        int startLineIndex = Math.Max((int)(_scroll / _lineSpacing) - 1, 0);
+        for (int i = startLineIndex; i < lines.Length; i++)
         {
-            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, i * _lineSpacing));
+            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, (i * _lineSpacing) - _scroll));
 
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
