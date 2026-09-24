@@ -36,4 +36,15 @@ public struct PathManager()
         }
 
     }
+
+    public void OpenDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            Path = null;
+            return;
+        }
+
+        Path = path;
+    }
 }

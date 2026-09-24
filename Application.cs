@@ -29,6 +29,7 @@ public class App : Application
     private static Renderer _renderer = null!;
 
     private readonly Editor _editor;
+    private readonly FileManager _fileManager;
 
     public App(string? initialFilePath)
     {
@@ -49,6 +50,7 @@ public class App : Application
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
+        _fileManager = new(0.2f, 1.0f);
     }
 
     public override void Update(double deltaTime)
@@ -61,6 +63,7 @@ public class App : Application
         _renderer.Clear(BackgroundColor);
 
         _editor.Render(_renderer);
+        _fileManager.Render(_renderer);
 
         _renderer.RenderPresent();
     }
