@@ -107,7 +107,7 @@ public class Editor
         // Opened file text
         {
             Vector2 filePathTextSize = App.Font.MeasureString(_pathManager.DisplayPath, App.SMALL_POINT_SIZE);
-            Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
+            Vector2 filePathTextPosition = new(App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
             renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _pathManager.DisplayPath, filePathTextPosition, Color.White);
         }
     }
