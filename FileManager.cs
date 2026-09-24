@@ -16,6 +16,6 @@ public class FileManager(float widthPercent, float heightPercent)
     {
         Vector2 position = new(App.WindowWidth - Width, 0);
         renderer.RenderFilledRectangle(new(position, Width, Height), App.BackgroundColor);
-        renderer.RenderLine(position, position with { Y = App.WindowWidth }, App.VeryLightColor);
+        renderer.RenderLine(position, position with { Y = App.WindowHeight }, App.VeryLightColor);
     }
 }
