@@ -15,6 +15,8 @@ public class App : Application
     private const int INITIAL_WINDOW_WIDTH = 800;
     private const int INITIAL_WINDOW_HEIGHT = 600;
 
+    private const int FILEMANAGER_WIDTH = 250;
+
     public static int WindowWidth = INITIAL_WINDOW_WIDTH;
     public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
     public static Vector2 WindowSize => new(WindowWidth, WindowHeight);
@@ -50,12 +52,13 @@ public class App : Application
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
-        _fileManager = new(0.15f, 1.0f);
+        _fileManager = new(FILEMANAGER_WIDTH, WindowHeight);
     }
 
     public override void Update(double deltaTime)
     {
         _editor.Update(deltaTime);
+        _fileManager.Height = WindowHeight;
     }
 
     public override void Render()
