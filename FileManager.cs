@@ -2,13 +2,10 @@ using System.Drawing;
 using System.Numerics;
 using SmashFramework;
 
-public class FileManager(float widthPercent, float heightPercent)
+public class FileManager(int width, int height)
 {
-    public float WidthPercent = widthPercent;
-    public float HeightPercent = heightPercent;
-
-    public float Width => App.WindowWidth * WidthPercent;
-    public float Height => App.WindowHeight * HeightPercent;
+    public float Width = width;
+    public float Height = height;
 
     private readonly PathManager _pathManager = new();
 
