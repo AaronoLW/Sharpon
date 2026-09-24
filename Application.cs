@@ -50,7 +50,7 @@ public class App : Application
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
-        _fileManager = new(0.2f, 1.0f);
+        _fileManager = new(0.15f, 1.0f);
     }
 
     public override void Update(double deltaTime)
