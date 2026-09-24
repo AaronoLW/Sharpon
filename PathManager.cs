@@ -1,4 +1,4 @@
-public struct FileManager()
+public struct PathManager()
 {
     public string? Path { get; private set; } = null;
     public readonly string DisplayPath => Path ?? "No file opened";

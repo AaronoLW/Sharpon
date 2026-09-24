@@ -14,7 +14,7 @@ public class Editor
     private const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
     private readonly TextDocument _document;
-    private readonly FileManager _fileManager;
+    private readonly PathManager _pathManager;
     private readonly KeybindHandler _keybindHandler = new();
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
@@ -28,8 +28,8 @@ public class Editor
 
     public Editor(string? initialFilePath)
     {
-        _fileManager = new();
-        _document = _fileManager.OpenFile(initialFilePath);
+        _pathManager = new();
+        _document = _pathManager.OpenFile(initialFilePath);
     }
 
     public void Update(double deltaTime)
@@ -57,7 +57,7 @@ public class Editor
         {
             if (Program.IsKeyDown(SDL.Keycode.S))
             {
-                _fileManager.SaveFile(_document);
+                _pathManager.SaveFile(_document);
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Plus))
@@ -106,9 +106,9 @@ public class Editor
 
         // Opened file text
         {
-            Vector2 filePathTextSize = App.Font.MeasureString(_fileManager.DisplayPath, App.SMALL_POINT_SIZE);
+            Vector2 filePathTextSize = App.Font.MeasureString(_pathManager.DisplayPath, App.SMALL_POINT_SIZE);
             Vector2 filePathTextPosition = new(App.WindowWidth - filePathTextSize.X - App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
-            renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _fileManager.DisplayPath, filePathTextPosition, Color.White);
+            renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _pathManager.DisplayPath, filePathTextPosition, Color.White);
         }
     }
 }
