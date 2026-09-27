@@ -53,16 +53,21 @@ public struct PathManager(string placeholderText = "Placeholder path text")
 
     }
 
-    public void OpenDirectory(string path)
+    public string[]? OpenDirectory(string path)
     {
         string fullPath = System.IO.Path.GetFullPath(path);
 
         if (!Directory.Exists(fullPath))
         {
             Path = null;
-            return;
+            return null;
         }
 
         Path = fullPath;
+
+        string[] files = Directory.GetFileSystemEntries(fullPath);
+
+        string[] filtered = [.. files.Where(f => !File.GetAttributes(f).HasFlag(FileAttributes.Hidden))];
+        return filtered;
     }
 }

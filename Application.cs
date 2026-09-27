@@ -7,8 +7,11 @@ using Color = System.Drawing.Color;
 public class App : Application
 {
     public const string FONT_NAME = "Iosevka-Medium";
+    public const string SMALL_FONT_NAME = "Iosevka-Regular";
+
     public const int POINT_SIZE = 21;
     public const int SMALL_POINT_SIZE = 18;
+    public const int VERY_SMALL_POINT_SIZE = 16;
 
     public const int DEFAULT_PADDING = 20;
 
@@ -22,6 +25,7 @@ public class App : Application
     public static Vector2 WindowSize => new(WindowWidth, WindowHeight);
 
     public static Font Font = null!;
+    public static Font SmallFont = null!;
 
     public static readonly Color BackgroundColor = Color.FromArgb(255, 20, 20, 25);
     public static readonly Color LightColor = Color.FromArgb(255, 18, 18, 23);
@@ -47,6 +51,7 @@ public class App : Application
         AssetManager.LoadFont("Iosevka-Regular.ttf");
 
         Font = AssetManager.Get<Font>(FONT_NAME);
+        SmallFont = AssetManager.Get<Font>(SMALL_FONT_NAME);
 
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
