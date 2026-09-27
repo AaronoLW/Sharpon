@@ -31,7 +31,7 @@ public class Editor
 
     public Editor(string? initialFilePath)
     {
-        _pathManager = new();
+        _pathManager = new("No file opened");
         _document = _pathManager.OpenFile(initialFilePath);
     }
 
