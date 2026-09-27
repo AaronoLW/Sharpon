@@ -1,7 +1,23 @@
-public struct PathManager()
+public struct PathManager(string placeholderText = "Placeholder path text")
 {
     public string? Path { get; private set; } = null;
-    public readonly string DisplayPath => Path ?? "No file opened";
+
+    public readonly string DisplayPath
+    {
+        get
+        {
+            string path = Path ?? _placeholderText;
+
+            // I hate this code but it works
+
+            if (Path != null && Directory.Exists(Path) && Path.EndsWith('/'))
+                path = System.IO.Path.GetDirectoryName(Path) ?? _placeholderText;
+
+            return path;
+        }
+    }
+
+    private readonly string _placeholderText = placeholderText;
 
     public TextDocument OpenFile(string? filePath)
     {
@@ -39,12 +55,14 @@ public struct PathManager()
 
     public void OpenDirectory(string path)
     {
-        if (!Directory.Exists(path))
+        string fullPath = System.IO.Path.GetFullPath(path);
+
+        if (!Directory.Exists(fullPath))
         {
             Path = null;
             return;
         }
 
-        Path = path;
+        Path = fullPath;
     }
 }
