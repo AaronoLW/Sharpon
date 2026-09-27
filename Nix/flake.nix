@@ -1,5 +1,5 @@
 {
-  description = "My .NET project with devenv";
+  description = "Sharpon!!!!";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -16,7 +16,7 @@
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [devenv.flakeModule];
-      systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
+      systems = ["x86_64-linux" "aarch64-linux"];
 
       perSystem = {
         config,
@@ -44,12 +44,12 @@
                 system
               } or (throw "Unsupported system: ${system}");
 
-            pname = "sharpon";
-            version = builtins.readFile ./VERSION;
+            pname = "Sharpon";
+            version = builtins.readFile ../VERSION;
 
-            src = ./.;
+            src = ../.;
 
-            projectFile = "Sharpon.csproj";
+            projectFile = "../Sharpon.csproj";
             nugetDeps = ./deps.json;
 
             dotnet-sdk = pkgs.dotnetCorePackages.sdk_10_0;
@@ -69,9 +69,6 @@
 
             dotnetPublishFlags = [
               "-p:PublishAot=true"
-              "-p:PublishSingleFile=true"
-              "-p:StripSymbols=true"
-              "-p:InvariantGlobalization=true" # Reduces size
               "-r:${rid}" # Runtime identifier
             ];
 
@@ -85,7 +82,6 @@
               udev
 
               iosevka
-              roboto
             ];
 
             executables = ["Sharpon"];

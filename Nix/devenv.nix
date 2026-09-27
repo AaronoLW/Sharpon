@@ -15,14 +15,14 @@
   ];
 
   tasks = {
-    "sharpon:dependencies" = {
+    "Sharpon:dependencies" = {
       exec = ''
         dotnet restore --packages out
         nuget-to-json out > deps.json
       '';
     };
-    "sharpon:build" = {
-      after = ["sharpon:dependencies"];
+    "Sharpon:build" = {
+      after = ["Sharpon:dependencies"];
       exec = "exec dotnet publish";
     };
   };
