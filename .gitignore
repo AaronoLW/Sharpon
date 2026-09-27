@@ -1,18 +1,18 @@
 bin
 obj
-AssetsGenerated.cs
 create_release.sh
-build
-out
-result
+
+# Nix stuff
+Nix/out
+Nix/result
 
 # Devenv
-.devenv*
-devenv.local.nix
-devenv.local.yaml
+Nix/.devenv*
+Nix/devenv.local.nix
+Nix/devenv.local.yaml
 
 # direnv
-.direnv
+Nix/.direnv
 
 # pre-commit
-.pre-commit-config.yaml
+Nix/.pre-commit-config.yaml
