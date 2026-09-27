@@ -11,13 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
     <PackageReference Include="SmashFramework" Version="1.2.2" />
   </ItemGroup>
 
   <Target Name="PreventWindowsBuilds" BeforeTargets="Build">
-    <Error
-      Condition="$(RuntimeIdentifier.StartsWith('win-'))"
-      Text="Windows builds are not allowed." />
+    <Error Condition="$(RuntimeIdentifier.StartsWith('win-'))" Text="Windows builds are not allowed." />
   </Target>
 
 </Project>
