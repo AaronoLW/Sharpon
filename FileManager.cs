@@ -47,7 +47,7 @@ public class FileManager
         renderer.RenderFilledRectangle(new(Position, Width, Height), App.DarkColor);
         renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, App.VeryLightColor);
 
-        string directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf('/') + 1).._pathManager.DisplayPath.Length];
+        string directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf(Path.DirectorySeparatorChar) + 1).._pathManager.DisplayPath.Length];
         renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Color.White);
 
         if (_fileSystemEntries != null)
