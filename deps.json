@@ -1,0 +1,27 @@
+[
+  {
+    "pname": "SDL3-CS",
+    "version": "3.4.16.1",
+    "hash": "sha256-2aXPGTPOxoGgfsnsxQMmuOop+1ouyDpag+iZJTHsV9k="
+  },
+  {
+    "pname": "SDL3-CS.Native",
+    "version": "3.4.2",
+    "hash": "sha256-Wngxzs4dg3+fCf/zC0cSWrKmyd1DVe0aua5gX/OUwks="
+  },
+  {
+    "pname": "SDL3-CS.Native.Image",
+    "version": "3.5.0",
+    "hash": "sha256-qHvbxs8uOay3ZGic1AGouiq2IzK47dCYg5uCWXxWoMs="
+  },
+  {
+    "pname": "SDL3-CS.Native.TTF",
+    "version": "3.3.0",
+    "hash": "sha256-fUYJisKLLSuO89XoEGuTTksscdfftGP+nvdpSrHKx+o="
+  },
+  {
+    "pname": "SmashFramework",
+    "version": "1.2.2",
+    "hash": "sha256-Nie0/k372RvF5WvPIdn8T58VVmKNjadgNi2wmSF78nw="
+  }
+]
