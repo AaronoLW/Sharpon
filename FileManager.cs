@@ -25,7 +25,7 @@ public class FileManager
 
     public void Render(Renderer renderer)
     {
-        renderer.RenderFilledRectangle(new(Position, Width, Height), App.BackgroundColor);
+        renderer.RenderFilledRectangle(new(Position, Width, Height), App.DarkColor);
         renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, App.VeryLightColor);
 
         string directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf('/') + 1).._pathManager.DisplayPath.Length];
