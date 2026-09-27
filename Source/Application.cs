@@ -46,11 +46,14 @@ public class App : Application
         _window.SetWindowResizable(true);
         SDL.StartTextInput(_window.Handle);
 
-        if (OperatingSystem.IsLinux())
-            AssetManager.SetAssetRootDirectory("/usr/share/fonts/TTF");
+        string? fontPath = SystemFontResolver.Resolve(FONT_NAME);
+        string? smallFontPath = SystemFontResolver.Resolve(SMALL_FONT_NAME);
 
-        AssetManager.LoadFont("Iosevka-Medium.ttf");
-        AssetManager.LoadFont("Iosevka-Regular.ttf");
+        if (fontPath == null) throw new Exception($"Font {FONT_NAME} is not installed");
+        if (smallFontPath == null) throw new Exception($"Font {SMALL_FONT_NAME} is not installed");
+
+        AssetManager.LoadFont(fontPath);
+        AssetManager.LoadFont(smallFontPath);
 
         Font = AssetManager.Get<Font>(FONT_NAME);
         SmallFont = AssetManager.Get<Font>(SMALL_FONT_NAME);
