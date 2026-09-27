@@ -20,6 +20,8 @@ public class App : Application
 
     private const int FILEMANAGER_WIDTH = 250;
 
+    public const int SCROLL_SPEED_AMPLIFIER = 20;
+
     public static int WindowWidth = INITIAL_WINDOW_WIDTH;
     public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
     public static Vector2 WindowSize => new(WindowWidth, WindowHeight);
@@ -86,6 +88,18 @@ public class App : Application
                         throw new Exception("Entry somehow was neither a file nor a directory");
                     }
                 }
+            }
+        }
+
+        if (Input.ScrollWheelDelta != 0)
+        {
+            if (Input.MouseX > WindowWidth - FILEMANAGER_WIDTH)
+            {
+                _fileManager.HandleScroll();
+            }
+            else
+            {
+                _editor.HandleScroll();
             }
         }
     }
