@@ -3,3 +3,16 @@ obj
 AssetsGenerated.cs
 create_release.sh
 build
+out
+result
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
