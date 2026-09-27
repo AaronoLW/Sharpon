@@ -57,7 +57,7 @@ public static class SystemFontResolver
         if (!OperatingSystem.IsWindows())
             return null;
 
-        string jrbFolder = Path.GetFullPath("%localappdata%\\Microsoft\\Windows\\Fonts");
+        string jrbFolder = Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Microsoft\Windows\Fonts");
 
         string fontPath = Path.Combine(jrbFolder, fontName + ".ttf");
 
