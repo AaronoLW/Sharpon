@@ -19,8 +19,6 @@ public static class SystemFontResolver
 
     private static string? GetLinuxFontPath(string fontName)
     {
-        // On NixOS and other Linux distros, fontconfig (fc-match) is the ONLY
-        // reliable way to get font paths without hardcoding FHS directories.
         try
         {
             ProcessStartInfo info = new()
