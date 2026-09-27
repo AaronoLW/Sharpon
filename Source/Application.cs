@@ -49,7 +49,11 @@ public class App : Application
         if (OperatingSystem.IsLinux())
             AssetManager.SetAssetRootDirectory("/usr/share/fonts/TTF");
         else if (OperatingSystem.IsWindows())
-            AssetManager.SetAssetRootDirectory(@"C:\Windows\Fonts");
+            AssetManager.SetAssetRootDirectory(
+                Environment.ExpandEnvironmentVariables(
+                    @"%LOCALAPPDATA%\Microsoft\Windows\Fonts"
+                )
+            );
 
         AssetManager.LoadFont("Iosevka-Medium.ttf");
         AssetManager.LoadFont("Iosevka-Regular.ttf");
