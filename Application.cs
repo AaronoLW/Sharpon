@@ -46,10 +46,9 @@ public class App : Application
         _window.SetWindowResizable(true);
         SDL.StartTextInput(_window.Handle);
 
-        AssetManager.SetAssetRootDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"));
+        if (OperatingSystem.IsLinux())
+            AssetManager.SetAssetRootDirectory("/usr/share/fonts/TTF");
 
-        AssetManager.LoadFont("Rubik-Regular.ttf");
-        AssetManager.LoadFont("Roboto-Regular.ttf");
         AssetManager.LoadFont("Iosevka-Medium.ttf");
         AssetManager.LoadFont("Iosevka-Regular.ttf");
 
