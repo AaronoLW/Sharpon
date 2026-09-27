@@ -20,4 +20,13 @@
    	</Content>
   </ItemGroup>
 
+  <Target Name="PreventCrossCompilation" BeforeTargets="Build">
+
+    <PropertyGroup>
+      <_TargetOS Condition="$(RuntimeIdentifier.StartsWith('win-'))">windows</_TargetOS>
+    </PropertyGroup>
+
+    <Error Text="Windows builds are not allowed." />
+  </Target>
+
 </Project>
