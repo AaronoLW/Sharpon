@@ -63,6 +63,10 @@ public static class SystemFontResolver
 
         string fontPath = Path.Combine(jrbFolder, fontName + ".ttf");
 
+        Console.WriteLine(jrbFolder);
+        Console.WriteLine(fontPath);
+        Console.WriteLine(userName);
+
         if (File.Exists(fontPath))
             return fontPath;
         else
