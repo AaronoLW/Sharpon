@@ -13,8 +13,6 @@ public class Editor
 
     private const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
-    private const int SCROLL_SPEED_AMPLIFIER = 20;
-
     private TextDocument _document = null!;
     private readonly PathManager _pathManager;
     private readonly KeybindHandler _keybindHandler = new();
@@ -55,11 +53,6 @@ public class Editor
         }
 
         _keybindHandler.HandleKeybinds(_document);
-
-        if (Input.ScrollWheelDelta != 0)
-        {
-            _scroll -= Input.ScrollWheelDelta * SCROLL_SPEED_AMPLIFIER;
-        }
 
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
@@ -126,5 +119,10 @@ public class Editor
     public void OpenFile(string? filePath)
     {
         _document = _pathManager.OpenFile(filePath);
+    }
+
+    public void HandleScroll()
+    {
+        _scroll -= Input.ScrollWheelDelta * App.SCROLL_SPEED_AMPLIFIER;
     }
 }

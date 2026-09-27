@@ -1,6 +1,7 @@
 using Color = System.Drawing.Color;
 using System.Numerics;
 using SmashFramework;
+using SDL3;
 
 public class FileManager
 {
@@ -10,11 +11,13 @@ public class FileManager
     public float Height;
 
     private Vector2 Position => new(App.WindowWidth - Width, 0);
-    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f);
+    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f) - new Vector2(0, _scroll);
 
     private PathManager _pathManager = new("No directory opened");
 
     private string[]? _fileSystemEntries;
+
+    private float _scroll = 0;
 
     public FileManager(int width, int height)
     {
@@ -40,6 +43,14 @@ public class FileManager
         return null;
     }
 
+    public void HandleScroll()
+    {
+        _scroll -= Input.ScrollWheelDelta * App.SCROLL_SPEED_AMPLIFIER;
+
+        if (_scroll < 0)
+            _scroll = 0;
+    }
+
     public void Render(Renderer renderer)
     {
         // This really is just starting to look like zed
@@ -54,9 +65,21 @@ public class FileManager
         {
             int? hoveredEntry = GetHoveredEntryIndex();
 
-            for (int i = 0; i < _fileSystemEntries.Length; i++)
+            Vector2 clipRectanglePosition = EntryBasePosition;
+            clipRectanglePosition.Y += _scroll;
+            clipRectanglePosition.Y += App.DEFAULT_PADDING;
+            clipRectanglePosition.X = 0;
+
+            Rectangle clipRect = new(clipRectanglePosition, App.WindowSize);
+            SDL.SetRenderClipRect(renderer.Handle, clipRect.ToSDLRect());
+
+            int startIndex = Math.Max((int)(_scroll / ENTRY_SPACING), 0);
+            for (int i = startIndex; i < _fileSystemEntries.Length; i++)
             {
                 Vector2 position = EntryBasePosition + GetEntryOffset(i);
+
+                if (position.Y > App.WindowHeight)
+                    break;
 
                 string name = Path.GetFileName(_fileSystemEntries[i]);
                 Color color = Directory.Exists(_fileSystemEntries[i]) ? Color.RoyalBlue : Color.White;
@@ -69,6 +92,8 @@ public class FileManager
 
                 renderer.RenderText(App.SmallFont, App.VERY_SMALL_POINT_SIZE, name, position, color);
             }
+
+            SDL.SetRenderClipRect(renderer.Handle, 0);
         }
     }
 
