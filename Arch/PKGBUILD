@@ -1,0 +1,31 @@
+pkgname=Sharpon-git
+pkgver=6.0.0
+pkgrel=1
+pkgdesc="Peak description"
+arch=('x86_64')
+url="https://github.com/AaronoLW/Sharpon"
+license=('MIT')
+depends=('ttf-iosevka' 'sdl3' 'sdl3_image' 'sdl3_ttf')
+makedepends=('dotnet-sdk' 'git')
+source=("git+$url.git")
+sha256sums=('SKIP')
+
+build() {
+    cd "$srcdir/Sharpon"
+
+    dotnet restore --locked-mode
+    dotnet publish \
+        -c Release \
+        -o "$srcdir/publish"
+}
+
+package() {
+    install -Dm755 "$srcdir/publish/Sharpon" \
+        "$pkgdir/usr/bin/Sharpon"
+
+    install -Dm644 "$srcdir/Sharpon/LICENSE" \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+    install -Dm644 "$srcdir/Sharpon/Sharpon.desktop" \
+            "$pkgdir/usr/share/applications/Sharpon.desktop"
+}
