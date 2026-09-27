@@ -15,7 +15,7 @@ public class Editor
 
     private const int SCROLL_SPEED_AMPLIFIER = 20;
 
-    private readonly TextDocument _document;
+    private TextDocument _document = null!;
     private readonly PathManager _pathManager;
     private readonly KeybindHandler _keybindHandler = new();
 
@@ -32,7 +32,7 @@ public class Editor
     public Editor(string? initialFilePath)
     {
         _pathManager = new("No file opened");
-        _document = _pathManager.OpenFile(initialFilePath);
+        OpenFile(initialFilePath);
     }
 
     public void Update(double deltaTime)
@@ -121,5 +121,10 @@ public class Editor
             Vector2 filePathTextPosition = new(App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
             renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _pathManager.DisplayPath, filePathTextPosition, Color.White);
         }
+    }
+
+    public void OpenFile(string? filePath)
+    {
+        _document = _pathManager.OpenFile(filePath);
     }
 }

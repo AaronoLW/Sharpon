@@ -65,6 +65,29 @@ public class App : Application
     {
         _editor.Update(deltaTime);
         _fileManager.Height = WindowHeight;
+
+        if (Input.IsLeftMousePressed())
+        {
+            if (Input.MouseX > WindowWidth - FILEMANAGER_WIDTH)
+            {
+                string? entry = _fileManager.HandleClick();
+                if (entry != null)
+                {
+                    if (File.Exists(entry))
+                    {
+                        _editor.OpenFile(entry);
+                    }
+                    else if (Directory.Exists(entry))
+                    {
+                        _fileManager.OpenDirectory(entry);
+                    }
+                    else
+                    {
+                        throw new Exception("Entry somehow was neither a file nor a directory");
+                    }
+                }
+            }
+        }
     }
 
     public override void Render()

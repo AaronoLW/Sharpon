@@ -12,9 +12,9 @@ public class FileManager
     private Vector2 Position => new(App.WindowWidth - Width, 0);
     private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f);
 
-    private readonly PathManager _pathManager = new("No directory opened");
+    private PathManager _pathManager = new("No directory opened");
 
-    private readonly string[]? _fileSystemEntries;
+    private string[]? _fileSystemEntries;
 
     public FileManager(int width, int height)
     {
@@ -22,6 +22,22 @@ public class FileManager
         Height = height;
 
         _fileSystemEntries = _pathManager.OpenDirectory(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+    }
+
+    public string? HandleClick()
+    {
+        if (_fileSystemEntries != null)
+        {
+            for (int i = 0; i < _fileSystemEntries.Length; i++)
+            {
+                Rectangle rect = GetEntryRectangle(i);
+
+                if (rect.IsPositionInRectangle(Input.MousePosition))
+                    return _fileSystemEntries[i];
+            }
+        }
+
+        return null;
     }
 
     public void Render(Renderer renderer)
@@ -86,5 +102,10 @@ public class FileManager
         }
 
         return null;
+    }
+
+    public void OpenDirectory(string path)
+    {
+        _fileSystemEntries = _pathManager.OpenDirectory(path);
     }
 }
