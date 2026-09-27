@@ -54,36 +54,18 @@ public static class SystemFontResolver
 
     private static string? GetWindowsFontPath(string fontName)
     {
-        if (!OperatingSystem.IsWindows()) return null;
+        if (!OperatingSystem.IsWindows())
+            return null;
 
-        string fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+        string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 
-        // Try direct file match just in case
-        string directPath = Path.Combine(fontsFolder, fontName + (fontName.EndsWith(".ttf") ? "" : ".ttf"));
-        if (File.Exists(directPath)) return directPath;
+        string jrbFolder = $"C:\\Users\\{userName}\\AppData\\Local\\Microsoft\\Windows\\Fonts";
 
-        // Resolve via Windows Registry
-#pragma warning disable CA1416 // Validate platform compatibility
-        using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts");
-        if (key != null)
-        {
-            foreach (string valueName in key.GetValueNames())
-            {
-                // Matches "Arial (TrueType)" to "Arial"
-                if (valueName.StartsWith(fontName, StringComparison.OrdinalIgnoreCase))
-                {
-                    string? fileName = key.GetValue(valueName)?.ToString();
-                    if (!string.IsNullOrEmpty(fileName))
-                    {
-                        string fullPath = Path.Combine(fontsFolder, fileName);
-                        if (File.Exists(fullPath))
-                            return fullPath;
-                    }
-                }
-            }
-        }
-#pragma warning restore CA1416
+        string fontPath = Path.Combine(jrbFolder, fontName + ".ttf");
 
-        return null;
+        if (File.Exists(fontPath))
+            return fontPath;
+        else
+            return null;
     }
 }
