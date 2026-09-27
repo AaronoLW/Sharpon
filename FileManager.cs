@@ -1,4 +1,4 @@
-using System.Drawing;
+using Color = System.Drawing.Color;
 using System.Numerics;
 using SmashFramework;
 
@@ -10,6 +10,7 @@ public class FileManager
     public float Height;
 
     private Vector2 Position => new(App.WindowWidth - Width, 0);
+    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f);
 
     private readonly PathManager _pathManager = new("No directory opened");
 
@@ -25,6 +26,8 @@ public class FileManager
 
     public void Render(Renderer renderer)
     {
+        // This really is just starting to look like zed
+
         renderer.RenderFilledRectangle(new(Position, Width, Height), App.DarkColor);
         renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, App.VeryLightColor);
 
@@ -33,11 +36,11 @@ public class FileManager
 
         if (_fileSystemEntries != null)
         {
-            Vector2 basePosition = Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f);
+            int? hoveredEntry = GetHoveredEntryIndex();
 
             for (int i = 0; i < _fileSystemEntries.Length; i++)
             {
-                Vector2 position = basePosition + new Vector2(0, (i + 1) * ENTRY_SPACING);
+                Vector2 position = EntryBasePosition + GetEntryOffset(i);
 
                 string name = Path.GetFileName(_fileSystemEntries[i]);
                 Color color = Directory.Exists(_fileSystemEntries[i]) ? Color.RoyalBlue : Color.White;
@@ -45,8 +48,43 @@ public class FileManager
                 if (Directory.Exists(_fileSystemEntries[i]))
                     name += Path.DirectorySeparatorChar;
 
+                if (hoveredEntry == i)
+                    renderer.RenderFilledRectangle(GetEntryRectangle(i), App.VeryLightColor);
+
                 renderer.RenderText(App.SmallFont, App.VERY_SMALL_POINT_SIZE, name, position, color);
             }
         }
+    }
+
+    private Vector2 GetEntryOffset(int index)
+    {
+        return new Vector2(0, (index + 1) * ENTRY_SPACING);
+    }
+
+    private Rectangle GetEntryRectangle(int index)
+    {
+        Vector2 entryPosition = EntryBasePosition + GetEntryOffset(index);
+        entryPosition.X = App.WindowWidth - Width;
+        entryPosition.Y -= ENTRY_SPACING / 4;
+
+        return new(entryPosition, Width, ENTRY_SPACING);
+    }
+
+    private int? GetHoveredEntryIndex()
+    {
+        if (_fileSystemEntries == null)
+            return null;
+
+        for (int i = 0; i < _fileSystemEntries.Length; i++)
+        {
+            Rectangle rectangle = GetEntryRectangle(i);
+
+            if (rectangle.IsPositionInRectangle(Input.MousePosition))
+            {
+                return i;
+            }
+        }
+
+        return null;
     }
 }
