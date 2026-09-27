@@ -2,7 +2,6 @@
 Name=Sharpon
 Comment=Code Editor
 Exec=Sharpon
-Icon=Sharpon
 Terminal=false
 Type=Application
 Categories=Development;
