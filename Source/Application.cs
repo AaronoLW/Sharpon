@@ -40,8 +40,6 @@ public class App : Application
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
 
-    private readonly DiscordRichPresence _richPresence = new();
-
     public App(string? initialFilePath)
     {
         CreateWindowAndRenderer("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, out _window, out _renderer);
@@ -119,7 +117,6 @@ public class App : Application
     {
         _window.Dispose();
         _renderer.Dispose();
-        _richPresence.Dispose();
         SDL.StopTextInput(_window.Handle);
         AssetManager.Dispose();
     }
