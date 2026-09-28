@@ -5,7 +5,7 @@ pkgdesc="Peak description"
 arch=('x86_64')
 url="https://github.com/AaronoLW/Sharpon"
 license=('MIT')
-depends=('ttf-iosevka' 'sdl3' 'sdl3_image' 'sdl3_ttf')
+depends=('ttf-iosevka' 'sdl3' 'sdl3_image' 'sdl3_ttf' 'fontconfig')
 makedepends=('dotnet-sdk' 'git')
 source=("git+$url.git")
 sha256sums=('SKIP')
@@ -14,9 +14,7 @@ build() {
     cd "$srcdir/Sharpon"
 
     dotnet restore --locked-mode
-    dotnet publish \
-        -c Release \
-        -o "$srcdir/publish"
+    dotnet publish -c Release
 }
 
 package() {
