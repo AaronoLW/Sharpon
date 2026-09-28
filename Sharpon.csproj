@@ -14,4 +14,9 @@
     <PackageReference Include="SmashFramework" Version="1.2.2" />
   </ItemGroup>
 
+  <PropertyGroup>
+  	<PublishDir>publish</PublishDir>
+  </PropertyGroup>
+
+
 </Project>
