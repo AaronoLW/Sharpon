@@ -1,6 +1,6 @@
 bin
 obj
-create_release.sh
+publish
 
 # Nix stuff
 Nix/out
