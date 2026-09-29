@@ -14,7 +14,7 @@ public class Editor
     private const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
     private TextDocument _document = null!;
-    private readonly PathManager _pathManager;
+    private PathManager _pathManager;
     private readonly KeybindHandler _keybindHandler = new();
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
