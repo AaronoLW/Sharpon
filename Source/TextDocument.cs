@@ -1,12 +1,12 @@
 using System.Text;
 using System.Numerics;
 
-public class TextDocument(string? initialText, int initialCharIndex = 0)
+public class TextDocument(string? initialText, int initialCharIndex = -1)
 {
-    private const string DEFAULT_TEXT = "Text der zum testen gedacht ist (Raphi edition)\ndwjdhjawkdaw\ndawkjdjawkdjaw\ndwakldjawdkla";
+    private const string DEFAULT_TEXT = "    Text der zum testen gedacht ist {}";
 
     public string Text => _stringBuilder.ToString();
-    public int CharIndex = initialCharIndex;
+    public int CharIndex = initialCharIndex == -1 ? (DEFAULT_TEXT.Length - 1) : 0;
 
     public int LineCharIndex => CharIndex - GetLineStartIndex();
 
@@ -246,5 +246,21 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
     private bool IsSpecialCharacter(char character)
     {
         return character == '\n' || BracketsClosed.Contains(character) || BracketsOpen.Contains(character);
+    }
+
+    public bool IsEnclosedInBrackets()
+    {
+        if (CharIndex != Text.Length)
+        {
+            for (int i = 0; i < BracketsClosed.Length; i++)
+            {
+                if (Text[CharIndex] == BracketsClosed[i] && Text[CharIndex - 1] == BracketsOpen[i])
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

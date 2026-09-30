@@ -1,4 +1,5 @@
-- Auto bracket indent
+- Put the ApplyTextAction function in KeybindHandler into another file
+- Add Java style bracket auto indent
 
 
 

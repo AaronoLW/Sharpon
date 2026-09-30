@@ -24,14 +24,14 @@ public struct PathManager(string placeholderText = "Placeholder path text")
         if (filePath == null)
         {
             Path = null;
-            return new(null, 0);
+            return new(null);
         }
 
         string fullPath = System.IO.Path.GetFullPath(filePath);
 
         if (Directory.Exists(fullPath))
         {
-            return new(null, 0);
+            return new(null);
         }
 
         if (fullPath.EndsWith(System.IO.Path.DirectorySeparatorChar))
