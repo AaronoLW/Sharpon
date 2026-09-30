@@ -232,12 +232,21 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
 
     public int GetLineStartIndent()
     {
+        if (Text.Length == 0)
+            return 0;
+
+        if (GetLineLength() == 0)
+            return 0;
+
         int startIndex = GetLineStartIndex();
         int count = 0;
 
         while (char.IsWhiteSpace(Text[startIndex + count]))
         {
             count++;
+
+            if (count >= GetLineLength())
+                break;
         }
 
         return count;
