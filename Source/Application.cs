@@ -40,6 +40,8 @@ public class App : Application
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
 
+    private readonly RichPresence _richPresence;
+
     public App(string? initialFilePath)
     {
         CreateWindowAndRenderer("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, out _window, out _renderer);
@@ -63,6 +65,7 @@ public class App : Application
 
         _editor = new(initialFilePath);
         _fileManager = new(FILEMANAGER_WIDTH, WindowHeight);
+        _richPresence = new();
     }
 
     public override void Update(double deltaTime)
