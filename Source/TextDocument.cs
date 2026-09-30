@@ -184,17 +184,15 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
 
     public int GetLineStartIndex()
     {
-        int startIndex = 0;
         for (int i = CharIndex - 1; i > 0; i--)
         {
             if (Text[i] == '\n')
             {
-                startIndex = i + 1;
-                break;
+                return i + 1;
             }
         }
 
-        return startIndex;
+        return 0;
     }
 
     public static TextDocument FromFile(string filePath)

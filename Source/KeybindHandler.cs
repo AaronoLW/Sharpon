@@ -40,7 +40,7 @@ public class KeybindHandler
         {
             if (Program.IsKeyDown(keybind.Key))
             {
-                if ((keybind.RequiresCtrl && Input.IsKeyDown(SDL.Keycode.LCtrl)) || !keybind.RequiresCtrl)
+                if ((keybind.RequiresCtrl && Input.IsKeyDown(SDL.Keycode.LCtrl)) || (!keybind.RequiresCtrl && !Input.IsKeyDown(SDL.Keycode.LCtrl)))
                     ApplyTextAction(document, keybind.Action);
             }
         }
