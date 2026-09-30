@@ -10,6 +10,20 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
 
     public int LineCharIndex => CharIndex - GetLineStartIndex();
 
+    public static readonly char[] BracketsOpen = [
+        '(',
+        '{',
+        '[',
+        '"',
+    ];
+
+    public static char[] BracketsClosed = [
+        ')',
+        '}',
+        ']',
+        '"',
+    ];
+
     private readonly StringBuilder _stringBuilder = new(initialText ?? DEFAULT_TEXT);
 
     public void Insert(string text)

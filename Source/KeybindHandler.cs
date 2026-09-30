@@ -51,7 +51,17 @@ public class KeybindHandler
         switch (action)
         {
             case TextAction.DeleteCharacter:
-                document.TryRemoveBackwards(1);
+                if (document.CharIndex != document.Text.Length &&
+                    document.CharIndex != 0 &&
+                    TextDocument.BracketsClosed.Contains(document.Text[document.CharIndex]) &&
+                    TextDocument.BracketsOpen.Contains(document.Text[document.CharIndex - 1]))
+                {
+                    document.CharIndex++;
+                    document.TryRemoveBackwards(2);
+                }
+                else
+                    document.TryRemoveBackwards(1);
+
                 break;
 
             case TextAction.DeleteWord:
