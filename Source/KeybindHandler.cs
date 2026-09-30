@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using SDL3;
 using SmashFramework;
 
@@ -95,10 +96,7 @@ public class KeybindHandler
                 break;
 
             case TextAction.InsertNewline:
-                string indent = "";
-                for (int i = 0; i < document.GetLineStartIndent(); i++)
-                    indent += ' ';
-                document.Insert('\n' + indent);
+                InsertNewLine(document);
                 break;
 
             case TextAction.InsertTab:
@@ -127,5 +125,28 @@ public class KeybindHandler
                 document.TryRemoveBackwards(length);
                 break;
         }
+    }
+
+    private void InsertNewLine(TextDocument document)
+    {
+        string indent = "";
+        for (int i = 0; i < document.GetLineStartIndent(); i++)
+            indent += ' ';
+
+        if (document.IsEnclosedInBrackets())
+        {
+            document.CharIndex--;
+            document.Insert('\n' + indent);
+            document.CharIndex++;
+            document.Insert('\n' + indent);
+            document.Insert('\n' + indent);
+            document.MoveUp();
+            document.Insert("    ");
+        }
+        else
+        {
+            document.Insert('\n' + indent);
+        }
+
     }
 }
