@@ -1,12 +1,12 @@
 using System.Text;
 using System.Numerics;
 
-public class TextDocument(string? initialText, int initialCharIndex = -1)
+public class TextDocument(string? initialText, int initialCharIndex = 0)
 {
     private const string DEFAULT_TEXT = "    Text der zum testen gedacht ist {}";
 
     public string Text => _stringBuilder.ToString();
-    public int CharIndex = initialCharIndex == -1 ? (DEFAULT_TEXT.Length - 1) : 0;
+    public int CharIndex = initialCharIndex;
 
     public int LineCharIndex => CharIndex - GetLineStartIndex();
 
