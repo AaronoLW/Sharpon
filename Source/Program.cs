@@ -9,7 +9,7 @@ internal static class Program
     public static string? TextInput { get; private set; }
 
     public const int FramesPerSecond = 120;
-    private static double _targetFrameTime = 1000.0 / FramesPerSecond;
+    private readonly static double _targetFrameTime = 1000.0 / FramesPerSecond;
 
     private static void Main(string[] args)
     {
