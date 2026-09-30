@@ -85,7 +85,10 @@ public class KeybindHandler
                 break;
 
             case TextAction.InsertNewline:
-                document.Insert('\n');
+                string indent = "";
+                for (int i = 0; i < document.GetLineStartIndent(); i++)
+                    indent += ' ';
+                document.Insert('\n' + indent);
                 break;
 
             case TextAction.InsertTab:
