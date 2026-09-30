@@ -132,5 +132,6 @@ public class FileManager
     public void OpenDirectory(string? path)
     {
         _fileSystemEntries = _pathManager.OpenDirectory(path);
+        _scroll = 0;
     }
 }
