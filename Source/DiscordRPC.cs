@@ -1,6 +1,6 @@
 using DiscordRPC;
 
-public class RichPresence
+public class RichPresence : IDisposable
 {
     private readonly DiscordRpcClient _client = new("1441930534052827267");
 
@@ -12,5 +12,10 @@ public class RichPresence
         });
 
         _client.Initialize();
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
     }
 }

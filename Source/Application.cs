@@ -124,6 +124,7 @@ public class App : Application
     {
         _window.Dispose();
         _renderer.Dispose();
+        _richPresence.Dispose();
         SDL.StopTextInput(_window.Handle);
         AssetManager.Dispose();
     }
