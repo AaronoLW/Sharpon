@@ -130,7 +130,9 @@ public class KeybindHandler
     private void InsertNewLine(TextDocument document)
     {
         string indent = "";
-        for (int i = 0; i < document.GetLineStartIndent(); i++)
+
+        int startIndent = document.GetLineStartIndent();
+        for (int i = 0; i < startIndent; i++)
             indent += ' ';
 
         if (document.IsEnclosedInBrackets())
@@ -145,6 +147,7 @@ public class KeybindHandler
         }
         else
         {
+            Console.WriteLine(indent.Length);
             document.Insert('\n' + indent);
         }
 
