@@ -73,13 +73,23 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         if (char.IsWhiteSpace(Text[CharIndex - 1]))
             foundWord = false;
 
-        if (Text[CharIndex - 1] == '\n')
-            return 1;
+        if (IsSpecialCharacter(Text[CharIndex - 1]))
+        {
+            if (CharIndex != Text.Length && BracketsOpen.Contains(Text[CharIndex - 1]))
+            {
+                CharIndex++;
+                return 2;
+            }
+            else
+            {
+                return 1;
+            }
+        }
 
         int length = 0;
         for (int i = CharIndex; i > 1; i--)
         {
-            if (char.IsWhiteSpace(Text[i - 1]))
+            if (Text[i - 1] == ' ' || IsSpecialCharacter(Text[i - 1]))
             {
                 if (foundWord)
                     return length;
@@ -106,13 +116,13 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
             foundWord = false;
         }
 
-        if (Text[CharIndex] == '\n')
+        if (IsSpecialCharacter(Text[CharIndex]))
             return 1;
 
         int length = 0;
         for (int i = CharIndex; i < Text.Length; i++)
         {
-            if (char.IsWhiteSpace(Text[i]))
+            if (char.IsWhiteSpace(Text[i]) || IsSpecialCharacter(Text[i]))
             {
                 if (foundWord)
                     return length;
@@ -231,5 +241,10 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         }
 
         return count;
+    }
+
+    private bool IsSpecialCharacter(char character)
+    {
+        return character == '\n' || BracketsClosed.Contains(character) || BracketsOpen.Contains(character);
     }
 }
