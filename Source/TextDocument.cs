@@ -207,4 +207,17 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         string fileContent = File.ReadAllText(filePath);
         return new(fileContent, 0);
     }
+
+    public int GetLineStartIndent()
+    {
+        int startIndex = GetLineStartIndex();
+        int count = 0;
+
+        while (char.IsWhiteSpace(Text[startIndex + count]))
+        {
+            count++;
+        }
+
+        return count;
+    }
 }
