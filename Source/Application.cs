@@ -64,7 +64,7 @@ public class App : Application
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
-        _fileManager = new(FILEMANAGER_WIDTH, WindowHeight);
+        _fileManager = new(FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
         _richPresence = new();
     }
 

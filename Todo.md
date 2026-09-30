@@ -1,6 +1,5 @@
-- Reset scroll on open file
-- Open folder
 - Auto indent
+- Auto double bracket delete
 - Auto bracket thingy
 - Single new line delete on ctrl+backspace
 

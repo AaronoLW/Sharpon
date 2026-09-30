@@ -19,12 +19,12 @@ public class FileManager
 
     private float _scroll = 0;
 
-    public FileManager(int width, int height)
+    public FileManager(int width, int height, string? initialPath)
     {
         Width = width;
         Height = height;
 
-        _fileSystemEntries = _pathManager.OpenDirectory(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+        OpenDirectory(initialPath);
     }
 
     public string? HandleClick()
@@ -129,7 +129,7 @@ public class FileManager
         return null;
     }
 
-    public void OpenDirectory(string path)
+    public void OpenDirectory(string? path)
     {
         _fileSystemEntries = _pathManager.OpenDirectory(path);
     }

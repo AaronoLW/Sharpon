@@ -119,6 +119,7 @@ public class Editor
     public void OpenFile(string? filePath)
     {
         _document = _pathManager.OpenFile(filePath);
+        _scroll = 0;
     }
 
     public void HandleScroll()

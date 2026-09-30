@@ -28,12 +28,23 @@ public struct PathManager(string placeholderText = "Placeholder path text")
         }
 
         string fullPath = System.IO.Path.GetFullPath(filePath);
-        Path = fullPath;
 
+        if (Directory.Exists(fullPath))
+        {
+            return new(null, 0);
+        }
+
+        if (fullPath.EndsWith(System.IO.Path.DirectorySeparatorChar))
+        {
+            fullPath = fullPath.TrimEnd(System.IO.Path.DirectorySeparatorChar);
+        }
+
+        Path = fullPath;
         if (!File.Exists(fullPath))
         {
             return new("", 0);
         }
+
 
         string fileContent = File.ReadAllText(fullPath);
         return new(fileContent, fileContent.Length);
@@ -53,21 +64,41 @@ public struct PathManager(string placeholderText = "Placeholder path text")
 
     }
 
-    public string[]? OpenDirectory(string path)
+    public string[]? OpenDirectory(string? initialPath)
     {
-        string fullPath = System.IO.Path.GetFullPath(path);
+        string path = initialPath ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        path = System.IO.Path.GetFullPath(path);
 
-        if (!Directory.Exists(fullPath))
+        if (File.Exists(path) && !Directory.Exists(path))
         {
-            Path = null;
-            return null;
+            path = System.IO.Path.GetDirectoryName(path) ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        else if (!Directory.Exists(path))
+        {
+            Console.WriteLine("duiwahdjiaw");
+            path = TryGetDirectoryFromNonExistingFile(path);
         }
 
-        Path = fullPath;
+        Path = path;
 
-        string[] files = Directory.GetFileSystemEntries(fullPath);
+        string[] files = Directory.GetFileSystemEntries(path);
 
         string[] filtered = [.. files.Where(f => !File.GetAttributes(f).HasFlag(FileAttributes.Hidden))];
         return filtered;
+    }
+
+    private string TryGetDirectoryFromNonExistingFile(string path)
+    {
+        if (path.EndsWith(System.IO.Path.DirectorySeparatorChar))
+        {
+            path = path.TrimEnd(System.IO.Path.DirectorySeparatorChar);
+        }
+
+        int lastSeparatorIndex = path.LastIndexOf(System.IO.Path.DirectorySeparatorChar);
+
+        if (lastSeparatorIndex == -1)
+            throw new Exception("No Path.DirectorySeparatorChar found in path");
+
+        return path[0..lastSeparatorIndex];
     }
 }
