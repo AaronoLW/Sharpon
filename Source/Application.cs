@@ -70,6 +70,7 @@ public class App : Application
 
     public override void Update(double deltaTime)
     {
+
         _editor.Update(deltaTime);
         _fileManager.Height = WindowHeight;
 

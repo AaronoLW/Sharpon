@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SDL3;
 using SmashFramework;
@@ -6,6 +7,9 @@ internal static class Program
 {
     private static readonly HashSet<SDL.Keycode> _downKeys = [];
     public static string? TextInput { get; private set; }
+
+    public const int FramesPerSecond = 120;
+    private static double _targetFrameTime = 1000.0 / FramesPerSecond;
 
     private static void Main(string[] args)
     {
@@ -19,6 +23,10 @@ internal static class Program
 
         App application = new(args.Length > 0 ? args[0] : null);
         application.Start();
+
+        Stopwatch stopwatch = new();
+
+        ulong lastTime = SDL.GetPerformanceCounter();
 
         bool running = true;
         while (running)
@@ -54,9 +62,18 @@ internal static class Program
                 Input.Event(e);
             }
 
-
             application.Update(SmashEngine.DeltaTime);
             application.Render();
+
+            ulong currentTime = SDL.GetPerformanceCounter();
+            double elapsed = (currentTime - lastTime) / SDL.GetPerformanceFrequency();
+            lastTime = currentTime;
+
+            int sleepTime = (int)(_targetFrameTime - elapsed);
+            if (sleepTime > 0)
+            {
+                Thread.Sleep(sleepTime);
+            }
         }
 
         application.End();
