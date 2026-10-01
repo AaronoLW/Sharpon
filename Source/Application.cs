@@ -72,8 +72,6 @@ public class App : Application
 
     public override void Update(double deltaTime)
     {
-
-        _editor.Update(deltaTime);
         _fileManager.Height = WindowHeight;
 
         if (Input.IsLeftMousePressed())
@@ -99,17 +97,17 @@ public class App : Application
             }
         }
 
-        if (Input.ScrollWheelDelta != 0)
+        if (Input.MouseX > WindowWidth - FILEMANAGER_WIDTH)
         {
-            if (Input.MouseX > WindowWidth - FILEMANAGER_WIDTH)
-            {
-                _fileManager.HandleScroll();
-            }
-            else
-            {
-                _editor.HandleScroll();
-            }
+            _fileManager.Update();
         }
+        else
+        {
+            _editor.Update();
+        }
+
+        _editor.Animate(deltaTime);
+        _fileManager.Animate(deltaTime);
     }
 
     public override void Render()
