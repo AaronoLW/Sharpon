@@ -50,16 +50,16 @@ public struct PathManager(string placeholderText = "Placeholder path text")
         return new(fileContent, fileContent.Length);
     }
 
-    public void SaveFile(TextDocument document)
+    public bool SaveFile(TextDocument document)
     {
         if (Path == null)
         {
-            Console.WriteLine("Couldn't save file (no file opened)");
+            return false;
         }
         else
         {
             File.WriteAllText(Path, document.Text);
-            Console.WriteLine("Saved File!");
+            return true;
         }
 
     }

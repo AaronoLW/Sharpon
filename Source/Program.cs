@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SDL3;
 using SmashFramework;
@@ -23,8 +22,6 @@ internal static class Program
 
         App application = new(args.Length > 0 ? args[0] : null);
         application.Start();
-
-        Stopwatch stopwatch = new();
 
         ulong lastTime = SDL.GetPerformanceCounter();
 
