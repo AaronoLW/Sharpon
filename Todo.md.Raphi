@@ -1,10 +1,10 @@
-- Put the ApplyTextAction function in KeybindHandler into another file
 - Add Java style bracket auto indent
 - Smooth scrolling
 - File save feedback
 - Config
 - Playtime counter?
 
+- (Copy)/Paste
 
 
 - Java support (+ gradle)

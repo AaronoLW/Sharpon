@@ -257,7 +257,10 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
 
     private bool IsSpecialCharacter(char character)
     {
-        return character == '\n' || BracketsClosed.Contains(character) || BracketsOpen.Contains(character);
+        return character == '\n' ||
+               character == '.' ||
+               BracketsClosed.Contains(character) ||
+               BracketsOpen.Contains(character);
     }
 
     public bool IsEnclosedInBrackets()
