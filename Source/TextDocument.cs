@@ -89,6 +89,9 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         int length = 0;
         for (int i = CharIndex; i > 1; i--)
         {
+            if (Text[i - 1] == '\n')
+                return length;
+
             if (Text[i - 1] == ' ' || IsSpecialCharacter(Text[i - 1]))
             {
                 if (foundWord)
