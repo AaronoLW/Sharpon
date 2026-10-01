@@ -16,9 +16,9 @@ public class Editor
     private TextDocument _document = null!;
     private PathManager _pathManager;
     private readonly KeybindHandler _keybindHandler = new();
+    private readonly Scroller _scroll = new(0, null);
 
     private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
-    private float _scroll;
 
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + LINE_SPACING_POINT_SIZE_INCREASE;
@@ -33,7 +33,7 @@ public class Editor
         OpenFile(initialFilePath);
     }
 
-    public void Update(double deltaTime)
+    public void Update()
     {
         if (Program.TextInput != null)
         {
@@ -73,7 +73,14 @@ public class Editor
             }
         }
 
-        Vector2 documentOffset = Position with { Y = Position.Y - _scroll };
+        _scroll.Update();
+    }
+
+    public void Animate(double deltaTime)
+    {
+        _scroll.Animate(deltaTime);
+
+        Vector2 documentOffset = Position with { Y = Position.Y - _scroll.Scroll };
         Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _editorStyle);
         if (_caretPosition != caretPosition)
         {
@@ -85,10 +92,10 @@ public class Editor
     {
         string[] lines = _document.Text.Split('\n');
 
-        int startLineIndex = Math.Max((int)(_scroll / _lineSpacing) - 1, 0);
+        int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
         for (int i = startLineIndex; i < lines.Length; i++)
         {
-            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, (i * _lineSpacing) - _scroll));
+            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
 
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
@@ -119,11 +126,6 @@ public class Editor
     public void OpenFile(string? filePath)
     {
         _document = _pathManager.OpenFile(filePath);
-        _scroll = 0;
-    }
-
-    public void HandleScroll()
-    {
-        _scroll -= Input.ScrollWheelDelta * App.SCROLL_SPEED_AMPLIFIER;
+        _scroll.Reset();
     }
 }

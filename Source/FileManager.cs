@@ -11,13 +11,12 @@ public class FileManager
     public float Height;
 
     private Vector2 Position => new(App.WindowWidth - Width, 0);
-    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f) - new Vector2(0, _scroll);
+    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f) - new Vector2(0, _scroll.Scroll);
 
     private PathManager _pathManager = new("No directory opened");
+    private readonly Scroller _scroll = new(0, null);
 
     private string[]? _fileSystemEntries;
-
-    private float _scroll = 0;
 
     public FileManager(int width, int height, string? initialPath)
     {
@@ -43,12 +42,17 @@ public class FileManager
         return null;
     }
 
-    public void HandleScroll()
+    public void Update()
     {
-        _scroll -= Input.ScrollWheelDelta * App.SCROLL_SPEED_AMPLIFIER;
+        _scroll.Update();
 
-        if (_scroll < 0)
-            _scroll = 0;
+        if (_scroll.Scroll < 0)
+            _scroll.Reset();
+    }
+
+    public void Animate(double deltaTime)
+    {
+        _scroll.Animate(deltaTime);
     }
 
     public void Render(Renderer renderer)
@@ -66,14 +70,14 @@ public class FileManager
             int? hoveredEntry = GetHoveredEntryIndex();
 
             Vector2 clipRectanglePosition = EntryBasePosition;
-            clipRectanglePosition.Y += _scroll;
+            clipRectanglePosition.Y += _scroll.Scroll;
             clipRectanglePosition.Y += App.DEFAULT_PADDING;
             clipRectanglePosition.X = 0;
 
             Rectangle clipRect = new(clipRectanglePosition, App.WindowSize);
             SDL.SetRenderClipRect(renderer.Handle, clipRect.ToSDLRect());
 
-            int startIndex = Math.Max((int)(_scroll / ENTRY_SPACING), 0);
+            int startIndex = Math.Max((int)(_scroll.Scroll / ENTRY_SPACING), 0);
             for (int i = startIndex; i < _fileSystemEntries.Length; i++)
             {
                 Vector2 position = EntryBasePosition + GetEntryOffset(i);
@@ -132,6 +136,6 @@ public class FileManager
     public void OpenDirectory(string? path)
     {
         _fileSystemEntries = _pathManager.OpenDirectory(path);
-        _scroll = 0;
+        _scroll.Reset();
     }
 }
