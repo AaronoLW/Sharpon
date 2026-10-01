@@ -90,13 +90,23 @@ public static class StringHelper
 
         if (document.IsEnclosedInBrackets())
         {
-            document.CharIndex--;
-            document.Insert('\n' + indent);
-            document.CharIndex++;
-            document.Insert('\n' + indent);
-            document.Insert('\n' + indent);
-            document.MoveUp();
-            document.Insert("    ");
+            if (App.CSharpBracketStyle)
+            {
+                document.CharIndex--;
+                document.Insert('\n' + indent);
+                document.CharIndex++;
+                document.Insert('\n' + indent);
+                document.Insert('\n' + indent);
+                document.MoveUp();
+                document.Insert("    ");
+            }
+            else
+            {
+                document.Insert('\n' + indent);
+                document.Insert('\n' + indent);
+                document.MoveUp();
+                document.Insert("    ");
+            }
         }
         else
         {
