@@ -22,6 +22,8 @@ public class App : Application
 
     public const int SCROLL_SPEED_AMPLIFIER = 20;
 
+    public static readonly bool CSharpBracketStyle = true;
+
     public static int WindowWidth = INITIAL_WINDOW_WIDTH;
     public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
     public static Vector2 WindowSize => new(WindowWidth, WindowHeight);
