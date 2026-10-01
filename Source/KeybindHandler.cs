@@ -147,7 +147,6 @@ public class KeybindHandler
         }
         else
         {
-            Console.WriteLine(indent.Length);
             document.Insert('\n' + indent);
         }
 
