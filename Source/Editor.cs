@@ -27,6 +27,8 @@ public class Editor
 
     private Vector2 _caretPosition = new();
 
+    private bool _unsavedChanges = false;
+
     public Editor(string? initialFilePath)
     {
         _pathManager = new("No file opened");
@@ -49,7 +51,10 @@ public class Editor
             {
                 _document.Insert((char)insert);
                 _document.CharIndex--;
+
             }
+
+            _unsavedChanges = true;
         }
 
         _keybindHandler.HandleKeybinds(_document);
@@ -58,7 +63,8 @@ public class Editor
         {
             if (Program.IsKeyDown(SDL.Keycode.S))
             {
-                _pathManager.SaveFile(_document);
+                if (_pathManager.SaveFile(_document))
+                    _unsavedChanges = false;
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Plus))
@@ -120,6 +126,13 @@ public class Editor
             Vector2 filePathTextSize = App.Font.MeasureString(_pathManager.DisplayPath, App.SMALL_POINT_SIZE);
             Vector2 filePathTextPosition = new(App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
             renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _pathManager.DisplayPath, filePathTextPosition, Color.White);
+
+            if (_unsavedChanges)
+            {
+                Vector2 unsavedChangesTextSize = App.Font.MeasureString("Unsaved Changes", App.SMALL_POINT_SIZE);
+                Vector2 unsavedChangesPos = new(App.WindowWidth - App.FILEMANAGER_WIDTH - unsavedChangesTextSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
+                renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, "Unsaved Changes", unsavedChangesPos, Color.White);
+            }
         }
     }
 
@@ -127,5 +140,6 @@ public class Editor
     {
         _document = _pathManager.OpenFile(filePath);
         _scroll.Reset();
+        _unsavedChanges = false;
     }
 }

@@ -18,7 +18,7 @@ public class App : Application
     private const int INITIAL_WINDOW_WIDTH = 800;
     private const int INITIAL_WINDOW_HEIGHT = 600;
 
-    private const int FILEMANAGER_WIDTH = 250;
+    public const int FILEMANAGER_WIDTH = 250;
 
     public const int SCROLL_SPEED_AMPLIFIER = 20;
 
