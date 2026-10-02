@@ -6,6 +6,8 @@ using Color = System.Drawing.Color;
 
 public class App : Application
 {
+    public static readonly string DATA_DIRECTORY_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sharpon");
+
     public const string FONT_NAME = "Iosevka-Medium";
     public const string SMALL_FONT_NAME = "Iosevka-Regular";
 
@@ -44,11 +46,18 @@ public class App : Application
 
     private readonly RichPresence _richPresence;
 
+    private readonly PlaytimeCounter _playtimeCounter = new();
+
     public App(string? initialFilePath)
     {
         CreateWindowAndRenderer("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, out _window, out _renderer);
         _window.SetWindowResizable(true);
         SDL.StartTextInput(_window.Handle);
+
+        if (!Directory.Exists(DATA_DIRECTORY_PATH))
+        {
+            Directory.CreateDirectory(DATA_DIRECTORY_PATH);
+        }
 
         string? fontPath = SystemFontResolver.Resolve(FONT_NAME);
         string? smallFontPath = SystemFontResolver.Resolve(SMALL_FONT_NAME);
@@ -108,6 +117,8 @@ public class App : Application
 
         _editor.Animate(deltaTime);
         _fileManager.Animate(deltaTime);
+
+        _playtimeCounter.Update(deltaTime);
     }
 
     public override void Render()
@@ -125,6 +136,7 @@ public class App : Application
         _window.Dispose();
         _renderer.Dispose();
         _richPresence.Dispose();
+        _playtimeCounter.Dispose();
         SDL.StopTextInput(_window.Handle);
         AssetManager.Dispose();
     }
