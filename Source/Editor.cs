@@ -4,7 +4,7 @@ using SmashFramework;
 
 using Color = System.Drawing.Color;
 
-public class Editor
+public class Editor : IPermutable
 {
     private const float CARET_SPEED = 40f;
     private const int TOP_BAR_HEIGHT = 50;
@@ -35,7 +35,7 @@ public class Editor
         OpenFile(initialFilePath);
     }
 
-    public void Update()
+    public void Update(double deltaTime)
     {
         if (Program.TextInput != null)
         {
@@ -79,11 +79,9 @@ public class Editor
             }
         }
 
-        _scroll.Update();
-    }
+        if (Input.MouseX < App.WindowWidth - App.FILEMANAGER_WIDTH)
+            _scroll.Update();
 
-    public void Animate(double deltaTime)
-    {
         _scroll.Animate(deltaTime);
 
         Vector2 documentOffset = Position with { Y = Position.Y - _scroll.Scroll };

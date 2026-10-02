@@ -17,7 +17,6 @@ public static class StringHelper
                 }
                 else
                     document.TryRemoveBackwards(1);
-
                 break;
 
             case TextAction.DeleteWord:
@@ -118,6 +117,5 @@ public static class StringHelper
         {
             document.Insert('\n' + indent);
         }
-
     }
 }

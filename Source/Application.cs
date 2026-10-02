@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Numerics;
 using SDL3;
 using SmashFramework;
@@ -46,7 +47,8 @@ public class App : Application
 
     private readonly RichPresence _richPresence;
 
-    private readonly PlaytimeCounter _playtimeCounter;
+    private readonly ReadOnlyCollection<IPermutable> _permutables;
+    private readonly ReadOnlyCollection<IDisposable> _disposables;
 
     public App(string? initialFilePath)
     {
@@ -77,7 +79,21 @@ public class App : Application
         _editor = new(initialFilePath);
         _fileManager = new(FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
         _richPresence = new();
-        _playtimeCounter = new();
+
+        PlaytimeCounter playtimeCounter = new();
+
+        _permutables = [
+            _editor,
+            _fileManager,
+            playtimeCounter
+        ];
+
+        _disposables = [
+            _window,
+            _renderer,
+            _richPresence,
+            playtimeCounter
+        ];
     }
 
     public override void Update(double deltaTime)
@@ -107,19 +123,8 @@ public class App : Application
             }
         }
 
-        if (Input.MouseX > WindowWidth - FILEMANAGER_WIDTH)
-        {
-            _fileManager.Update();
-        }
-        else
-        {
-            _editor.Update();
-        }
-
-        _editor.Animate(deltaTime);
-        _fileManager.Animate(deltaTime);
-
-        _playtimeCounter.Update(deltaTime);
+        foreach (IPermutable permutable in _permutables)
+            permutable.Update(deltaTime);
     }
 
     public override void Render()
@@ -134,10 +139,9 @@ public class App : Application
 
     public override void End()
     {
-        _window.Dispose();
-        _renderer.Dispose();
-        _richPresence.Dispose();
-        _playtimeCounter.Dispose();
+        foreach (IDisposable disposable in _disposables)
+            disposable.Dispose();
+
         SDL.StopTextInput(_window.Handle);
         AssetManager.Dispose();
     }
