@@ -3,7 +3,7 @@ using System.Numerics;
 using SmashFramework;
 using SDL3;
 
-public class FileManager
+public class FileManager : IPermutable
 {
     private const float ENTRY_SPACING = App.VERY_SMALL_POINT_SIZE * 2;
 
@@ -42,16 +42,14 @@ public class FileManager
         return null;
     }
 
-    public void Update()
+    public void Update(double deltaTime)
     {
-        _scroll.Update();
+        if (Input.MouseX > App.WindowWidth - App.FILEMANAGER_WIDTH)
+            _scroll.Update();
 
         if (_scroll.Scroll < 0)
             _scroll.Reset();
-    }
 
-    public void Animate(double deltaTime)
-    {
         _scroll.Animate(deltaTime);
     }
 

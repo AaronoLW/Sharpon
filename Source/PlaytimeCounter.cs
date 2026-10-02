@@ -1,6 +1,6 @@
 using SDL3;
 
-public class PlaytimeCounter : IDisposable
+public class PlaytimeCounter : IDisposable, IPermutable
 {
     private const int AUTO_SAVE_INTERVAL = 60;
 
