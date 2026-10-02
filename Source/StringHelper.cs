@@ -1,3 +1,5 @@
+using SDL3;
+
 public static class StringHelper
 {
     public static void ApplyTextAction(TextDocument document, TextAction action)
@@ -76,6 +78,10 @@ public static class StringHelper
                 int length = document.GetJumpForwardLength();
                 document.CharIndex += length;
                 document.TryRemoveBackwards(length);
+                break;
+
+            case TextAction.Paste:
+                document.Insert(SDL.GetClipboardText());
                 break;
         }
     }

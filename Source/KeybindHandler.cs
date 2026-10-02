@@ -20,6 +20,7 @@ public class KeybindHandler
             new(SDL.Keycode.Home, TextAction.GoToStartOfLine, false),
             new(SDL.Keycode.Delete, TextAction.DeleteCharacterForward, false),
             new(SDL.Keycode.Delete, TextAction.DeleteWordForward, true),
+            new(SDL.Keycode.V, TextAction.Paste, true),
         } },
     };
 
