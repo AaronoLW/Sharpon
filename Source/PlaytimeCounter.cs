@@ -17,7 +17,11 @@ public class PlaytimeCounter : IDisposable
         }
         else
         {
-            _totalElapsedTime = float.Parse(File.ReadAllText(SAVE_FILE_PATH));
+            string fileContent = File.ReadAllText(SAVE_FILE_PATH);
+            if (fileContent != string.Empty)
+                _totalElapsedTime = float.Parse(fileContent);
+            else
+                _totalElapsedTime = 0;
         }
     }
 
