@@ -14,4 +14,5 @@ public enum TextAction
     GoToStartOfLine,
     DeleteCharacterForward,
     DeleteWordForward,
+    Paste
 }
