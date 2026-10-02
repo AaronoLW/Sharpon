@@ -46,7 +46,7 @@ public class App : Application
 
     private readonly RichPresence _richPresence;
 
-    private readonly PlaytimeCounter _playtimeCounter = new();
+    private readonly PlaytimeCounter _playtimeCounter;
 
     public App(string? initialFilePath)
     {
@@ -77,6 +77,7 @@ public class App : Application
         _editor = new(initialFilePath);
         _fileManager = new(FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
         _richPresence = new();
+        _playtimeCounter = new();
     }
 
     public override void Update(double deltaTime)
