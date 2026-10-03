@@ -22,6 +22,7 @@ public class App : Application
     private const int INITIAL_WINDOW_HEIGHT = 600;
 
     public const int FILEMANAGER_WIDTH = 250;
+    public const int ACTIVITY_BAR_HEIGHT = 50;
 
     public const int SCROLL_SPEED_AMPLIFIER = 20;
 
@@ -49,6 +50,9 @@ public class App : Application
 
     private readonly ReadOnlyCollection<IPermutable> _permutables;
     private readonly ReadOnlyCollection<IDisposable> _disposables;
+
+    private ActivityBar _activityBar;
+    private IActivityBarProvider _activityBarProvider;
 
     public App(string? initialFilePath)
     {
@@ -94,6 +98,8 @@ public class App : Application
             _richPresence,
             playtimeCounter
         ];
+
+        _activityBarProvider = _editor;
     }
 
     public override void Update(double deltaTime)
@@ -123,6 +129,8 @@ public class App : Application
             }
         }
 
+        _activityBar = _activityBarProvider.ProvideActivityBar();
+
         foreach (IPermutable permutable in _permutables)
             permutable.Update(deltaTime);
     }
@@ -132,6 +140,7 @@ public class App : Application
         _renderer.Clear(BackgroundColor);
 
         _editor.Render(_renderer);
+        _activityBar.Render(_renderer);
         _fileManager.Render(_renderer);
 
         _renderer.RenderPresent();

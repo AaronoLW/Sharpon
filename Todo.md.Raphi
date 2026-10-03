@@ -1,5 +1,7 @@
-- IActivityBarProvider
+- Forward/backward button in File manager
 - Config
+- Point size increasing/decreasing
+- Terminal
 
-
+- LSP support
 - Java support (+ gradle)

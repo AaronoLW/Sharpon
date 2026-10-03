@@ -4,10 +4,9 @@ using SmashFramework;
 
 using Color = System.Drawing.Color;
 
-public class Editor : IPermutable
+public class Editor : IPermutable, IActivityBarProvider
 {
     private const float CARET_SPEED = 40f;
-    private const int TOP_BAR_HEIGHT = 50;
 
     private const int MIN_POINT_SIZE = 4;
 
@@ -18,7 +17,7 @@ public class Editor : IPermutable
     private readonly KeybindHandler _keybindHandler = new();
     private readonly Scroller _scroll = new(0, null);
 
-    private readonly Vector2 Position = new(App.DEFAULT_PADDING, TOP_BAR_HEIGHT + App.DEFAULT_PADDING);
+    private readonly Vector2 Position = new(App.DEFAULT_PADDING, App.ACTIVITY_BAR_HEIGHT + App.DEFAULT_PADDING);
 
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + LINE_SPACING_POINT_SIZE_INCREASE;
@@ -113,17 +112,8 @@ public class Editor : IPermutable
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
 
-        // Top bar
-        {
-            renderer.RenderFilledRectangle(new(0, 0, App.WindowWidth, TOP_BAR_HEIGHT), App.BackgroundColor);
-            renderer.RenderLine(new(0, TOP_BAR_HEIGHT), new(App.WindowWidth, TOP_BAR_HEIGHT), App.VeryLightColor);
-        }
-
         // Opened file text
         {
-            Vector2 filePathTextSize = App.Font.MeasureString(_pathManager.DisplayPath, App.SMALL_POINT_SIZE);
-            Vector2 filePathTextPosition = new(App.DEFAULT_PADDING, (TOP_BAR_HEIGHT / 2) - (filePathTextSize.Y / 2.5f));
-            renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, _pathManager.DisplayPath, filePathTextPosition, Color.White);
 
             if (_unsavedChanges)
             {
@@ -132,6 +122,11 @@ public class Editor : IPermutable
                 renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, "Unsaved Changes", unsavedChangesPos, Color.White);
             }
         }
+    }
+
+    public ActivityBar ProvideActivityBar()
+    {
+        return new(_pathManager.DisplayPath, _unsavedChanges ? "Unsaved Changes" : "");
     }
 
     public void OpenFile(string? filePath)
