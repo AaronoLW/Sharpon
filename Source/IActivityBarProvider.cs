@@ -1,4 +1,4 @@
 public interface IActivityBarProvider
 {
-    public ActivityBar ProvideActivityBar();
+    public Activity ProvideActivityBar();
 }

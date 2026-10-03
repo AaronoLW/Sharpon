@@ -3,7 +3,7 @@ using System.Numerics;
 using SmashFramework;
 using SDL3;
 
-public class FileManager : IPermutable
+public class FileManager : IPermutable, IRenderable
 {
     private const float ENTRY_SPACING = App.VERY_SMALL_POINT_SIZE * 2;
 
@@ -21,6 +21,8 @@ public class FileManager : IPermutable
     private Color _backButtonColor = App.LightColor;
 
     private string[]? _fileSystemEntries;
+
+    public bool ShouldRender { get; set; } = true;
 
     public FileManager(int width, int height, string? initialPath)
     {
