@@ -114,13 +114,6 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
         // Opened file text
         {
-
-            if (_unsavedChanges)
-            {
-                Vector2 unsavedChangesTextSize = App.Font.MeasureString("Unsaved Changes", App.SMALL_POINT_SIZE);
-                Vector2 unsavedChangesPos = new(App.WindowWidth - App.FILEMANAGER_WIDTH - unsavedChangesTextSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
-                renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, "Unsaved Changes", unsavedChangesPos, Color.White);
-            }
         }
     }
 
