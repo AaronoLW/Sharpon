@@ -38,6 +38,9 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
     {
         if (Program.TextInput != null)
         {
+            string textInput = Program.TextInput;
+            if (textInput.Contains('\r')) Console.WriteLine("Carirawidwahjkdawjdkjawn");
+
             _document.Insert(Program.TextInput);
 
             char? insert = null;
@@ -106,15 +109,8 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
             renderer.RenderText(App.Font, _pointSize, lines[i], linePosition, Color.White);
         }
 
-        // Caret
-        {
-            Rectangle caret = new(_caretPosition, 2, _pointSize);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        }
-
-        // Opened file text
-        {
-        }
+        Rectangle caret = new(_caretPosition, 2, _pointSize);
+        renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
     }
 
     public Activity ProvideActivityBar()
