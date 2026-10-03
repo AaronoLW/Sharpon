@@ -10,8 +10,8 @@ public struct PathManager(string placeholderText = "Placeholder path text")
 
             // I hate this code but it works
 
-            if (Path != null && Directory.Exists(Path) && Path.EndsWith('/'))
-                path = System.IO.Path.GetDirectoryName(Path) ?? _placeholderText;
+            if (Path != null && Directory.Exists(Path) && Path.EndsWith(System.IO.Path.DirectorySeparatorChar))
+                path = System.IO.Path.GetDirectoryName(Path) ?? PathExtensions.GetRootDirectory();
 
             return path;
         }
@@ -75,13 +75,21 @@ public struct PathManager(string placeholderText = "Placeholder path text")
         }
         else if (!Directory.Exists(path))
         {
-            Console.WriteLine("duiwahdjiaw");
             path = TryGetDirectoryFromNonExistingFile(path);
         }
 
-        Path = path;
+        string[] files = [];
+        try
+        {
+            files = Directory.GetFileSystemEntries(path);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return OpenDirectory(Path);
+        }
 
-        string[] files = Directory.GetFileSystemEntries(path);
+        Path = path;
 
         string[] filtered = [.. files.Where(f => !File.GetAttributes(f).HasFlag(FileAttributes.Hidden))];
         return filtered;

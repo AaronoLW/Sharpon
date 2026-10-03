@@ -11,10 +11,14 @@ public class FileManager : IPermutable
     public float Height;
 
     private Vector2 Position => new(App.WindowWidth - Width, 0);
-    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 1.5f) - new Vector2(0, _scroll.Scroll);
+    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 2) - new Vector2(0, _scroll.Scroll);
 
     private PathManager _pathManager = new("No directory opened");
     private readonly Scroller _scroll = new(0, null);
+
+    private const int BACK_BUTTON_SIZE = 40;
+    private Rectangle _backButtonRectangle => new(new Vector2(App.WindowWidth - App.DEFAULT_PADDING / 1.5f - BACK_BUTTON_SIZE, App.DEFAULT_PADDING / 1.5f), BACK_BUTTON_SIZE, BACK_BUTTON_SIZE);
+    private Color _backButtonColor = App.LightColor;
 
     private string[]? _fileSystemEntries;
 
@@ -51,6 +55,21 @@ public class FileManager : IPermutable
             _scroll.Reset();
 
         _scroll.Animate(deltaTime);
+
+        if (_backButtonRectangle.IsPositionInRectangle(Input.MousePosition))
+        {
+            _backButtonColor = Color.White;
+            if (Input.IsLeftMousePressed())
+            {
+                string? parentDirectory = GetParentDirectory();
+                if (parentDirectory != null)
+                    OpenDirectory(parentDirectory);
+            }
+        }
+        else
+        {
+            _backButtonColor = App.VeryLightColor;
+        }
     }
 
     public void Render(Renderer renderer)
@@ -60,8 +79,18 @@ public class FileManager : IPermutable
         renderer.RenderFilledRectangle(new(Position, Width, Height), App.DarkColor);
         renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, App.VeryLightColor);
 
-        string directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf(Path.DirectorySeparatorChar) + 1).._pathManager.DisplayPath.Length];
+        string directoryName = _pathManager.DisplayPath;
+
+        if (directoryName.Length != 1)
+            directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf(Path.DirectorySeparatorChar) + 1).._pathManager.DisplayPath.Length];
+
         renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Color.White);
+
+        renderer.RenderFilledRectangle(_backButtonRectangle, App.LightColor);
+        renderer.RenderRectangle(_backButtonRectangle, _backButtonColor);
+
+        Vector2 buttonTextSize = App.Font.MeasureString("<", App.SMALL_POINT_SIZE);
+        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), Color.White);
 
         if (_fileSystemEntries != null)
         {
@@ -129,6 +158,18 @@ public class FileManager : IPermutable
         }
 
         return null;
+    }
+
+    private string? GetParentDirectory()
+    {
+        if (_pathManager.Path == null)
+            return null;
+
+        DirectoryInfo? parent = Directory.GetParent(_pathManager.Path);
+        if (parent == null)
+            return null;
+
+        return parent.FullName;
     }
 
     public void OpenDirectory(string? path)
