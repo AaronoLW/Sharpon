@@ -40,18 +40,22 @@ public class App : Application
     public static readonly Color VeryLightColor = Color.FromArgb(255, 50, 50, 55);
     public static readonly Color DarkColor = Color.FromArgb(255, 15, 15, 20);
 
+    public static readonly Vector2 ActivityPosition = new(App.DEFAULT_PADDING, ACTIVITY_BAR_HEIGHT + DEFAULT_PADDING);
+
     private static Window _window = null!;
     private static Renderer _renderer = null!;
 
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
+    private readonly Config _config;
 
     private readonly RichPresence _richPresence;
 
     private readonly ReadOnlyCollection<IPermutable> _permutables;
+    private readonly List<IRenderable> _renderables;
     private readonly ReadOnlyCollection<IDisposable> _disposables;
 
-    private ActivityBar _activityBar;
+    private readonly ActivityBar _activityBar = new();
     private IActivityBarProvider _activityBarProvider;
 
     public App(string? initialFilePath)
@@ -85,11 +89,19 @@ public class App : Application
         _richPresence = new();
 
         PlaytimeCounter playtimeCounter = new();
+        _config = new();
 
         _permutables = [
             _editor,
             _fileManager,
             playtimeCounter
+        ];
+
+        _renderables = [
+            _editor,
+            _activityBar,
+            _fileManager,
+            _config,
         ];
 
         _disposables = [
@@ -129,7 +141,12 @@ public class App : Application
             }
         }
 
-        _activityBar = _activityBarProvider.ProvideActivityBar();
+        if (Input.IsKeyDown(SDL.Keycode.LCtrl) && Input.IsKeyPressed(SDL.Keycode.Comma))
+        {
+            SwitchEditorAndConfig();
+        }
+
+        _activityBar.SetActivity(_activityBarProvider.ProvideActivityBar());
 
         foreach (IPermutable permutable in _permutables)
             permutable.Update(deltaTime);
@@ -139,9 +156,8 @@ public class App : Application
     {
         _renderer.Clear(BackgroundColor);
 
-        _editor.Render(_renderer);
-        _activityBar.Render(_renderer);
-        _fileManager.Render(_renderer);
+        foreach (IRenderable renderable in _renderables)
+            if (renderable.ShouldRender) renderable.Render(_renderer);
 
         _renderer.RenderPresent();
     }
@@ -159,5 +175,21 @@ public class App : Application
     {
         WindowWidth = width;
         WindowHeight = height;
+    }
+
+    private void SwitchEditorAndConfig()
+    {
+        if (_config.ShouldRender)
+        {
+            _config.ShouldRender = false;
+            _editor.ShouldRender = true;
+            _activityBarProvider = _editor;
+        }
+        else
+        {
+            _config.ShouldRender = true;
+            _editor.ShouldRender = false;
+            _activityBarProvider = _config;
+        }
     }
 }

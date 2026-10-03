@@ -4,7 +4,7 @@ using SmashFramework;
 
 using Color = System.Drawing.Color;
 
-public class Editor : IPermutable, IActivityBarProvider
+public class Editor : IPermutable, IRenderable, IActivityBarProvider
 {
     private const float CARET_SPEED = 40f;
 
@@ -17,8 +17,6 @@ public class Editor : IPermutable, IActivityBarProvider
     private readonly KeybindHandler _keybindHandler = new();
     private readonly Scroller _scroll = new(0, null);
 
-    private readonly Vector2 Position = new(App.DEFAULT_PADDING, App.ACTIVITY_BAR_HEIGHT + App.DEFAULT_PADDING);
-
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + LINE_SPACING_POINT_SIZE_INCREASE;
 
@@ -27,6 +25,8 @@ public class Editor : IPermutable, IActivityBarProvider
     private Vector2 _caretPosition = new();
 
     private bool _unsavedChanges = false;
+
+    public bool ShouldRender { get; set; } = true;
 
     public Editor(string? initialFilePath)
     {
@@ -38,9 +38,6 @@ public class Editor : IPermutable, IActivityBarProvider
     {
         if (Program.TextInput != null)
         {
-            if (Program.TextInput.Contains('\r'))
-                Console.WriteLine("BACKSLASH R AAAAAAAAAA");
-
             _document.Insert(Program.TextInput);
 
             char? insert = null;
@@ -86,7 +83,7 @@ public class Editor : IPermutable, IActivityBarProvider
 
         _scroll.Animate(deltaTime);
 
-        Vector2 documentOffset = Position with { Y = Position.Y - _scroll.Scroll };
+        Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
         Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _editorStyle);
         if (_caretPosition != caretPosition)
         {
@@ -101,7 +98,7 @@ public class Editor : IPermutable, IActivityBarProvider
         int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
         for (int i = startLineIndex; i < lines.Length; i++)
         {
-            Vector2 linePosition = Vector2.Round(Position + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
+            Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
 
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
@@ -127,7 +124,7 @@ public class Editor : IPermutable, IActivityBarProvider
         }
     }
 
-    public ActivityBar ProvideActivityBar()
+    public Activity ProvideActivityBar()
     {
         return new(_pathManager.DisplayPath, _unsavedChanges ? "Unsaved Changes" : "");
     }
