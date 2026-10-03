@@ -38,6 +38,9 @@ public class Editor : IPermutable, IActivityBarProvider
     {
         if (Program.TextInput != null)
         {
+            if (Program.TextInput.Contains('\r'))
+                Console.WriteLine("BACKSLASH R AAAAAAAAAA");
+
             _document.Insert(Program.TextInput);
 
             char? insert = null;
