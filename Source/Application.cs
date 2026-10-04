@@ -2,15 +2,13 @@ using System.Collections.ObjectModel;
 using System.Numerics;
 using SDL3;
 using SmashFramework;
+using KatziDrip;
 
 using Color = System.Drawing.Color;
 
 public class App : Application
 {
     public static readonly string DATA_DIRECTORY_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sharpon");
-
-    public const string FONT_NAME = "Iosevka-Medium";
-    public const string SMALL_FONT_NAME = "Iosevka-Regular";
 
     public const int POINT_SIZE = 21;
     public const int SMALL_POINT_SIZE = 18;
@@ -34,11 +32,6 @@ public class App : Application
 
     public static Font Font = null!;
     public static Font SmallFont = null!;
-
-    public static readonly Color BackgroundColor = Color.FromArgb(255, 20, 20, 25);
-    public static readonly Color LightColor = Color.FromArgb(255, 24, 24, 29);
-    public static readonly Color VeryLightColor = Color.FromArgb(255, 50, 50, 55);
-    public static readonly Color DarkColor = Color.FromArgb(255, 15, 15, 20);
 
     public static readonly Vector2 ActivityPosition = new(App.DEFAULT_PADDING, ACTIVITY_BAR_HEIGHT + DEFAULT_PADDING);
 
@@ -69,17 +62,17 @@ public class App : Application
             Directory.CreateDirectory(DATA_DIRECTORY_PATH);
         }
 
-        string? fontPath = SystemFontResolver.Resolve(FONT_NAME);
-        string? smallFontPath = SystemFontResolver.Resolve(SMALL_FONT_NAME);
+        string? fontPath = SystemFontResolver.Resolve(Drip.FontName);
+        string? smallFontPath = SystemFontResolver.Resolve(Drip.SmallFontName);
 
-        if (fontPath == null) throw new Exception($"Font {FONT_NAME} is not installed");
-        if (smallFontPath == null) throw new Exception($"Font {SMALL_FONT_NAME} is not installed");
+        if (fontPath == null) throw new Exception($"Font {Drip.FontName} is not installed");
+        if (smallFontPath == null) throw new Exception($"Font {Drip.SmallFontName} is not installed");
 
         AssetManager.LoadFont(fontPath);
         AssetManager.LoadFont(smallFontPath);
 
-        Font = AssetManager.Get<Font>(FONT_NAME);
-        SmallFont = AssetManager.Get<Font>(SMALL_FONT_NAME);
+        Font = AssetManager.Get<Font>(Drip.FontName);
+        SmallFont = AssetManager.Get<Font>(Drip.SmallFontName);
 
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
@@ -154,7 +147,7 @@ public class App : Application
 
     public override void Render()
     {
-        _renderer.Clear(BackgroundColor);
+        _renderer.Clear(Drip.BaseColor.ToSystemColor());
 
         foreach (IRenderable renderable in _renderables)
             if (renderable.ShouldRender) renderable.Render(_renderer);
