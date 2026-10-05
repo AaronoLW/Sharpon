@@ -60,9 +60,7 @@ public class VimSet : IKeybindSet
                     textAction = TextAction.MoveUp;
 
                 if (Program.IsKeyDown(SDL.Keycode.I))
-                {
                     SetVimMode(document, VimMode.Insert);
-                }
 
                 if (Program.IsKeyDown(SDL.Keycode.A))
                 {
@@ -72,14 +70,13 @@ public class VimSet : IKeybindSet
                 }
 
                 if (Program.IsKeyDown(SDL.Keycode.B))
-                {
                     textAction = TextAction.JumpLeft;
-                }
 
                 if (Program.IsKeyDown(SDL.Keycode.E) || Program.IsKeyDown(SDL.Keycode.W))
-                {
                     textAction = TextAction.JumpRight;
-                }
+
+                if (Program.IsKeyDown(SDL.Keycode.P))
+                    textAction = TextAction.Paste;
             }
         }
 

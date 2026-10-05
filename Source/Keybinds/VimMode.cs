@@ -1,5 +1,5 @@
 public enum VimMode
 {
     Normal,
-    Insert
+    Insert,
 }
