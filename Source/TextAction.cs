@@ -1,5 +1,6 @@
 public enum TextAction
 {
+    None,
     DeleteCharacter,
     DeleteWord,
     MoveLeft,
@@ -14,5 +15,5 @@ public enum TextAction
     GoToStartOfLine,
     DeleteCharacterForward,
     DeleteWordForward,
-    Paste
+    Paste,
 }

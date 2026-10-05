@@ -278,4 +278,10 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
 
         return false;
     }
+
+    public void Clear()
+    {
+        _stringBuilder.Clear();
+        CharIndex = 0;
+    }
 }

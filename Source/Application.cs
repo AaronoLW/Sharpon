@@ -14,6 +14,8 @@ public class App : Application
     public const int SMALL_POINT_SIZE = 18;
     public const int VERY_SMALL_POINT_SIZE = 16;
 
+    public const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
+
     public const int DEFAULT_PADDING = 20;
 
     private const int INITIAL_WINDOW_WIDTH = 800;
@@ -21,6 +23,7 @@ public class App : Application
 
     public const int FILEMANAGER_WIDTH = 250;
     public const int ACTIVITY_BAR_HEIGHT = 50;
+    public const int TERMINAL_HEIGHT = 400;
 
     public const int SCROLL_SPEED_AMPLIFIER = 20;
 
@@ -41,6 +44,7 @@ public class App : Application
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
     private readonly Config _config;
+    private readonly Terminal _terminal;
 
     private readonly RichPresence _richPresence;
 
@@ -85,11 +89,13 @@ public class App : Application
 
         PlaytimeCounter playtimeCounter = new();
         _config = new();
+        _terminal = new();
 
         _permutables = [
             _editor,
             _fileManager,
-            playtimeCounter
+            playtimeCounter,
+            _terminal
         ];
 
         _renderables = [
@@ -97,6 +103,7 @@ public class App : Application
             _activityBar,
             _fileManager,
             _config,
+            //_terminal,
         ];
 
         _disposables = [
