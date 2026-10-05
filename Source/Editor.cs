@@ -14,6 +14,8 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
     private PathManager _pathManager;
     private readonly Scroller _scroll = new(0, null);
 
+    private IKeybindSet _keybindSet = new VimSet();
+
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
 
@@ -33,27 +35,7 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
     public void Update(double deltaTime)
     {
-        //if (Program.TextInput != null)
-        //{
-        //    _document.Insert(Program.TextInput);
-
-        //    char? insert = null;
-        //    if (Program.TextInput == "{") insert = '}';
-        //    if (Program.TextInput == "(") insert = ')';
-        //    if (Program.TextInput == "\"") insert = '"';
-        //    if (Program.TextInput == "[") insert = ']';
-
-        //    if (insert != null)
-        //    {
-        //        _document.Insert((char)insert);
-        //        _document.CharIndex--;
-
-        //    }
-
-        //    _unsavedChanges = true;
-        //}
-
-        KeybindHandler.HandleKeybinds(_document);
+        _keybindSet.HandleKeybinds(_document);
 
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
@@ -90,6 +72,17 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
     public void Render(Renderer renderer)
     {
+        if (_document.CaretStyle == CaretStyle.Beam)
+        {
+            Rectangle caret = new(_caretPosition, 2, _pointSize);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+        else
+        {
+            Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, _pointSize);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+
         string[] lines = _document.Text.Split('\n');
 
         int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
@@ -102,9 +95,6 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
             renderer.RenderText(App.Font, _pointSize, lines[i], linePosition, Color.White);
         }
-
-        Rectangle caret = new(_caretPosition, 2, _pointSize);
-        renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
     }
 
     public Activity ProvideActivityBar()
