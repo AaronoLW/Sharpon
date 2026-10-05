@@ -6,7 +6,6 @@ using KatziDrip;
 public class TextDocument(string? initialText, int initialCharIndex = 0)
 {
     private const string DEFAULT_TEXT = "Hallo";
-    public static readonly Kolor CaretColor = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 125);
 
     public string Text => _stringBuilder.ToString();
     public int CharIndex = initialCharIndex;

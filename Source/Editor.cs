@@ -74,12 +74,12 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
     {
         if (_document.CaretStyle == CaretStyle.Beam)
         {
-            Rectangle caret = new(_caretPosition, 2, _pointSize);
+            Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
         else
         {
-            Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, _pointSize);
+            Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
 
