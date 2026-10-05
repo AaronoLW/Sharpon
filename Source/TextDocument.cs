@@ -1,14 +1,19 @@
 using System.Text;
 using System.Numerics;
+using SDL3;
+using KatziDrip;
 
 public class TextDocument(string? initialText, int initialCharIndex = 0)
 {
-    private const string DEFAULT_TEXT = "    Text der zum testen gedacht ist {}";
+    private const string DEFAULT_TEXT = "Hallo";
+    public static readonly Kolor CaretColor = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 125);
 
     public string Text => _stringBuilder.ToString();
     public int CharIndex = initialCharIndex;
 
     public int LineCharIndex => CharIndex - GetLineStartIndex();
+
+    public CaretStyle CaretStyle = CaretStyle.Block;
 
     public static readonly char[] BracketsOpen = [
         '(',
@@ -233,6 +238,11 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         return new(fileContent, 0);
     }
 
+    public void Clear()
+    {
+        _stringBuilder.Clear();
+    }
+
     public int GetLineStartIndent()
     {
         if (Text.Length == 0)
@@ -279,9 +289,123 @@ public class TextDocument(string? initialText, int initialCharIndex = 0)
         return false;
     }
 
-    public void Clear()
+    public void ApplyTextAction(TextAction action)
     {
-        _stringBuilder.Clear();
-        CharIndex = 0;
+        switch (action)
+        {
+            case TextAction.DeleteCharacter:
+                if (CharIndex != Text.Length &&
+                    CharIndex != 0 &&
+                    BracketsClosed.Contains(Text[CharIndex]) &&
+                    BracketsOpen.Contains(Text[CharIndex - 1]))
+                {
+                    CharIndex++;
+                    TryRemoveBackwards(2);
+                }
+                else
+                    TryRemoveBackwards(1);
+                break;
+
+            case TextAction.DeleteWord:
+                TryRemoveBackwards(GetJumpBackLength());
+                break;
+
+            case TextAction.MoveLeft:
+                if (CharIndex > 0)
+                    CharIndex--;
+                break;
+
+            case TextAction.MoveRight:
+                if (CharIndex < Text.Length)
+                    CharIndex++;
+                break;
+
+            case TextAction.JumpLeft:
+                CharIndex -= GetJumpBackLength();
+                break;
+
+            case TextAction.JumpRight:
+                CharIndex += GetJumpForwardLength();
+                break;
+
+            case TextAction.MoveUp:
+                MoveUp();
+                break;
+
+            case TextAction.MoveDown:
+                MoveDown();
+                break;
+
+            case TextAction.InsertNewline:
+                InsertNewLine();
+                break;
+
+            case TextAction.InsertTab:
+                Insert("    ");
+                break;
+
+            case TextAction.GoToStartOfLine:
+                CharIndex = GetLineStartIndex();
+                break;
+
+            case TextAction.GoToEndOfLine:
+                CharIndex = GetLineStartIndex() + GetLineLength();
+                break;
+
+            case TextAction.DeleteCharacterForward:
+                if (CharIndex != Text.Length)
+                {
+                    CharIndex++;
+                    TryRemoveBackwards(1);
+                }
+                break;
+
+            case TextAction.DeleteWordForward:
+                int length = GetJumpForwardLength();
+                CharIndex += length;
+                TryRemoveBackwards(length);
+                break;
+
+            case TextAction.Paste:
+                Insert(SDL.GetClipboardText());
+                break;
+
+            case TextAction.None:
+                break;
+        }
+    }
+
+    private void InsertNewLine()
+    {
+        string indent = "";
+
+        int startIndent = GetLineStartIndent();
+        for (int i = 0; i < startIndent; i++)
+            indent += ' ';
+
+        if (IsEnclosedInBrackets())
+        {
+            if (App.CSharpBracketStyle)
+            {
+                CharIndex--;
+                Insert('\n' + indent);
+                CharIndex++;
+                Insert('\n' + indent);
+                Insert('\n' + indent);
+                MoveUp();
+                Insert("    ");
+            }
+            else
+            {
+                Insert('\n' + indent);
+                Insert('\n' + indent);
+                MoveUp();
+                Insert("    ");
+            }
+        }
+        else
+        {
+            Insert('\n' + indent);
+        }
     }
 }
