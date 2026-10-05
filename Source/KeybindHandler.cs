@@ -1,49 +1,60 @@
-using System.Security.Cryptography;
 using SDL3;
 using SmashFramework;
 
-public class KeybindHandler
+public static class KeybindHandler
 {
-    private readonly Dictionary<string, List<Keybind>> _keybindSets = new() {
-        { "Default", new() {
-            new(SDL.Keycode.Left, TextAction.MoveLeft, false),
-            new(SDL.Keycode.Right, TextAction.MoveRight, false),
-            new(SDL.Keycode.Up, TextAction.MoveUp, false),
-            new(SDL.Keycode.Down, TextAction.MoveDown, false),
-            new(SDL.Keycode.Left, TextAction.JumpLeft, true),
-            new(SDL.Keycode.Right, TextAction.JumpRight, true),
-            new(SDL.Keycode.Backspace, TextAction.DeleteCharacter, false),
-            new(SDL.Keycode.Backspace, TextAction.DeleteWord, true),
-            new(SDL.Keycode.Return, TextAction.InsertNewline, false),
-            new(SDL.Keycode.Tab, TextAction.InsertTab, false),
-            new(SDL.Keycode.End, TextAction.GoToEndOfLine, false),
-            new(SDL.Keycode.Home, TextAction.GoToStartOfLine, false),
-            new(SDL.Keycode.Delete, TextAction.DeleteCharacterForward, false),
-            new(SDL.Keycode.Delete, TextAction.DeleteWordForward, true),
-            new(SDL.Keycode.V, TextAction.Paste, true),
-        } },
-    };
+    private static readonly KeybindSet _keybindSet = new(
+        new()
+        {
+            { "Mode", "Normal" }
+        },
+        variables =>
+        {
+            return variables["Mode"] == "Insert";
+        },
+        new()
+        {
+            new(SDL.Keycode.H, TextAction.MoveLeft, false, false, variables => { return variables["Mode"] == "Normal"; } ),
+            new(SDL.Keycode.L, TextAction.MoveRight, false, false, variables => { return variables["Mode"] == "Normal"; } ),
+            new(SDL.Keycode.K, TextAction.MoveUp, false, false, variables => { return variables["Mode"] == "Normal"; } ),
+            new(SDL.Keycode.J, TextAction.MoveDown, false, false, variables => { return variables["Mode"] == "Normal"; } ),
+            new(SDL.Keycode.I, TextAction.None, false, false, variables => { if (variables["Mode"] == "Normal") variables["Mode"] = "Insert";  return false; } ),
 
-    public List<string> RegisteredKeybindSets => [.. _keybindSets.Keys];
+            new(SDL.Keycode.Escape, TextAction.None, false, false, variables => { variables["Mode"] = "Normal";  return false; } ),
+        }
+    );
 
-    public string SelectedKeybindSet = "Default";
-
-    public void RegisterSet(string name, List<Keybind> keybinds)
+    public static void HandleKeybinds(TextDocument document)
     {
-        _keybindSets.Add(name, keybinds);
-    }
+        if (_keybindSet.TextInputCondition.Invoke(_keybindSet.Variables))
+        {
+            if (Program.TextInput != null)
+            {
+                document.Insert(Program.TextInput);
 
-    public void HandleKeybinds(TextDocument document)
-    {
-        if (SelectedKeybindSet == null)
-            return;
+                char? insert = null;
+                if (Program.TextInput == "{") insert = '}';
+                if (Program.TextInput == "(") insert = ')';
+                if (Program.TextInput == "\"") insert = '"';
+                if (Program.TextInput == "[") insert = ']';
 
-        foreach (Keybind keybind in _keybindSets[SelectedKeybindSet])
+                if (insert != null)
+                {
+                    document.Insert((char)insert);
+                    document.CharIndex--;
+
+                }
+            }
+        }
+
+        foreach (Keybind keybind in _keybindSet.Keybinds)
         {
             if (Program.IsKeyDown(keybind.Key))
             {
-                if ((keybind.RequiresCtrl && Input.IsKeyDown(SDL.Keycode.LCtrl)) || (!keybind.RequiresCtrl && !Input.IsKeyDown(SDL.Keycode.LCtrl)))
+                if (keybind.Condition == null || keybind.Condition.Invoke(_keybindSet.Variables))
+                {
                     StringHelper.ApplyTextAction(document, keybind.Action);
+                }
             }
         }
     }

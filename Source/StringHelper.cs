@@ -82,6 +82,9 @@ public static class StringHelper
             case TextAction.Paste:
                 document.Insert(SDL.GetClipboardText());
                 break;
+
+            case TextAction.None:
+                break;
         }
     }
 

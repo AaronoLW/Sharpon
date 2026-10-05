@@ -10,15 +10,12 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
     private const int MIN_POINT_SIZE = 4;
 
-    private const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
-
     private TextDocument _document = null!;
     private PathManager _pathManager;
-    private readonly KeybindHandler _keybindHandler = new();
     private readonly Scroller _scroll = new(0, null);
 
     private int _pointSize = App.POINT_SIZE;
-    private float _lineSpacing => _pointSize + LINE_SPACING_POINT_SIZE_INCREASE;
+    private float _lineSpacing => _pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
 
     private EditorStyle _editorStyle => new(_pointSize, _lineSpacing);
 
@@ -36,30 +33,27 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
     public void Update(double deltaTime)
     {
-        if (Program.TextInput != null)
-        {
-            string textInput = Program.TextInput;
-            if (textInput.Contains('\r')) Console.WriteLine("Carirawidwahjkdawjdkjawn");
+        //if (Program.TextInput != null)
+        //{
+        //    _document.Insert(Program.TextInput);
 
-            _document.Insert(Program.TextInput);
+        //    char? insert = null;
+        //    if (Program.TextInput == "{") insert = '}';
+        //    if (Program.TextInput == "(") insert = ')';
+        //    if (Program.TextInput == "\"") insert = '"';
+        //    if (Program.TextInput == "[") insert = ']';
 
-            char? insert = null;
-            if (Program.TextInput == "{") insert = '}';
-            if (Program.TextInput == "(") insert = ')';
-            if (Program.TextInput == "\"") insert = '"';
-            if (Program.TextInput == "[") insert = ']';
+        //    if (insert != null)
+        //    {
+        //        _document.Insert((char)insert);
+        //        _document.CharIndex--;
 
-            if (insert != null)
-            {
-                _document.Insert((char)insert);
-                _document.CharIndex--;
+        //    }
 
-            }
+        //    _unsavedChanges = true;
+        //}
 
-            _unsavedChanges = true;
-        }
-
-        _keybindHandler.HandleKeybinds(_document);
+        KeybindHandler.HandleKeybinds(_document);
 
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
