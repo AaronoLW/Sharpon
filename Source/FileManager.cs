@@ -18,7 +18,7 @@ public class FileManager : IPermutable, IRenderable
 
     private const int BACK_BUTTON_SIZE = 40;
     private Rectangle _backButtonRectangle => new(new Vector2(App.WindowWidth - App.DEFAULT_PADDING / 1.5f - BACK_BUTTON_SIZE, App.DEFAULT_PADDING / 1.5f), BACK_BUTTON_SIZE, BACK_BUTTON_SIZE);
-    private Color _backButtonColor = Drip.LightColor;
+    private Kolor _backButtonColor = Drip.LightColor;
 
     private string[]? _fileSystemEntries;
 
@@ -78,21 +78,21 @@ public class FileManager : IPermutable, IRenderable
     {
         // This really is just starting to look like zed
 
-        renderer.RenderFilledRectangle(new(Position, Width, Height), Drip.DarkColor.ToSystemColor());
-        renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, Drip.VeryLightColor.ToSystemColor());
+        renderer.RenderFilledRectangle(new(Position, Width, Height), Drip.DarkColor.ToColor());
+        renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, Drip.VeryLightColor.ToColor());
 
         string directoryName = _pathManager.DisplayPath;
 
         if (directoryName.Length != 1)
             directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf(Path.DirectorySeparatorChar) + 1).._pathManager.DisplayPath.Length];
 
-        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), new Color(255, 255, 255, 255).ToSystemColor());
+        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Drip.White.ToColor());
 
-        renderer.RenderFilledRectangle(_backButtonRectangle, Drip.LightColor.ToSystemColor());
-        renderer.RenderRectangle(_backButtonRectangle, _backButtonColor.ToSystemColor());
+        renderer.RenderFilledRectangle(_backButtonRectangle, Drip.LightColor.ToColor());
+        renderer.RenderRectangle(_backButtonRectangle, _backButtonColor.ToColor());
 
         Vector2 buttonTextSize = App.Font.MeasureString("<", App.SMALL_POINT_SIZE);
-        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), new Color(255, 255, 255, 255).ToSystemColor());
+        renderer.RenderText(App.Font, App.SMALL_POINT_SIZE, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), Drip.White.ToColor());
 
         if (_fileSystemEntries != null)
         {
@@ -115,15 +115,15 @@ public class FileManager : IPermutable, IRenderable
                     break;
 
                 string name = Path.GetFileName(_fileSystemEntries[i]);
-                Color color = Directory.Exists(_fileSystemEntries[i]) ? new(48, 92, 222, 255) : new(255, 255, 255, 255);
+                Kolor color = Directory.Exists(_fileSystemEntries[i]) ? Drip.RoyalBlue : Drip.White;
 
                 if (Directory.Exists(_fileSystemEntries[i]))
                     name += Path.DirectorySeparatorChar;
 
                 if (hoveredEntry == i)
-                    renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.VeryLightColor.ToSystemColor());
+                    renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.VeryLightColor.ToColor());
 
-                renderer.RenderText(App.SmallFont, App.VERY_SMALL_POINT_SIZE, name, position, color.ToSystemColor());
+                renderer.RenderText(App.SmallFont, App.VERY_SMALL_POINT_SIZE, name, position, color.ToColor());
             }
 
             SDL.SetRenderClipRect(renderer.Handle, 0);

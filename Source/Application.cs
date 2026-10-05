@@ -62,6 +62,8 @@ public class App : Application
             Directory.CreateDirectory(DATA_DIRECTORY_PATH);
         }
 
+        Drip.Load(Drip.DEFAULT_THEME_NAME);
+
         string? fontPath = SystemFontResolver.Resolve(Drip.FontName);
         string? smallFontPath = SystemFontResolver.Resolve(Drip.SmallFontName);
 
@@ -147,7 +149,7 @@ public class App : Application
 
     public override void Render()
     {
-        _renderer.Clear(Drip.BaseColor.ToSystemColor());
+        _renderer.Clear(Drip.BaseColor.ToColor());
 
         foreach (IRenderable renderable in _renderables)
             if (renderable.ShouldRender) renderable.Render(_renderer);
