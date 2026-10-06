@@ -133,7 +133,35 @@ public class TextDocument(string text)
 
     public int GetJumpLeftLength()
     {
-        return 2;
+        if (CharIndex == 0)
+        {
+            if (LineIndex > 0)
+                return 1;
+            else
+                return 0;
+        }
+
+        bool foundWord = true;
+        if (char.IsWhiteSpace(Line[CharIndex - 1]))
+            foundWord = false;
+
+        int length = 0;
+        for (int i = CharIndex - 1; i > 0; i--)
+        {
+            if (Line[i] == ' ')
+            {
+                if (foundWord)
+                    return length;
+            }
+            else
+            {
+                foundWord = true;
+            }
+
+            length++;
+        }
+
+        return CharIndex;
     }
 
     public int GetJumpRightLength()
