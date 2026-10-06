@@ -22,7 +22,14 @@ public class TextDocument(string text)
 
     public void RemoveBackwards(int count)
     {
+        if (CharIndex == 0)
+        {
+            JoinLineUpwards();
+            return;
+        }
 
+        Line = Line.Remove(CharIndex - count, count);
+        CharIndex -= count;
     }
 
     public void MoveLeft()
@@ -35,5 +42,16 @@ public class TextDocument(string text)
     {
         if (CharIndex < Line.Length)
             CharIndex++;
+    }
+
+    public void JoinLineUpwards()
+    {
+        if (LineIndex == 0)
+            return;
+
+        string lineContent = Line;
+        LineIndex--;
+        CharIndex = Line.Length;
+        Insert(lineContent);
     }
 }
