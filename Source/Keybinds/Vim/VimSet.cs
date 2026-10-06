@@ -18,6 +18,7 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.Normal),
         new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLine(); },   VimMode.Normal),
         new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLineOnPreviousLine(); },   VimMode.Normal, SDL.Keycode.LShift),
+        new(SDL.Keycode.P,         (vimSet, document) => document.PasteClipboard(),           VimMode.Normal),
 
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),         VimMode.Insert),
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(document.GetJumpLeftLength()),         VimMode.Insert, SDL.Keycode.LCtrl),
