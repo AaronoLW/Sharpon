@@ -19,8 +19,6 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
 
-    private EditorStyle _editorStyle => new(_pointSize, _lineSpacing);
-
     private Vector2 _caretPosition = new();
 
     private bool _unsavedChanges = false;
@@ -62,26 +60,26 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
         _scroll.Animate(deltaTime);
 
-        //Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
-        //Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _editorStyle);
-        //if (_caretPosition != caretPosition)
-        //{
-        //    _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
-        //}
+        Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
+        Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _pointSize, _lineSpacing);
+        if (_caretPosition != caretPosition)
+        {
+            _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
+        }
     }
 
     public void Render(Renderer renderer)
     {
-        //if (_document.CaretStyle == CaretStyle.Beam)
-        //{
-        //    Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
-        //    renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        //}
-        //else
-        //{
-        //    Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
-        //    renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        //}
+        if (_document.CaretStyle == CaretStyle.Beam)
+        {
+            Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+        else
+        {
+            Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
 
         List<string> lines = _document.Lines;
 
