@@ -24,14 +24,14 @@ public struct PathManager(string placeholderText = "Placeholder path text")
         if (filePath == null)
         {
             Path = null;
-            return new(null);
+            return new("");
         }
 
         string fullPath = System.IO.Path.GetFullPath(filePath);
 
         if (Directory.Exists(fullPath))
         {
-            return new(null);
+            return new("");
         }
 
         if (fullPath.EndsWith(System.IO.Path.DirectorySeparatorChar))
@@ -42,12 +42,12 @@ public struct PathManager(string placeholderText = "Placeholder path text")
         Path = fullPath;
         if (!File.Exists(fullPath))
         {
-            return new("", 0);
+            return new("");
         }
 
 
         string fileContent = File.ReadAllText(fullPath);
-        return new(fileContent, fileContent.Length);
+        return new(fileContent);
     }
 
     public bool SaveFile(TextDocument document)
