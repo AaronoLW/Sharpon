@@ -25,7 +25,9 @@ public class VimSet : IKeybindSet
                     document.MoveLeft();
                 }
             }
-        }
 
+            if (Program.IsKeyDown(SDL.Keycode.Backspace))
+                document.RemoveBackwards(1);
+        }
     }
 }
