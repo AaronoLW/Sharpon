@@ -37,7 +37,7 @@ public class TextDocument(string text)
     public void Insert(string text)
     {
         Line = Line.Insert(CharIndex, text);
-        CharIndex++;
+        CharIndex += text.Length;
 
         if (CharIndex > LineLength)
             CharIndex--;
@@ -107,6 +107,22 @@ public class TextDocument(string text)
         Lines.Insert(LineIndex + 1, text);
         LineIndex++;
         CharIndex = 0;
+    }
+
+    public void InsertNewLineOnPreviousLine()
+    {
+        if (LineIndex > 0)
+        {
+            LineIndex--;
+            CharIndex = LineLength;
+        }
+
+        InsertNewLine();
+    }
+
+    public void InsertTab()
+    {
+        Insert("    ");
     }
 
     public void JoinLineUpwards()

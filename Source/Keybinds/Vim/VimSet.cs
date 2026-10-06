@@ -16,11 +16,14 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.A,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.JumpToEndOfLine(); },      VimMode.Normal, SDL.Keycode.LShift),
         new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(document.GetJumpRightLength()),  VimMode.Normal),
         new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.Normal),
+        new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLine(); },   VimMode.Normal),
+        new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLineOnPreviousLine(); },   VimMode.Normal, SDL.Keycode.LShift),
 
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),         VimMode.Insert),
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(document.GetJumpLeftLength()),         VimMode.Insert, SDL.Keycode.LCtrl),
         new(SDL.Keycode.Escape,    (vimSet, document) => { document.MoveLeft(); vimSet.SetVimMode(VimMode.Normal, document); },    VimMode.Insert),
         new(SDL.Keycode.Return,    (vimSet, document) => document.InsertNewLine(),            VimMode.Insert),
+        new(SDL.Keycode.Tab,       (vimSet, document) => document.InsertTab(),                VimMode.Insert),
     ];
 
     public void HandleKeybinds(TextDocument document)
