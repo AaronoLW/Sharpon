@@ -166,7 +166,35 @@ public class TextDocument(string text)
 
     public int GetJumpRightLength()
     {
-        return 2;
+        if (CharIndex == LineLength)
+        {
+            if (LineIndex == Lines.Count)
+                return 0;
+            else
+                return 1;
+        }
+
+        bool foundWord = true;
+        if (char.IsWhiteSpace(Line[CharIndex]))
+            foundWord = false;
+
+        int length = 0;
+        for (int i = CharIndex; i < LineLength; i++)
+        {
+            if (char.IsWhiteSpace(Line[i]))
+            {
+                if (foundWord)
+                    return length;
+            }
+            else
+            {
+                foundWord = true;
+            }
+
+            length++;
+        }
+
+        return length;
     }
 
     private void ClampCaretIfNecessary()
