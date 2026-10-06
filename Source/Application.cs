@@ -44,7 +44,6 @@ public class App : Application
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
     private readonly Config _config;
-    private readonly Terminal _terminal;
 
     private readonly RichPresence _richPresence;
 
@@ -89,13 +88,11 @@ public class App : Application
 
         PlaytimeCounter playtimeCounter = new();
         _config = new();
-        _terminal = new();
 
         _permutables = [
             _editor,
             _fileManager,
             playtimeCounter,
-            _terminal
         ];
 
         _renderables = [
@@ -103,7 +100,6 @@ public class App : Application
             _activityBar,
             _fileManager,
             _config,
-            //_terminal,
         ];
 
         _disposables = [

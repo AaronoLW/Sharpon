@@ -62,31 +62,31 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
         _scroll.Animate(deltaTime);
 
-        Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
-        Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _editorStyle);
-        if (_caretPosition != caretPosition)
-        {
-            _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
-        }
+        //Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
+        //Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _editorStyle);
+        //if (_caretPosition != caretPosition)
+        //{
+        //    _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
+        //}
     }
 
     public void Render(Renderer renderer)
     {
-        if (_document.CaretStyle == CaretStyle.Beam)
-        {
-            Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        }
-        else
-        {
-            Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        }
+        //if (_document.CaretStyle == CaretStyle.Beam)
+        //{
+        //    Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
+        //    renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        //}
+        //else
+        //{
+        //    Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
+        //    renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        //}
 
-        string[] lines = _document.Text.Split('\n');
+        List<string> lines = _document.Lines;
 
         int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
-        for (int i = startLineIndex; i < lines.Length; i++)
+        for (int i = startLineIndex; i < lines.Count; i++)
         {
             Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
 
