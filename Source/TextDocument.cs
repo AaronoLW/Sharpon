@@ -1,4 +1,5 @@
 using System.Numerics;
+using SDL3;
 
 public class TextDocument(string text)
 {
@@ -211,6 +212,11 @@ public class TextDocument(string text)
         }
 
         return length;
+    }
+
+    public void PasteClipboard()
+    {
+        Insert(SDL.GetClipboardText());
     }
 
     private void ClampCaretIfNecessary()
