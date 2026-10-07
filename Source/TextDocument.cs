@@ -67,6 +67,12 @@ public class TextDocument(string text)
 
     public void RemoveBackwards(int count)
     {
+        if (IsEnclosedInBrackets())
+        {
+            CharIndex++;
+            count++;
+        }
+
         if (CharIndex == 0)
         {
             JoinLineUpwards();
@@ -181,7 +187,7 @@ public class TextDocument(string text)
 
         if (IsSpecialCharacter(Line[CharIndex - 1]))
         {
-            if (BracketsOpen.Contains(Line[CharIndex - 1]))
+            if (IsEnclosedInBrackets())
             {
                 CharIndex++;
                 return 2;
@@ -272,5 +278,19 @@ public class TextDocument(string text)
                BracketsClosed.Contains(character) ||
                SpecialCharacters.Contains(character) ||
                character == ' ';
+    }
+
+    private bool IsEnclosedInBrackets()
+    {
+        if (CharIndex >= LineLength)
+            return false;
+
+        if (BracketsClosed.Contains(Line[CharIndex]) &&
+            BracketsOpen.Contains(Line[CharIndex - 1]))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
