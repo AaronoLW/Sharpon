@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Text;
 using SDL3;
 
 public class TextDocument(string text)
@@ -130,11 +131,32 @@ public class TextDocument(string text)
     public void InsertNewLine()
     {
         string text = Line[CharIndex..LineLength];
-        Line = Line[0..CharIndex];
 
-        Lines.Insert(LineIndex + 1, text);
-        LineIndex++;
-        CharIndex = 0;
+        if (IsEnclosedInBrackets())
+        {
+            if (App.CSharpBracketStyle)
+            {
+
+            }
+            else
+            {
+                int indent = GetLineStartIndent();
+
+                Line = Line[0..CharIndex];
+                Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
+                Lines.Insert(LineIndex + 1, GetSpacesString(indent));
+                LineIndex++;
+                CharIndex = 0;
+                Insert(GetSpacesString(indent + 4));
+            }
+        }
+        else
+        {
+            Line = Line[0..CharIndex];
+            Lines.Insert(LineIndex + 1, text);
+            LineIndex++;
+            CharIndex = 0;
+        }
     }
 
     public void InsertNewLineOnPreviousLine()
@@ -161,6 +183,7 @@ public class TextDocument(string text)
         string lineContent = Line;
         DeleteLine();
 
+        CharIndex = Line.Length;
         Insert(lineContent);
         CharIndex = LineLength - lineContent.Length;
     }
@@ -254,6 +277,19 @@ public class TextDocument(string text)
         return length;
     }
 
+    public int GetLineStartIndent()
+    {
+        if (LineLength == 0)
+            return 0;
+
+        int index = 0;
+
+        while (Line[index] == ' ')
+            index++;
+
+        return index;
+    }
+
     public void PasteClipboard()
     {
         Insert(SDL.GetClipboardText());
@@ -285,6 +321,9 @@ public class TextDocument(string text)
         if (CharIndex >= LineLength)
             return false;
 
+        if (CharIndex == 0)
+            return false;
+
         if (BracketsClosed.Contains(Line[CharIndex]) &&
             BracketsOpen.Contains(Line[CharIndex - 1]))
         {
@@ -292,5 +331,16 @@ public class TextDocument(string text)
         }
 
         return false;
+    }
+
+    private string GetSpacesString(int amount)
+    {
+        StringBuilder fuckyou = new();
+        for (int i = 0; i < amount; i++)
+        {
+            fuckyou.Append(' ');
+        }
+
+        return fuckyou.ToString();
     }
 }
