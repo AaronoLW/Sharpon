@@ -20,8 +20,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLineOnPreviousLine(); },   VimMode.Normal, SDL.Keycode.LShift),
         new(SDL.Keycode.P,         (vimSet, document) => document.PasteClipboard(),           VimMode.Normal),
         new(SDL.Keycode.Left,      (vimSet, document) => document.MoveLeft(),              VimMode.Normal),
-        new(SDL.Keycode.Up,        (vimSet, document) => document.MoveDown(),                VimMode.Normal),
-        new(SDL.Keycode.Down,      (vimSet, document) => document.MoveUp(),                VimMode.Normal),
+        new(SDL.Keycode.Down,        (vimSet, document) => document.MoveDown(),                VimMode.Normal),
+        new(SDL.Keycode.Up,      (vimSet, document) => document.MoveUp(),                VimMode.Normal),
         new(SDL.Keycode.Right,     (vimSet, document) => document.MoveRight(),            VimMode.Normal),
 
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert),
@@ -30,8 +30,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.Return,    (vimSet, document) => document.InsertNewLine(),                                                 VimMode.Insert),
         new(SDL.Keycode.Tab,       (vimSet, document) => document.InsertTab(),                                                     VimMode.Insert),
         new(SDL.Keycode.Left,      (vimSet, document) => document.MoveLeft(),                 VimMode.Insert),
-        new(SDL.Keycode.Up,        (vimSet, document) => document.MoveDown(),                   VimMode.Insert),
-        new(SDL.Keycode.Down,      (vimSet, document) => document.MoveUp(),                   VimMode.Insert),
+        new(SDL.Keycode.Down,        (vimSet, document) => document.MoveDown(),                   VimMode.Insert),
+        new(SDL.Keycode.Up,      (vimSet, document) => document.MoveUp(),                   VimMode.Insert),
         new(SDL.Keycode.Right,     (vimSet, document) => document.MoveRight(),               VimMode.Insert),
     ];
 

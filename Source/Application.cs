@@ -4,8 +4,6 @@ using SDL3;
 using SmashFramework;
 using KatziDrip;
 
-using Color = System.Drawing.Color;
-
 public class App : Application
 {
     public static readonly string DATA_DIRECTORY_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sharpon");
