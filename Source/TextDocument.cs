@@ -6,6 +6,27 @@ public class TextDocument(string text)
     public List<string> Lines => _lines;
     private readonly List<string> _lines = [.. text.Split('\n')];
 
+    public static readonly char[] BracketsOpen = [
+        '{',
+        '(',
+        '[',
+        '"',
+    ];
+
+    public static readonly char[] BracketsClosed = [
+        '}',
+        ')',
+        ']',
+        '"',
+    ];
+
+    public static readonly char[] SpecialCharacters = [
+        '.',
+        ',',
+        '/',
+        '\\',
+    ];
+
     public string Text => string.Join("\n", _lines);
 
     public int CharIndex { get; private set; }
@@ -158,6 +179,9 @@ public class TextDocument(string text)
                 return 0;
         }
 
+        if (IsSpecialCharacter(Line[CharIndex - 1]))
+            return 1;
+
         bool foundWord = true;
         if (char.IsWhiteSpace(Line[CharIndex - 1]))
             foundWord = false;
@@ -165,7 +189,7 @@ public class TextDocument(string text)
         int length = 0;
         for (int i = CharIndex - 1; i > 0; i--)
         {
-            if (Line[i] == ' ')
+            if (IsSpecialOrWhiteSpaceCharacter(Line[i]))
             {
                 if (foundWord)
                     return length;
@@ -191,6 +215,9 @@ public class TextDocument(string text)
                 return 1;
         }
 
+        if (IsSpecialCharacter(Line[CharIndex]))
+            return 1;
+
         bool foundWord = true;
         if (char.IsWhiteSpace(Line[CharIndex]))
             foundWord = false;
@@ -198,7 +225,7 @@ public class TextDocument(string text)
         int length = 0;
         for (int i = CharIndex; i < LineLength; i++)
         {
-            if (char.IsWhiteSpace(Line[i]))
+            if (IsSpecialOrWhiteSpaceCharacter(Line[i]))
             {
                 if (foundWord)
                     return length;
@@ -223,5 +250,20 @@ public class TextDocument(string text)
     {
         if (CharIndex > LineLength)
             CharIndex = LineLength;
+    }
+
+    private bool IsSpecialCharacter(char character)
+    {
+        return BracketsOpen.Contains(character) ||
+               BracketsClosed.Contains(character) ||
+               SpecialCharacters.Contains(character);
+    }
+
+    private bool IsSpecialOrWhiteSpaceCharacter(char character)
+    {
+        return BracketsOpen.Contains(character) ||
+               BracketsClosed.Contains(character) ||
+               SpecialCharacters.Contains(character) ||
+               character == ' ';
     }
 }
