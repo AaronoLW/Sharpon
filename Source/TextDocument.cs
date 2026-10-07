@@ -180,7 +180,14 @@ public class TextDocument(string text)
         }
 
         if (IsSpecialCharacter(Line[CharIndex - 1]))
-            return 1;
+        {
+            if (BracketsOpen.Contains(Line[CharIndex - 1]))
+            {
+                CharIndex++;
+                return 2;
+            }
+            else return 1;
+        }
 
         bool foundWord = true;
         if (char.IsWhiteSpace(Line[CharIndex - 1]))
