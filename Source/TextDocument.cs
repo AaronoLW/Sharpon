@@ -136,7 +136,17 @@ public class TextDocument(string text)
         {
             if (App.CSharpBracketStyle)
             {
+                int indent = GetLineStartIndent();
+                char bracket = Line[CharIndex - 1];
 
+                CharIndex--;
+                Line = Line[0..CharIndex];
+                Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
+                Lines.Insert(LineIndex + 1, "");
+                Lines.Insert(LineIndex + 1, GetSpacesString(indent) + bracket);
+                LineIndex += 2;
+                CharIndex = 0;
+                Insert(GetSpacesString(indent + 4));
             }
             else
             {
