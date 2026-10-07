@@ -175,9 +175,14 @@ public class TextDocument(string text)
         {
             LineIndex--;
             CharIndex = LineLength;
+            InsertNewLine();
+        }
+        else
+        {
+            _lines.Insert(0, "");
+            CharIndex = 0;
         }
 
-        InsertNewLine();
     }
 
     public void InsertTab()
