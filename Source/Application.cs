@@ -25,7 +25,7 @@ public class App : Application
     public const int ACTIVITY_BAR_HEIGHT = 50;
     public const int TERMINAL_HEIGHT = 400;
 
-    public const int SCROLL_SPEED_AMPLIFIER = 20;
+    public const int SCROLL_SPEED_AMPLIFIER = 40;
 
     public static readonly bool CSharpBracketStyle = true;
 
