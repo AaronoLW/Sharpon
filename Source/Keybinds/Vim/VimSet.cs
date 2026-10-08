@@ -57,7 +57,7 @@ public class VimSet : IKeybindSet
             }
         }
 
-        SDL.Keycode[] pressedModifiers = GetPressedModifiers();
+        SDL.Keycode[] pressedModifiers = KeybindHelper.GetPressedModifiers();
 
         foreach (VimKeybind keybind in _keybinds)
         {
@@ -93,18 +93,5 @@ public class VimSet : IKeybindSet
 
         if (_vimMode == VimMode.Normal)
             document.CaretStyle = CaretStyle.Block;
-    }
-
-    private SDL.Keycode[] GetPressedModifiers()
-    {
-        List<SDL.Keycode> modifiers = [];
-
-        if (Input.IsKeyDown(SDL.Keycode.LShift))
-            modifiers.Add(SDL.Keycode.LShift);
-
-        if (Input.IsKeyDown(SDL.Keycode.LCtrl))
-            modifiers.Add(SDL.Keycode.LCtrl);
-
-        return [.. modifiers];
     }
 }
