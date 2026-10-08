@@ -162,10 +162,12 @@ public class TextDocument(string text)
         }
         else
         {
+            int indent = GetLineStartIndent();
+
             Line = Line[0..CharIndex];
-            Lines.Insert(LineIndex + 1, text);
+            Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
             LineIndex++;
-            CharIndex = 0;
+            CharIndex = indent;
         }
     }
 
@@ -300,7 +302,12 @@ public class TextDocument(string text)
         int index = 0;
 
         while (Line[index] == ' ')
+        {
             index++;
+
+            if (index == LineLength)
+                break;
+        }
 
         return index;
     }
