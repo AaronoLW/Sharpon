@@ -39,6 +39,8 @@ public class App : Application
     private static Window _window = null!;
     private static Renderer _renderer = null!;
 
+    private static bool _windowFullscreen = false;
+
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
     private readonly Config _config;
@@ -135,6 +137,12 @@ public class App : Application
                     }
                 }
             }
+        }
+
+        if (Input.IsKeyPressed(SDL.Keycode.F11))
+        {
+            _window.SetFullscreen(!_windowFullscreen);
+            _windowFullscreen = !_windowFullscreen;
         }
 
         if (Input.IsKeyDown(SDL.Keycode.LCtrl) && Input.IsKeyPressed(SDL.Keycode.Comma))
