@@ -14,7 +14,7 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
     private PathManager _pathManager;
     private readonly Scroller _scroll = new(0, null);
 
-    private IKeybindSet _keybindSet = new VimSet();
+    private readonly IKeybindSet _keybindSet = new VimSet();
 
     private int _pointSize = App.POINT_SIZE;
     private float _lineSpacing => _pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
