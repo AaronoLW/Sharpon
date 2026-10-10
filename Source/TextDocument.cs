@@ -12,6 +12,7 @@ public class TextDocument(string text)
         '(',
         '[',
         '"',
+        '<',
     ];
 
     public static readonly char[] BracketsClosed = [
@@ -19,6 +20,7 @@ public class TextDocument(string text)
         ')',
         ']',
         '"',
+        '>',
     ];
 
     public static readonly char[] SpecialCharacters = [
