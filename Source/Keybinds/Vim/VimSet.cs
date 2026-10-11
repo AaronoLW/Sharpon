@@ -33,6 +33,10 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.Down,        (vimSet, document) => document.MoveDown(),                   VimMode.Insert),
         new(SDL.Keycode.Up,      (vimSet, document) => document.MoveUp(),                   VimMode.Insert),
         new(SDL.Keycode.Right,     (vimSet, document) => document.MoveRight(),               VimMode.Insert),
+
+        new(SDL.Keycode.D,     (vimSet, document) => vimSet.SetVimMode(VimMode.Delete, document),               VimMode.Normal),
+        new(SDL.Keycode.D,     (vimSet, document) => { document.DeleteLine(); vimSet.SetVimMode(VimMode.Normal, document); },               VimMode.Delete),
+        new(SDL.Keycode.Escape,     (vimSet, document) => vimSet.SetVimMode(VimMode.Normal, document),               VimMode.Delete),
     ];
 
     public void HandleKeybinds(TextDocument document)
@@ -72,6 +76,7 @@ public class VimSet : IKeybindSet
                 if (Program.IsKeyDown(keybind.Keycode))
                 {
                     keybind.Action.Invoke(this, document);
+                    break;
                 }
             }
             else
@@ -79,6 +84,7 @@ public class VimSet : IKeybindSet
                 if (Input.IsKeyPressed(keybind.Keycode))
                 {
                     keybind.Action.Invoke(this, document);
+                    break;
                 }
             }
         }
@@ -90,6 +96,9 @@ public class VimSet : IKeybindSet
 
         if (_vimMode == VimMode.Insert)
             document.CaretStyle = CaretStyle.Beam;
+
+        if (_vimMode == VimMode.Delete)
+            document.CaretStyle = CaretStyle.Underline;
 
         if (_vimMode == VimMode.Normal)
             document.CaretStyle = CaretStyle.Block;
