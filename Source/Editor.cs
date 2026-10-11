@@ -75,9 +75,14 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
             Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
-        else
+        else if (_document.CaretStyle == CaretStyle.Block)
         {
             Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+        else if (_document.CaretStyle == CaretStyle.Underline)
+        {
+            Rectangle caret = new(_caretPosition + new Vector2(0, _pointSize), App.Font.MeasureString("|", _pointSize).X, 4);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
 
