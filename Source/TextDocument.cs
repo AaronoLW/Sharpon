@@ -49,7 +49,9 @@ public class TextDocument(string text)
         private set => _lines[LineIndex] = value;
     }
 
-    public int LineLength => Math.Max(Line.Length - (CaretStyle == CaretStyle.Block ? 1 : 0), 0);
+    public int LineLength => Math.Max(Line.Length -
+        ((CaretStyle == CaretStyle.Block || CaretStyle == CaretStyle.Underline) ? 1 : 0)
+        , 0);
 
     public Vector2 GetCaretPosition(Vector2 offset, float pointSize, float lineSpacing)
     {
@@ -91,6 +93,7 @@ public class TextDocument(string text)
         if (LineIndex == 0)
         {
             _lines[0] = "";
+            CharIndex = 0;
         }
         else
         {
