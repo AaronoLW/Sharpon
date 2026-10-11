@@ -23,6 +23,7 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.Down,        (vimSet, document) => document.MoveDown(),                VimMode.Normal),
         new(SDL.Keycode.Up,      (vimSet, document) => document.MoveUp(),                VimMode.Normal),
         new(SDL.Keycode.Right,     (vimSet, document) => document.MoveRight(),            VimMode.Normal),
+        new(SDL.Keycode.V,     (vimSet, document) => document.StartSelection(),            VimMode.Normal),
 
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert),
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(document.GetJumpLeftLength()),                   VimMode.Insert, SDL.Keycode.LCtrl),
