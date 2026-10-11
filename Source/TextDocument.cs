@@ -35,6 +35,9 @@ public class TextDocument(string text)
     public int CharIndex { get; private set; }
     public int LineIndex { get; private set; }
 
+    public int? SelectionCharIndex { get; private set; } = null;
+    public int? SelectionLineIndex { get; private set; } = null;
+
     private CaretStyle _caretStyle = CaretStyle.Beam;
 
     public CaretStyle CaretStyle
@@ -320,6 +323,12 @@ public class TextDocument(string text)
     public void PasteClipboard()
     {
         Insert(SDL.GetClipboardText());
+    }
+
+    public void StartSelection()
+    {
+        SelectionCharIndex = CharIndex;
+        SelectionLineIndex = LineIndex;
     }
 
     private void ClampCaretIfNecessary()

@@ -96,6 +96,12 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
 
+            if (i >= _document.SelectionLineIndex)
+            {
+                Rectangle selectionRect = new(linePosition, App.Font.MeasureString(lines[i], _pointSize));
+                renderer.RenderFilledRectangle(selectionRect, Color.FromArgb(200, 255, 255, 255));
+            }
+
             renderer.RenderText(App.Font, _pointSize, lines[i], linePosition, Color.White);
         }
     }
