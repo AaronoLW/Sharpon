@@ -6,6 +6,7 @@ using KatziDrip;
 public class FileManager : IPermutable, IRenderable
 {
     private const float ENTRY_SPACING = App.VERY_SMALL_POINT_SIZE * 2;
+    private const float AUTO_REFRESH_INTERVAL = 0.5f;
 
     public float Width;
     public float Height;
@@ -21,6 +22,8 @@ public class FileManager : IPermutable, IRenderable
     private Kolor _backButtonColor = Drip.LightColor;
 
     private string[]? _fileSystemEntries;
+
+    private float _autoRefreshTimer = AUTO_REFRESH_INTERVAL;
 
     public bool ShouldRender { get; set; } = true;
 
@@ -71,6 +74,13 @@ public class FileManager : IPermutable, IRenderable
         else
         {
             _backButtonColor = Drip.VeryLightColor;
+        }
+
+        _autoRefreshTimer -= (float)deltaTime;
+        if (_autoRefreshTimer <= 0)
+        {
+            OpenDirectory(_pathManager.Path, false);
+            _autoRefreshTimer = AUTO_REFRESH_INTERVAL;
         }
     }
 
@@ -174,9 +184,9 @@ public class FileManager : IPermutable, IRenderable
         return parent.FullName;
     }
 
-    public void OpenDirectory(string? path)
+    public void OpenDirectory(string? path, bool resetScroll = true)
     {
         _fileSystemEntries = _pathManager.OpenDirectory(path);
-        _scroll.Reset();
+        if (resetScroll) _scroll.Reset();
     }
 }
