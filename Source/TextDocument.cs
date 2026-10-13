@@ -35,8 +35,9 @@ public class TextDocument(string text)
     public int CharIndex { get; private set; }
     public int LineIndex { get; private set; }
 
-    public int? SelectionCharIndex { get; private set; } = null;
-    public int? SelectionLineIndex { get; private set; } = null;
+    public SelectionMode SelectionMode { get; private set; } = SelectionMode.None;
+    public int SelectionCharIndex { get; private set; } = 0;
+    public int SelectionLineIndex { get; private set; } = 0;
 
     private CaretStyle _caretStyle = CaretStyle.Beam;
 
@@ -327,8 +328,66 @@ public class TextDocument(string text)
 
     public void StartSelection()
     {
+        SelectionMode = SelectionMode.Default;
         SelectionCharIndex = CharIndex;
         SelectionLineIndex = LineIndex;
+    }
+
+    /// <summary>
+    /// (from, to)
+    /// </summary
+    public (int, int)? GetSelectionRangeOnLine(int lineIndex)
+    {
+        if (SelectionMode == SelectionMode.None)
+            return null;
+
+        if (SelectionMode == SelectionMode.Default)
+        {
+            // Im losing my mind why am I doing this
+            if (IsLineInSelection(lineIndex))
+            {
+                if (lineIndex == LineIndex)
+                {
+                    if (lineIndex < SelectionLineIndex)
+                        return (CharIndex, Lines[lineIndex].Length);
+                    else if (lineIndex > SelectionLineIndex)
+                        return (0, CharIndex);
+                    else
+                    {
+                        if (CharIndex < SelectionCharIndex)
+                            return (SelectionCharIndex + 1, CharIndex);
+                        else
+                            return (SelectionCharIndex, CharIndex);
+                    }
+                }
+                else
+                {
+                    if (lineIndex == SelectionLineIndex)
+                    {
+                        if (lineIndex < LineIndex)
+                            return (SelectionCharIndex, Lines[lineIndex].Length);
+                        else
+                            return (0, SelectionCharIndex + 1);
+                    }
+                    else
+                        return (0, Lines[lineIndex].Length);
+                }
+            }
+            //else
+            //{
+            //}
+        }
+
+        return null;
+    }
+
+    private bool IsLineInSelection(int lineIndex)
+    {
+        if (LineIndex <= lineIndex && SelectionLineIndex >= lineIndex ||
+            SelectionLineIndex <= lineIndex && LineIndex >= lineIndex)
+            return true;
+
+        return false;
     }
 
     private void ClampCaretIfNecessary()

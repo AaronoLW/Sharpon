@@ -1,4 +1,5 @@
 using System.Numerics;
+using KatziDrip;
 using SDL3;
 using SmashFramework;
 
@@ -70,6 +71,36 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
 
     public void Render(Renderer renderer)
     {
+        RenderCaret(renderer);
+
+        List<string> lines = _document.Lines;
+
+        int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
+        for (int i = startLineIndex; i < lines.Count; i++)
+        {
+            Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
+
+            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
+                break;
+
+            (int, int)? selectionRange = _document.GetSelectionRangeOnLine(i);
+            if (selectionRange != null)
+            {
+                float fromWidth = App.Font.MeasureString(lines[i][0..selectionRange.Value.Item1], _pointSize).X;
+                float toWidth = App.Font.MeasureString(lines[i][0..selectionRange.Value.Item2], _pointSize).X - fromWidth;
+
+                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, App.Font.MeasureString(lines[i], _pointSize).Y));
+
+                Kolor royalBlue = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 100);
+                renderer.RenderFilledRectangle(selectionRect, royalBlue.ToColor());
+            }
+
+            renderer.RenderText(App.Font, _pointSize, lines[i], linePosition, Color.White);
+        }
+    }
+
+    private void RenderCaret(Renderer renderer)
+    {
         if (_document.CaretStyle == CaretStyle.Beam)
         {
             Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
@@ -84,25 +115,6 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
         {
             Rectangle caret = new(_caretPosition + new Vector2(0, _pointSize), App.Font.MeasureString("|", _pointSize).X, 4);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        }
-
-        List<string> lines = _document.Lines;
-
-        int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
-        for (int i = startLineIndex; i < lines.Count; i++)
-        {
-            Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
-
-            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
-                break;
-
-            if (i >= _document.SelectionLineIndex)
-            {
-                Rectangle selectionRect = new(linePosition, App.Font.MeasureString(lines[i], _pointSize));
-                renderer.RenderFilledRectangle(selectionRect, Color.FromArgb(200, 255, 255, 255));
-            }
-
-            renderer.RenderText(App.Font, _pointSize, lines[i], linePosition, Color.White);
         }
     }
 
