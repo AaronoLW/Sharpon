@@ -1,11 +1,12 @@
 - Linewise text selecting
 - FIX UNSAVED CHANGES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-- Copying/Pasting
+- Copying
 - Autoscroll
 - Terminal
 - Config (more)
 - Cases (Csgo style)
 - Dekku support
 
+- KatziRechner integration
 - LSP support
 - Java support (+ gradle)
