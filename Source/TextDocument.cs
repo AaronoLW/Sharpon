@@ -465,6 +465,9 @@ public class TextDocument(string text)
         int lineIndex = (int)(mousePosition.Y / lineSpacing);
         int charIndex = 0;
 
+        if (lineIndex < 0)
+            return;
+
         if (lineIndex < _lines.Count)
         {
             charIndex = (int)(mousePosition.X / App.Font.MeasureString("W", pointSize).X);
