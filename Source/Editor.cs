@@ -56,6 +56,11 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
             }
         }
 
+        if (Input.IsLeftMousePressed())
+        {
+            _document.JumpToMousePosition(App.ActivityPosition - new Vector2(0, _scroll.Scroll), _pointSize, _lineSpacing);
+        }
+
         if (Input.MouseX < App.WindowWidth - App.FILEMANAGER_WIDTH)
             _scroll.Update();
 
