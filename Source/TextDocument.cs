@@ -505,6 +505,9 @@ public class TextDocument(string text)
         if (charIndex > GetLineLength(lineIndex))
             charIndex = GetLineLength(lineIndex);
 
+        if (charIndex < 0)
+            charIndex = 0;
+
         LineIndex = lineIndex;
         CharIndex = charIndex;
     }
