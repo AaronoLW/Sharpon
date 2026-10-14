@@ -391,6 +391,20 @@ public class TextDocument(string text)
                 i--;
                 endLine--;
             }
+
+            if (SelectionLineIndex > LineIndex)
+            {
+                Line += Lines[LineIndex + 1];
+                Lines.RemoveAt(LineIndex + 1);
+            }
+            else
+            {
+                LineIndex--;
+                CharIndex = LineLength;
+                Line += Lines[LineIndex + 1];
+                Lines.RemoveAt(LineIndex + 1);
+                CharIndex++;
+            }
         }
 
         // I now know why I never implemented text selection
