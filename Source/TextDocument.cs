@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Text;
 using SDL3;
+using SmashFramework;
 
 public class TextDocument(string text)
 {
@@ -53,9 +54,7 @@ public class TextDocument(string text)
         private set => _lines[LineIndex] = value;
     }
 
-    public int LineLength => Math.Max(Line.Length -
-        ((CaretStyle == CaretStyle.Block || CaretStyle == CaretStyle.Underline) ? 1 : 0)
-        , 0);
+    public int LineLength => GetLineLength(LineIndex);
 
     public Vector2 GetCaretPosition(Vector2 offset, float pointSize, float lineSpacing)
     {
@@ -459,6 +458,26 @@ public class TextDocument(string text)
         return null;
     }
 
+    public void JumpToMousePosition(Vector2 offset, float pointSize, float lineSpacing)
+    {
+        Vector2 mousePosition = Input.MousePosition - offset;
+
+        int lineIndex = (int)(mousePosition.Y / lineSpacing);
+        int charIndex = 0;
+
+        if (lineIndex < _lines.Count)
+        {
+            charIndex = (int)(mousePosition.X / App.Font.MeasureString("W", pointSize).X);
+        }
+        else lineIndex = _lines.Count - 1;
+
+        if (charIndex > GetLineLength(lineIndex))
+            charIndex = GetLineLength(lineIndex);
+
+        LineIndex = lineIndex;
+        CharIndex = charIndex;
+    }
+
     private bool IsLineInSelection(int lineIndex)
     {
         if (LineIndex <= lineIndex && SelectionLineIndex >= lineIndex ||
@@ -479,6 +498,11 @@ public class TextDocument(string text)
         return BracketsOpen.Contains(character) ||
                BracketsClosed.Contains(character) ||
                SpecialCharacters.Contains(character);
+    }
+
+    private int GetLineLength(int lineIndex)
+    {
+        return Math.Max(_lines[lineIndex].Length - ((CaretStyle == CaretStyle.Block || CaretStyle == CaretStyle.Underline) ? 1 : 0), 0);
     }
 
     private bool IsSpecialOrWhiteSpaceCharacter(char character)

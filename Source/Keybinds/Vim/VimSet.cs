@@ -49,6 +49,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.K,         (vimSet, document) => document.MoveUp(),                   VimMode.Visual),
         new(SDL.Keycode.L,         (vimSet, document) => document.MoveRight(),                VimMode.Visual),
         new(SDL.Keycode.D,         (vimSet, document) => { document.DeleteSelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },                VimMode.Visual),
+        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(document.GetJumpRightLength()),  VimMode.Visual),
+        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.Visual),
     ];
 
     public void HandleKeybinds(TextDocument document)
