@@ -52,7 +52,7 @@ public class App : Application
     private readonly ReadOnlyCollection<IDisposable> _disposables;
 
     private readonly ActivityBar _activityBar = new();
-    private IActivityBarProvider _activityBarProvider;
+    private IActivityProvider _activityProvider;
 
     public App(string? initialFilePath)
     {
@@ -109,7 +109,7 @@ public class App : Application
             playtimeCounter
         ];
 
-        _activityBarProvider = _editor;
+        _activityProvider = _editor;
     }
 
     public override void Update(double deltaTime)
@@ -150,7 +150,7 @@ public class App : Application
             SwitchEditorAndConfig();
         }
 
-        _activityBar.SetActivity(_activityBarProvider.ProvideActivityBar());
+        _activityBar.SetActivity(_activityProvider.ProvideActivity());
 
         foreach (IPermutable permutable in _permutables)
             permutable.Update(deltaTime);
@@ -187,13 +187,13 @@ public class App : Application
         {
             _config.ShouldRender = false;
             _editor.ShouldRender = true;
-            _activityBarProvider = _editor;
+            _activityProvider = _editor;
         }
         else
         {
             _config.ShouldRender = true;
             _editor.ShouldRender = false;
-            _activityBarProvider = _config;
+            _activityProvider = _config;
         }
     }
 }

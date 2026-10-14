@@ -5,7 +5,7 @@ using SmashFramework;
 
 using Color = System.Drawing.Color;
 
-public class Editor : IPermutable, IRenderable, IActivityBarProvider
+public class Editor : IPermutable, IRenderable, IActivityProvider
 {
     private const float CARET_SPEED = 40f;
 
@@ -123,7 +123,7 @@ public class Editor : IPermutable, IRenderable, IActivityBarProvider
         }
     }
 
-    public Activity ProvideActivityBar()
+    public Activity ProvideActivity()
     {
         return new(_pathManager.DisplayPath, _unsavedChanges ? "Unsaved Changes" : "");
     }
