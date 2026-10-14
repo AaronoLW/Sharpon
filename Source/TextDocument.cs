@@ -73,6 +73,23 @@ public class TextDocument(string text)
             CharIndex--;
     }
 
+    // hiiiiiii
+    // hi but not
+
+    public void Insert(string[] lines)
+    {
+        for (int i = 0; i < lines.Length; i++)
+        {
+            Line = Line.Insert(CharIndex, lines[i]);
+            CharIndex += lines[i].Length;
+
+            if (CharIndex > LineLength)
+                CharIndex--;
+
+            InsertNewLine(fancyStuff: false);
+        }
+    }
+
     public void RemoveBackwards(int count)
     {
         if (IsEnclosedInBrackets())
@@ -136,9 +153,18 @@ public class TextDocument(string text)
         }
     }
 
-    public void InsertNewLine()
+    public void InsertNewLine(bool fancyStuff = true)
     {
         string text = Line[CharIndex..LineLength];
+
+        if (!fancyStuff)
+        {
+            Line = Line[0..CharIndex];
+            Lines.Insert(LineIndex + 1, text);
+            LineIndex++;
+            CharIndex = 0;
+            return;
+        }
 
         if (IsEnclosedInBrackets())
         {
@@ -322,7 +348,9 @@ public class TextDocument(string text)
 
     public void PasteClipboard()
     {
-        Insert(SDL.GetClipboardText());
+        string clipboardText = SDL.GetClipboardText();
+        string[] lines = clipboardText.Split('\n').Where(s => s != string.Empty).ToArray();
+        Insert(lines);
     }
 
     public void StartSelection()
