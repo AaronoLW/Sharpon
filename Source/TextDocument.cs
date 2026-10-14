@@ -333,6 +333,69 @@ public class TextDocument(string text)
         SelectionLineIndex = LineIndex;
     }
 
+    public void EndSelection()
+    {
+        SelectionMode = SelectionMode.None;
+        SelectionCharIndex = 0;
+        SelectionLineIndex = 0;
+    }
+
+    /// <summary>
+    /// Automatically adjusts the CharIndex and LineIndex to not be out of bounds
+    /// </summary>
+    public void DeleteSelection()
+    {
+        // Aaron = Katze
+        // Katze = gut
+        // Katze.Coding = peak
+        // Katze.Coding = funktioniert
+
+        if (SelectionMode == SelectionMode.None)
+            return;
+
+        int startLine = Math.Min(LineIndex, SelectionLineIndex);
+        int endLine = Math.Max(LineIndex, SelectionLineIndex);
+
+        if (startLine == endLine)
+        {
+            int startChar = Math.Min(CharIndex, SelectionCharIndex);
+            int endChar = Math.Max(CharIndex, SelectionCharIndex);
+
+            Line = Line.Remove(startChar, endChar - startChar + 1);
+            if (CharIndex > SelectionCharIndex)
+            {
+                CharIndex -= endChar - startChar + 1;
+            }
+        }
+        else
+        {
+            for (int i = startLine; i <= endLine; i++)
+            {
+                if (i == startLine)
+                {
+                    Lines[i] = Lines[i].Remove(CharIndex, Lines[i].Length - CharIndex);
+                    continue;
+                }
+
+                if (i == endLine)
+                {
+                    Lines[i] = Lines[i].Remove(0, SelectionCharIndex + 1);
+                    continue;
+                }
+
+                Lines.RemoveAt(i);
+
+                if (LineIndex > SelectionLineIndex)
+                    LineIndex--;
+
+                i--;
+                endLine--;
+            }
+        }
+
+        // I now know why I never implemented text selection
+    }
+
     /// <summary>
     /// (from, to)
     /// </summary
@@ -375,6 +438,7 @@ public class TextDocument(string text)
             }
             //else
             //{
+            //  fucking die
             //}
         }
 

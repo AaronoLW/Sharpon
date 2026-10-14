@@ -2,5 +2,6 @@ public enum VimMode
 {
     Normal,
     Insert,
-    Delete
+    Delete,
+    Visual
 }
