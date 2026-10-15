@@ -56,9 +56,9 @@ public class TextDocument(string text)
 
     public int LineLength => GetLineLength(LineIndex);
 
-    public Vector2 GetCaretPosition(Vector2 offset, float pointSize, float lineSpacing)
+    public Vector2 GetCaretPosition(Vector2 offset, Font font, float lineSpacing)
     {
-        float x = App.Font.MeasureString(Line[0..CharIndex], pointSize).X;
+        float x = font.MeasureString(Line[0..CharIndex]).X;
         float y = lineSpacing * LineIndex;
 
         return offset + new Vector2(x, y);
@@ -486,7 +486,7 @@ public class TextDocument(string text)
         return null;
     }
 
-    public void JumpToMousePosition(Vector2 offset, float pointSize, float lineSpacing)
+    public void JumpToMousePosition(Vector2 offset, Font font, float lineSpacing)
     {
         Vector2 mousePosition = Input.MousePosition - offset;
 
@@ -498,7 +498,7 @@ public class TextDocument(string text)
 
         if (lineIndex < _lines.Count)
         {
-            charIndex = (int)(mousePosition.X / App.Font.MeasureString("W", pointSize).X);
+            charIndex = (int)(mousePosition.X / font.MeasureString("W").X);
         }
         else lineIndex = _lines.Count - 1;
 

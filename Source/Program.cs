@@ -12,7 +12,7 @@ internal static class Program
 
     private static void Main(string[] args)
     {
-        SmashEngine.Init();
+        Smash.Init();
 
         if (args.Length > 1)
         {
@@ -21,14 +21,15 @@ internal static class Program
         }
 
         App application = new(args.Length > 0 ? args[0] : null);
-        application.Start();
 
         ulong lastTime = SDL.GetPerformanceCounter();
 
         bool running = true;
         while (running)
         {
-            SmashEngine.Update(false);
+            ulong currentTime = SDL.GetPerformanceCounter();
+            double deltaTime = (double)(currentTime - lastTime) / SDL.GetPerformanceFrequency();
+            lastTime = currentTime;
 
             _downKeys.Clear();
             TextInput = null;
@@ -59,14 +60,11 @@ internal static class Program
                 Input.Event(e);
             }
 
-            application.Update(SmashEngine.DeltaTime);
+            application.Update(deltaTime);
             application.Render();
 
-            ulong currentTime = SDL.GetPerformanceCounter();
-            double elapsed = (currentTime - lastTime) / SDL.GetPerformanceFrequency();
-            lastTime = currentTime;
 
-            int sleepTime = (int)(_targetFrameTime - elapsed);
+            int sleepTime = (int)(_targetFrameTime - deltaTime);
             if (sleepTime > 0)
             {
                 Thread.Sleep(sleepTime);
@@ -74,7 +72,7 @@ internal static class Program
         }
 
         application.End();
-        SmashEngine.Stop();
+        Smash.Quit();
     }
 
     // This in contrast to Input.IsKeyDown respects the OS' key repetition

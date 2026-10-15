@@ -4,7 +4,7 @@ using SDL3;
 using SmashFramework;
 using KatziDrip;
 
-public class App : Application
+public class App
 {
     public static readonly string DATA_DIRECTORY_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sharpon");
 
@@ -33,6 +33,7 @@ public class App : Application
 
     public static Font Font = null!;
     public static Font SmallFont = null!;
+    public static Font VerySmallFont = null!;
 
     public static readonly Vector2 ActivityPosition = new(App.DEFAULT_PADDING, ACTIVITY_BAR_HEIGHT + DEFAULT_PADDING);
 
@@ -56,9 +57,10 @@ public class App : Application
 
     public App(string? initialFilePath)
     {
-        CreateWindowAndRenderer("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, out _window, out _renderer);
-        _window.SetWindowResizable(true);
-        SDL.StartTextInput(_window.Handle);
+        _window = Window.Create("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, SDL.WindowFlags.Resizable);
+        _renderer = new(_window);
+
+        _window.StartPollingTextInput();
 
         if (!Directory.Exists(DATA_DIRECTORY_PATH))
         {
@@ -73,16 +75,14 @@ public class App : Application
         if (fontPath == null) throw new Exception($"Font {Drip.FontName} is not installed");
         if (smallFontPath == null) throw new Exception($"Font {Drip.SmallFontName} is not installed");
 
-        AssetManager.LoadFont(fontPath);
-        AssetManager.LoadFont(smallFontPath);
-
-        Font = AssetManager.Get<Font>(Drip.FontName);
-        SmallFont = AssetManager.Get<Font>(Drip.SmallFontName);
+        Font = new(fontPath, POINT_SIZE, _renderer);
+        SmallFont = new(smallFontPath, SMALL_POINT_SIZE, _renderer);
+        VerySmallFont = new(smallFontPath, VERY_SMALL_POINT_SIZE, _renderer);
 
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
-        _editor = new(initialFilePath);
+        _editor = new(initialFilePath, _renderer);
         _fileManager = new(FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
         _richPresence = new();
 
@@ -112,7 +112,7 @@ public class App : Application
         _activityProvider = _editor;
     }
 
-    public override void Update(double deltaTime)
+    public void Update(double deltaTime)
     {
         _fileManager.Height = WindowHeight;
 
@@ -141,7 +141,7 @@ public class App : Application
 
         if (Input.IsKeyPressed(SDL.Keycode.F11))
         {
-            _window.SetFullscreen(!_windowFullscreen);
+            SDL.SetWindowFullscreen(_window.Handle, !_windowFullscreen);
             _windowFullscreen = !_windowFullscreen;
         }
 
@@ -156,7 +156,7 @@ public class App : Application
             permutable.Update(deltaTime);
     }
 
-    public override void Render()
+    public void Render()
     {
         _renderer.Clear(Drip.BaseColor.ToColor());
 
@@ -166,7 +166,7 @@ public class App : Application
         _renderer.RenderPresent();
     }
 
-    public override void End()
+    public void End()
     {
         foreach (IDisposable disposable in _disposables)
             disposable.Dispose();
