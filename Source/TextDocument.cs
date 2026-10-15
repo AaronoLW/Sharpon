@@ -112,13 +112,25 @@ public class TextDocument(string text)
     {
         if (LineIndex == 0)
         {
-            _lines[0] = "";
-            CharIndex = 0;
+            if (_lines.Count > 1)
+            {
+                _lines.RemoveAt(0);
+                if (CharIndex > LineLength)
+                    CharIndex = LineLength;
+            }
+            else
+            {
+                _lines[0] = "";
+                CharIndex = 0;
+            }
         }
         else
         {
             _lines.RemoveAt(LineIndex);
-            LineIndex--;
+            if (LineIndex == _lines.Count)
+            {
+                LineIndex--;
+            }
         }
     }
 
