@@ -7,7 +7,7 @@ public class Config : IActivityProvider, IRenderable
 
     public void Render(Renderer renderer)
     {
-        renderer.RenderText(App.Font, App.POINT_SIZE, "Config!!!!!", App.ActivityPosition, Color.White);
+        renderer.RenderString(App.Font, "Config!!!!!", App.ActivityPosition, Color.White);
     }
 
     public Activity ProvideActivity()
