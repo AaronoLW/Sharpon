@@ -16,16 +16,16 @@ public class ActivityBar : IRenderable
 
         // Main text
         {
-            Vector2 textSize = App.Font.MeasureString(_mainText);
+            Vector2 textSize = App.Font.MeasureString(_mainText, App.POINT_SIZE);
             Vector2 textPosition = new(App.DEFAULT_PADDING, (App.ACTIVITY_BAR_HEIGHT / 2) - (textSize.Y / 2.5f));
-            renderer.RenderString(App.Font, _mainText, textPosition, Drip.White.ToColor());
+            renderer.RenderString(App.Font, App.POINT_SIZE, _mainText, textPosition, Drip.White.ToColor());
         }
 
         // Sub text
         {
-            Vector2 textSize = App.Font.MeasureString(_subText);
+            Vector2 textSize = App.Font.MeasureString(_subText, App.POINT_SIZE);
             Vector2 textPosition = new(App.WindowWidth - App.FILEMANAGER_WIDTH - textSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
-            renderer.RenderString(App.Font, _subText, textPosition, Drip.White.ToColor());
+            renderer.RenderString(App.Font, App.POINT_SIZE, _subText, textPosition, Drip.White.ToColor());
         }
     }
 

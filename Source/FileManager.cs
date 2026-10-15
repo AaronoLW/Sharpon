@@ -96,13 +96,13 @@ public class FileManager : IPermutable, IRenderable
         if (directoryName.Length != 1)
             directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf(Path.DirectorySeparatorChar) + 1).._pathManager.DisplayPath.Length];
 
-        renderer.RenderString(App.Font, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Drip.White.ToColor());
+        renderer.RenderString(App.Font, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Drip.White.ToColor());
 
         renderer.RenderFilledRectangle(_backButtonRectangle, Drip.LightColor.ToColor());
         renderer.RenderRectangle(_backButtonRectangle, _backButtonColor.ToColor());
 
-        Vector2 buttonTextSize = App.SmallFont.MeasureString("<");
-        renderer.RenderString(App.SmallFont, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), Drip.White.ToColor());
+        Vector2 buttonTextSize = App.Font.MeasureString("<", App.SMALL_POINT_SIZE);
+        renderer.RenderString(App.Font, App.SMALL_POINT_SIZE, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), Drip.White.ToColor());
 
         if (_fileSystemEntries != null)
         {
@@ -133,7 +133,7 @@ public class FileManager : IPermutable, IRenderable
                 if (hoveredEntry == i)
                     renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.VeryLightColor.ToColor());
 
-                renderer.RenderString(App.VerySmallFont, name, position, color.ToColor());
+                renderer.RenderString(App.SmallFont, App.VERY_SMALL_POINT_SIZE, name, position, color.ToColor());
             }
 
             SDL.SetRenderClipRect(renderer.Handle, 0);
