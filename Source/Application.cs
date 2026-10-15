@@ -33,7 +33,6 @@ public class App
 
     public static Font Font = null!;
     public static Font SmallFont = null!;
-    public static Font VerySmallFont = null!;
 
     public static readonly Vector2 ActivityPosition = new(App.DEFAULT_PADDING, ACTIVITY_BAR_HEIGHT + DEFAULT_PADDING);
 
@@ -75,14 +74,13 @@ public class App
         if (fontPath == null) throw new Exception($"Font {Drip.FontName} is not installed");
         if (smallFontPath == null) throw new Exception($"Font {Drip.SmallFontName} is not installed");
 
-        Font = new(fontPath, POINT_SIZE, _renderer);
-        SmallFont = new(smallFontPath, SMALL_POINT_SIZE, _renderer);
-        VerySmallFont = new(smallFontPath, VERY_SMALL_POINT_SIZE, _renderer);
+        Font = AssetManager.LoadFont(fontPath, _renderer);
+        SmallFont = AssetManager.LoadFont(smallFontPath, _renderer);
 
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
-        _editor = new(initialFilePath, _renderer);
+        _editor = new(initialFilePath);
         _fileManager = new(FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
         _richPresence = new();
 
@@ -164,6 +162,8 @@ public class App
             if (renderable.ShouldRender) renderable.Render(_renderer);
 
         _renderer.RenderPresent();
+
+        _editor.AfterRender();
     }
 
     public void End()
