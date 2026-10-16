@@ -58,7 +58,7 @@ public class TextDocument(string text)
 
     public Vector2 GetCaretPosition(Vector2 offset, int pointSize, float lineSpacing)
     {
-        float x = App.Font.MeasureString(Line[0..CharIndex], pointSize).X;
+        float x = FontManager.FontRegular.MeasureString(Line[0..CharIndex], pointSize).X;
         float y = lineSpacing * LineIndex;
 
         return offset + new Vector2(x, y);
@@ -510,7 +510,7 @@ public class TextDocument(string text)
 
         if (lineIndex < _lines.Count)
         {
-            charIndex = (int)(mousePosition.X / App.Font.MeasureString("W", pointSize).X);
+            charIndex = (int)(mousePosition.X / FontManager.FontRegular.MeasureString("W", pointSize).X);
         }
         else lineIndex = _lines.Count - 1;
 

@@ -31,9 +31,6 @@ public class App
     public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
     public static Vector2 WindowSize => new(WindowWidth, WindowHeight);
 
-    public static Font Font = null!;
-    public static Font SmallFont = null!;
-
     public static readonly Vector2 ActivityPosition = new(App.DEFAULT_PADDING, ACTIVITY_BAR_HEIGHT + DEFAULT_PADDING);
 
     private static Window _window = null!;
@@ -67,15 +64,7 @@ public class App
         }
 
         Drip.Load(Drip.DEFAULT_THEME_NAME);
-
-        string? fontPath = SystemFontResolver.Resolve(Drip.FontName);
-        string? smallFontPath = SystemFontResolver.Resolve(Drip.SmallFontName);
-
-        if (fontPath == null) throw new Exception($"Font {Drip.FontName} is not installed");
-        if (smallFontPath == null) throw new Exception($"Font {Drip.SmallFontName} is not installed");
-
-        Font = AssetManager.LoadFont(fontPath, _renderer);
-        SmallFont = AssetManager.LoadFont(smallFontPath, _renderer);
+        FontManager.Init(_renderer);
 
         _renderer.SetVSyncEnabled(true);
         _renderer.SetRenderBlendMode(BlendMode.Blend);
