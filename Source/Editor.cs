@@ -26,7 +26,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
     public bool ShouldRender { get; set; } = true;
 
-    private Queue<float> _scheduledPointSizeDeletions = new();
+    private readonly Queue<float> _scheduledPointSizeDeletions = new();
 
     public Editor(string? initialFilePath)
     {
@@ -110,12 +110,22 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
         }
     }
 
-    public void AfterRender()
+    public void AfterRender(Renderer renderer)
     {
+        if (_scheduledPointSizeDeletions.Count > 0)
+        {
+            renderer.RefreshTextEngine();
+            AssetManager.Remove(Drip.FontName);
+            string? fontPath = SystemFontResolver.Resolve(Drip.FontName);
+            App.Font.Dispose();
+            App.Font = AssetManager.LoadFont(fontPath!, renderer);
+        }
+
+
         while (_scheduledPointSizeDeletions.Count > 0)
         {
             float pointSize = _scheduledPointSizeDeletions.Dequeue();
-            AssetManager.Get<Font>(Drip.FontName).DeleteSizeIfExists(pointSize);
+            App.Font.DeleteSizeIfExists(pointSize);
         }
     }
 

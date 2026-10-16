@@ -163,7 +163,7 @@ public class App
 
         _renderer.RenderPresent();
 
-        _editor.AfterRender();
+        _editor.AfterRender(_renderer);
     }
 
     public void End()
