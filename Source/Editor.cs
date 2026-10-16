@@ -97,16 +97,16 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
             (int, int)? selectionRange = _document.GetSelectionRangeOnLine(i);
             if (selectionRange != null)
             {
-                float fromWidth = App.Font.MeasureString(lines[i][0..selectionRange.Value.Item1], _pointSize).X;
-                float toWidth = App.Font.MeasureString(lines[i][0..selectionRange.Value.Item2], _pointSize).X - fromWidth;
+                float fromWidth = FontManager.FontRegular.MeasureString(lines[i][0..selectionRange.Value.Item1], _pointSize).X;
+                float toWidth = FontManager.FontRegular.MeasureString(lines[i][0..selectionRange.Value.Item2], _pointSize).X - fromWidth;
 
-                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, App.Font.MeasureString(lines[i], _pointSize).Y));
+                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(lines[i], _pointSize).Y));
 
                 Kolor royalBlue = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 100);
                 renderer.RenderFilledRectangle(selectionRect, royalBlue.ToColor());
             }
 
-            renderer.RenderString(App.Font, _pointSize, lines[i], linePosition, Color.White);
+            renderer.RenderString(FontManager.FontRegular, _pointSize, lines[i], linePosition, Color.White);
         }
     }
 
@@ -115,17 +115,14 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
         if (_scheduledPointSizeDeletions.Count > 0)
         {
             renderer.RefreshTextEngine();
-            AssetManager.Remove(Drip.FontName);
-            string? fontPath = SystemFontResolver.Resolve(Drip.FontName);
-            App.Font.Dispose();
-            App.Font = AssetManager.LoadFont(fontPath!, renderer);
+            FontManager.Reload(renderer);
         }
 
 
         while (_scheduledPointSizeDeletions.Count > 0)
         {
             float pointSize = _scheduledPointSizeDeletions.Dequeue();
-            App.Font.DeleteSizeIfExists(pointSize);
+            FontManager.FontRegular.DeleteSizeIfExists(pointSize);
         }
     }
 
@@ -133,17 +130,17 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
     {
         if (_document.CaretStyle == CaretStyle.Beam)
         {
-            Rectangle caret = new(_caretPosition, 2, App.Font.MeasureString("|", _pointSize).Y);
+            Rectangle caret = new(_caretPosition, 2, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
         else if (_document.CaretStyle == CaretStyle.Block)
         {
-            Rectangle caret = new(_caretPosition, App.Font.MeasureString("|", _pointSize).X, App.Font.MeasureString("|", _pointSize).Y);
+            Rectangle caret = new(_caretPosition, FontManager.FontRegular.MeasureString("|", _pointSize).X, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
         else if (_document.CaretStyle == CaretStyle.Underline)
         {
-            Rectangle caret = new(_caretPosition + new Vector2(0, _pointSize), App.Font.MeasureString("|", _pointSize).X, 4);
+            Rectangle caret = new(_caretPosition + new Vector2(0, _pointSize), FontManager.FontRegular.MeasureString("|", _pointSize).X, 4);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
     }
