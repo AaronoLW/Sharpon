@@ -25,6 +25,7 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.Up,      (vimSet, document) => document.MoveUp(),                VimMode.Normal),
         new(SDL.Keycode.Right,     (vimSet, document) => document.MoveRight(),            VimMode.Normal),
         new(SDL.Keycode.V,     (vimSet, document) => { document.StartSelection(); vimSet.SetVimMode(VimMode.Visual, document); },            VimMode.Normal),
+        new(SDL.Keycode.V,     (vimSet, document) => { document.StartSelection(); vimSet.SetVimMode(VimMode.Visual, document); },            VimMode.Normal, SDL.Keycode.LShift),
 
         // Insert mode
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert),
@@ -82,7 +83,7 @@ public class VimSet : IKeybindSet
             if (_vimMode != keybind.VimMode)
                 continue;
 
-            if (keybind.Modifiers.Length != pressedModifiers.Length)
+            if (!pressedModifiers.All(p => keybind.Modifiers.Contains(p)))
                 continue;
 
             if (keybind.Repeats)
