@@ -365,9 +365,9 @@ public class TextDocument(string text)
         Insert(lines);
     }
 
-    public void StartSelection()
+    public void StartSelection(SelectionMode selectionMode)
     {
-        SelectionMode = SelectionMode.Default;
+        SelectionMode = selectionMode;
         SelectionCharIndex = CharIndex;
         SelectionLineIndex = LineIndex;
     }
@@ -493,6 +493,14 @@ public class TextDocument(string text)
             //{
             //  fucking die
             //}
+        }
+
+        if (SelectionMode == SelectionMode.Linewise)
+        {
+            if (IsLineInSelection(lineIndex))
+            {
+                return (0, Lines[lineIndex].Length);
+            }
         }
 
         return null;
