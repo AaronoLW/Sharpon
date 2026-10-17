@@ -392,61 +392,84 @@ public class TextDocument(string text)
         if (SelectionMode == SelectionMode.None)
             return;
 
-        int startLine = Math.Min(LineIndex, SelectionLineIndex);
-        int endLine = Math.Max(LineIndex, SelectionLineIndex);
-
-        if (startLine == endLine)
+        if (SelectionMode == SelectionMode.Default)
         {
-            int startChar = Math.Min(CharIndex, SelectionCharIndex);
-            int endChar = Math.Max(CharIndex, SelectionCharIndex);
+            int startLine = Math.Min(LineIndex, SelectionLineIndex);
+            int endLine = Math.Max(LineIndex, SelectionLineIndex);
 
-            Line = Line.Remove(startChar, endChar - startChar + 1);
-            if (CharIndex > SelectionCharIndex)
+            if (startLine == endLine)
             {
-                CharIndex -= endChar - startChar + 1;
-            }
-        }
-        else
-        {
-            for (int i = startLine; i <= endLine; i++)
-            {
-                if (i == startLine)
+                int startChar = Math.Min(CharIndex, SelectionCharIndex);
+                int endChar = Math.Max(CharIndex, SelectionCharIndex);
+
+                Line = Line.Remove(startChar, endChar - startChar + 1);
+                if (CharIndex > SelectionCharIndex)
                 {
-                    Lines[i] = Lines[i].Remove(CharIndex, Lines[i].Length - CharIndex);
-                    continue;
+                    CharIndex -= endChar - startChar + 1;
                 }
-
-                if (i == endLine)
-                {
-                    Lines[i] = Lines[i].Remove(0, SelectionCharIndex + 1);
-                    continue;
-                }
-
-                Lines.RemoveAt(i);
-
-                if (LineIndex > SelectionLineIndex)
-                    LineIndex--;
-
-                i--;
-                endLine--;
-            }
-
-            if (SelectionLineIndex > LineIndex)
-            {
-                Line += Lines[LineIndex + 1];
-                Lines.RemoveAt(LineIndex + 1);
             }
             else
             {
-                LineIndex--;
-                CharIndex = LineLength;
-                Line += Lines[LineIndex + 1];
-                Lines.RemoveAt(LineIndex + 1);
-                CharIndex++;
-            }
-        }
+                for (int i = startLine; i <= endLine; i++)
+                {
+                    if (i == startLine)
+                    {
+                        Lines[i] = Lines[i].Remove(CharIndex, Lines[i].Length - CharIndex);
+                        continue;
+                    }
 
-        // I now know why I never implemented text selection
+                    if (i == endLine)
+                    {
+                        Lines[i] = Lines[i].Remove(0, SelectionCharIndex + 1);
+                        continue;
+                    }
+
+                    Lines.RemoveAt(i);
+
+                    if (LineIndex > SelectionLineIndex)
+                        LineIndex--;
+
+                    i--;
+                    endLine--;
+                }
+
+                if (SelectionLineIndex > LineIndex)
+                {
+                    Line += Lines[LineIndex + 1];
+                    Lines.RemoveAt(LineIndex + 1);
+                }
+                else
+                {
+                    LineIndex--;
+                    CharIndex = LineLength;
+                    Line += Lines[LineIndex + 1];
+                    Lines.RemoveAt(LineIndex + 1);
+                    CharIndex++;
+                }
+            }
+
+            // I now know why I never implemented text selection
+        }
+        else if (SelectionMode == SelectionMode.Linewise)
+        {
+            int startLine = Math.Min(LineIndex, SelectionLineIndex);
+            int endLine = Math.Max(LineIndex, SelectionLineIndex);
+
+            if (_lines.Count == 1)
+            {
+                _lines[0] = "";
+                CharIndex = 0;
+                return;
+            }
+
+            for (int i = 0; i <= endLine - startLine; i++)
+            {
+                _lines.RemoveAt(startLine);
+            }
+
+            LineIndex = startLine;
+            ClampCaretIfNecessary();
+        }
     }
 
     /// <summary>
