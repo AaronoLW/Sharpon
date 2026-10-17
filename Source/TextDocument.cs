@@ -83,11 +83,11 @@ public class TextDocument(string text)
             Line = Line.Insert(CharIndex, lines[i]);
             CharIndex += lines[i].Length;
 
-            if (CharIndex > LineLength)
-                CharIndex--;
-
-            InsertNewLine(fancyStuff: false);
+            if (i != lines.Length - 1)
+                InsertNewLine(fancyStuff: false);
         }
+
+        ClampCaretIfNecessary();
     }
 
     public void RemoveBackwards(int count)
@@ -167,12 +167,12 @@ public class TextDocument(string text)
 
     public void InsertNewLine(bool fancyStuff = true)
     {
-        string text = Line[CharIndex..LineLength];
+        string text = Line[CharIndex..Line.Length];
 
         if (!fancyStuff)
         {
             Line = Line[0..CharIndex];
-            Lines.Insert(LineIndex + 1, text);
+            _lines.Insert(LineIndex + 1, text);
             LineIndex++;
             CharIndex = 0;
             return;
@@ -361,7 +361,7 @@ public class TextDocument(string text)
     public void PasteClipboard()
     {
         string clipboardText = SDL.GetClipboardText();
-        string[] lines = clipboardText.Split('\n').Where(s => s != string.Empty).ToArray();
+        string[] lines = clipboardText.Split('\n');
         Insert(lines);
     }
 
@@ -553,6 +553,63 @@ public class TextDocument(string text)
 
         LineIndex = lineIndex;
         CharIndex = charIndex;
+    }
+
+    public string GetSelectedText()
+    {
+        StringBuilder sb = new();
+
+        int startLine = Math.Min(LineIndex, SelectionLineIndex);
+        int endLine = Math.Max(LineIndex, SelectionLineIndex);
+
+
+        if (startLine == endLine)
+        {
+            int startChar = Math.Min(CharIndex, SelectionCharIndex);
+            int endChar = Math.Max(CharIndex, SelectionCharIndex);
+
+            if (SelectionMode == SelectionMode.Linewise)
+                return _lines[startLine][0.._lines[startLine].Length];
+            else
+                return _lines[startLine][startChar..endChar];
+        }
+
+        for (int i = startLine; i <= endLine; i++)
+        {
+            if (i == startLine)
+            {
+                if (LineIndex < SelectionLineIndex)
+                    sb.Append(_lines[i][CharIndex.._lines[i].Length]);
+                else
+                    sb.Append(_lines[i][0..CharIndex]);
+            }
+            else if (i == endLine)
+            {
+                if (LineIndex > SelectionLineIndex)
+                    sb.Append(_lines[i][SelectionCharIndex.._lines[i].Length]);
+                else
+                    sb.Append(_lines[i][0..(SelectionCharIndex + 1)]);
+            }
+            else
+            {
+                sb.Append(_lines[i]);
+            }
+
+            if (i != _lines.Count - 1)
+            {
+                sb.Append('\n');
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    public void CopySelection()
+    {
+        if (SelectionMode == SelectionMode.None)
+            return;
+
+        SDL.SetClipboardText(GetSelectedText());
     }
 
     private bool IsLineInSelection(int lineIndex)
