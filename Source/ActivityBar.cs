@@ -24,7 +24,7 @@ public class ActivityBar : IRenderable
         // Sub text
         {
             Vector2 textSize = FontManager.FontRegular.MeasureString(_subText, App.POINT_SIZE);
-            Vector2 textPosition = new(App.WindowWidth - App.FILEMANAGER_WIDTH - textSize.X - App.DEFAULT_PADDING, App.DEFAULT_PADDING);
+            Vector2 textPosition = new(App.WindowWidth - App.FILEMANAGER_WIDTH - textSize.X - App.DEFAULT_PADDING, (App.ACTIVITY_BAR_HEIGHT / 2) - (textSize.Y / 2.5f));
             renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _subText, textPosition, Drip.White.ToColor());
         }
     }

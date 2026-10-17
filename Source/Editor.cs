@@ -36,7 +36,8 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
     public void Update(double deltaTime)
     {
-        _keybindSet.HandleKeybinds(_document);
+        if (_keybindSet.HandleKeybinds(_document))
+            _unsavedChanges = true;
 
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {

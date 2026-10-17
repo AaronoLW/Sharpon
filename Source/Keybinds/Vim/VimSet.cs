@@ -64,8 +64,10 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.VisualLine),
     ];
 
-    public void HandleKeybinds(TextDocument document)
+    public bool HandleKeybinds(TextDocument document)
     {
+        bool madeChanges = false;
+
         if (_vimMode == VimMode.Insert)
         {
             if (Program.TextInput != null)
@@ -83,10 +85,14 @@ public class VimSet : IKeybindSet
                     document.Insert(((char)insert).ToString());
                     document.MoveLeft();
                 }
+
+                madeChanges = true;
             }
         }
 
         SDL.Keycode[] pressedModifiers = KeybindHelper.GetPressedModifiers();
+
+        string previousText = document.Text;
 
         foreach (VimKeybind keybind in _keybinds)
         {
@@ -96,23 +102,17 @@ public class VimSet : IKeybindSet
             if (!pressedModifiers.All(p => keybind.Modifiers.Contains(p)))
                 continue;
 
-            if (keybind.Repeats)
+            if (Program.IsKeyDown(keybind.Keycode))
             {
-                if (Program.IsKeyDown(keybind.Keycode))
-                {
-                    keybind.Action.Invoke(this, document);
-                    break;
-                }
-            }
-            else
-            {
-                if (Input.IsKeyPressed(keybind.Keycode))
-                {
-                    keybind.Action.Invoke(this, document);
-                    break;
-                }
+                keybind.Action.Invoke(this, document);
+                break;
             }
         }
+
+        if (document.Text != previousText)
+            madeChanges = true;
+
+        return madeChanges;
     }
 
     private void SetVimMode(VimMode vimMode, TextDocument document)
