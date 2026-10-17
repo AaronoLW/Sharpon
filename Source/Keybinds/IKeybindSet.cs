@@ -1,4 +1,7 @@
 public interface IKeybindSet
 {
-    public void HandleKeybinds(TextDocument document);
+    /// <summary>
+    /// Returns if changes have been made to the text document
+    /// </summary>
+    public bool HandleKeybinds(TextDocument document);
 }

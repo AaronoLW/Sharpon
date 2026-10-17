@@ -21,7 +21,7 @@ public class DefaultSet : IKeybindSet
         new(SDL.Keycode.Tab, (set, document) => document.InsertTab()),
     ];
 
-    public void HandleKeybinds(TextDocument document)
+    public bool HandleKeybinds(TextDocument document)
     {
         if (Program.TextInput != null)
         {
@@ -38,6 +38,8 @@ public class DefaultSet : IKeybindSet
                 document.Insert(((char)insert).ToString());
                 document.MoveLeft();
             }
+
+            return true;
         }
 
         SDL.Keycode[] pressedModifiers = KeybindHelper.GetPressedModifiers();
@@ -62,5 +64,7 @@ public class DefaultSet : IKeybindSet
                 }
             }
         }
+
+        return true;
     }
 }
