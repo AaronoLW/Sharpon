@@ -21,6 +21,8 @@ public class DefaultSet : IKeybindSet
         new(SDL.Keycode.Tab, (set, document) => document.InsertTab()),
     ];
 
+    public CaretStyle DefaultCaretStyle { get; } = CaretStyle.Beam;
+
     public bool HandleKeybinds(TextDocument document)
     {
         if (Program.TextInput != null)
@@ -66,5 +68,10 @@ public class DefaultSet : IKeybindSet
         }
 
         return true;
+    }
+
+    public CaretStyle GetCaretStyle()
+    {
+        return CaretStyle.Beam;
     }
 }

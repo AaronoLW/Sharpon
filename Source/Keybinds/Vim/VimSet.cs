@@ -3,7 +3,8 @@ using SmashFramework;
 
 public class VimSet : IKeybindSet
 {
-    private VimMode _vimMode = VimMode.Insert;
+    private VimMode _vimMode = VimMode.Normal;
+
     private readonly List<VimKeybind> _keybinds = [
         // Normal mode
         new(SDL.Keycode.H,         (vimSet, document) => document.MoveLeft(),                 VimMode.Normal),
@@ -65,6 +66,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.VisualLine),
         new(SDL.Keycode.Y,         (vimSet, document) => { document.CopySelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },   VimMode.VisualLine),
     ];
+
+    public CaretStyle DefaultCaretStyle { get; } = CaretStyle.Block;
 
     public bool HandleKeybinds(TextDocument document)
     {
@@ -135,5 +138,15 @@ public class VimSet : IKeybindSet
 
         if (_vimMode == VimMode.VisualLine)
             document.CaretStyle = CaretStyle.Block;
+    }
+
+    public CaretStyle GetCaretStyle()
+    {
+        return _vimMode switch
+        {
+            VimMode.Insert => CaretStyle.Beam,
+            VimMode.Delete => CaretStyle.Underline,
+            _ => CaretStyle.Block,
+        };
     }
 }
