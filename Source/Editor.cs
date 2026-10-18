@@ -154,6 +154,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
     public void OpenFile(string? filePath)
     {
         _document = _pathManager.OpenFile(filePath);
+        _document.CaretStyle = _keybindSet.GetCaretStyle();
         _scroll.Reset();
         _unsavedChanges = false;
     }
