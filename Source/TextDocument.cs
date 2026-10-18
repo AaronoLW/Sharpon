@@ -455,15 +455,16 @@ public class TextDocument(string text)
             int startLine = Math.Min(LineIndex, SelectionLineIndex);
             int endLine = Math.Max(LineIndex, SelectionLineIndex);
 
-            if (_lines.Count == 1)
-            {
-                _lines[0] = "";
-                CharIndex = 0;
-                return;
-            }
 
             for (int i = 0; i <= endLine - startLine; i++)
             {
+                if (_lines.Count == 1)
+                {
+                    _lines[0] = "";
+                    CharIndex = 0;
+                    break;
+                }
+
                 _lines.RemoveAt(startLine);
             }
 
@@ -562,6 +563,7 @@ public class TextDocument(string text)
         int startLine = Math.Min(LineIndex, SelectionLineIndex);
         int endLine = Math.Max(LineIndex, SelectionLineIndex);
 
+        // #coding
 
         if (startLine == endLine)
         {
