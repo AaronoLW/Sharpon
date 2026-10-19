@@ -94,7 +94,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
     public void Render(Renderer renderer)
     {
-        RenderCaret(renderer);
+        _document.RenderCaret(renderer, _caretPosition, _pointSize);
 
         List<string> lines = _document.Lines;
 
@@ -135,25 +135,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
         {
             float pointSize = _scheduledPointSizeDeletions.Dequeue();
             FontManager.FontRegular.DeleteSizeIfExists(pointSize);
-        }
-    }
-
-    private void RenderCaret(Renderer renderer)
-    {
-        if (_document.CaretStyle == CaretStyle.Beam)
-        {
-            Rectangle caret = new(_caretPosition, 2, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        }
-        else if (_document.CaretStyle == CaretStyle.Block)
-        {
-            Rectangle caret = new(_caretPosition, FontManager.FontRegular.MeasureString("|", _pointSize).X, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
-        }
-        else if (_document.CaretStyle == CaretStyle.Underline)
-        {
-            Rectangle caret = new(_caretPosition + new Vector2(0, _pointSize), FontManager.FontRegular.MeasureString("|", _pointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
     }
 

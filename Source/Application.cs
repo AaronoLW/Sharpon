@@ -14,6 +14,8 @@ public class App
 
     public const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
+    public const int LINE_SPACING = POINT_SIZE + LINE_SPACING_POINT_SIZE_INCREASE;
+
     public const int DEFAULT_PADDING = 20;
 
     private const int INITIAL_WINDOW_WIDTH = 800;
@@ -21,7 +23,9 @@ public class App
 
     public const int FILEMANAGER_WIDTH = 250;
     public const int ACTIVITY_BAR_HEIGHT = 50;
-    public const int TERMINAL_HEIGHT = 400;
+    public const int TERMINAL_HEIGHT = 350;
+
+    public const int ANIMATION_SPEED = 40;
 
     public const int SCROLL_SPEED_AMPLIFIER = 40;
 
@@ -41,6 +45,7 @@ public class App
     private readonly Editor _editor;
     private readonly FileManager _fileManager;
     private readonly Config _config;
+    private readonly Terminal _terminal;
 
     private readonly RichPresence _richPresence;
 
@@ -75,11 +80,13 @@ public class App
 
         PlaytimeCounter playtimeCounter = new();
         _config = new();
+        _terminal = new();
 
         _permutables = [
             _editor,
             _fileManager,
             playtimeCounter,
+            _terminal
         ];
 
         _renderables = [
@@ -87,6 +94,7 @@ public class App
             _activityBar,
             _fileManager,
             _config,
+            _terminal
         ];
 
         _disposables = [
@@ -132,9 +140,17 @@ public class App
             _windowFullscreen = !_windowFullscreen;
         }
 
-        if (Input.IsKeyDown(SDL.Keycode.LCtrl) && Input.IsKeyPressed(SDL.Keycode.Comma))
+        if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
-            SwitchEditorAndConfig();
+            if (Input.IsKeyPressed(SDL.Keycode.Comma))
+            {
+                SwitchEditorAndConfig();
+            }
+
+            if (Input.IsKeyPressed(SDL.Keycode.T))
+            {
+                _terminal.Opened = !_terminal.Opened;
+            }
         }
 
         _activityBar.SetActivity(_activityProvider.ProvideActivity());

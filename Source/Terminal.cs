@@ -1,0 +1,54 @@
+using Color = System.Drawing.Color;
+using SmashFramework;
+using System.Numerics;
+
+public class Terminal : IPermutable, IRenderable
+{
+    public bool Opened;
+
+    private bool _shouldRender = false;
+    public bool ShouldRender { get => _shouldRender || Height >= 1; set => _shouldRender = value; }
+
+    public float Height { get; private set; } = 0;
+
+    private TextDocument _document;
+    private IKeybindSet _keybindSet = new VimSet();
+
+    public Vector2 Position => new(0, App.WindowHeight - Height);
+    public Vector2 TextPosition => Position + new Vector2(App.DEFAULT_PADDING);
+
+    public Terminal()
+    {
+        _document = new("Was geht");
+    }
+
+    public void Update(double deltaTime)
+    {
+        if (Opened)
+        {
+            Height = MathHelper.Larp(Height, App.TERMINAL_HEIGHT, App.ANIMATION_SPEED * (float)deltaTime);
+        }
+        else
+        {
+            Height = MathHelper.Larp(Height, 0, App.ANIMATION_SPEED * (float)deltaTime);
+        }
+
+        _keybindSet.HandleKeybinds(_document);
+    }
+
+    public void Render(Renderer renderer)
+    {
+        Rectangle backgroundRectangle = new(Position, App.WindowWidth, App.TERMINAL_HEIGHT);
+        renderer.RenderFilledRectangle(backgroundRectangle, Color.Black);
+
+        renderer.RenderLine(0, App.WindowHeight - Height, App.WindowWidth, App.WindowHeight - Height, Color.RoyalBlue);
+
+        _document.RenderCaret(renderer, _document.GetCaretPosition(TextPosition, App.POINT_SIZE, App.LINE_SPACING), App.POINT_SIZE);
+
+        for (int i = 0; i < _document.Lines.Count; i++)
+        {
+            Vector2 position = TextPosition + new Vector2(0, i * App.LINE_SPACING);
+            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _document.Lines[i], position, Color.White);
+        }
+    }
+}
