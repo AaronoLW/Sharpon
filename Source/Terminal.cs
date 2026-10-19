@@ -1,6 +1,7 @@
 using Color = System.Drawing.Color;
 using SmashFramework;
 using System.Numerics;
+using KatziDrip;
 
 public class Terminal : IPermutable, IRenderable
 {
@@ -43,15 +44,9 @@ public class Terminal : IPermutable, IRenderable
         Rectangle backgroundRectangle = new(Position, App.WindowWidth, App.TERMINAL_HEIGHT);
         renderer.RenderFilledRectangle(backgroundRectangle, Color.Black);
 
-        renderer.RenderLine(0, App.WindowHeight - Height, App.WindowWidth, App.WindowHeight - Height, Color.RoyalBlue);
+        renderer.RenderLine(0, App.WindowHeight - Height, App.WindowWidth, App.WindowHeight - Height, Drip.AccentColor.ToColor());
 
         Rectangle bounds = new(Position, App.WindowWidth, Height);
         _document.Render(renderer, TextPosition, bounds, 1);
-
-        //for (int i = 0; i < _document.Lines.Count; i++)
-        //{
-        //    Vector2 position = TextPosition + new Vector2(0, i * TextDocument.LineSpacing);
-        //    renderer.RenderString(FontManager.FontRegular, TextDocument.PointSize, _document.Lines[i], position, Color.White);
-        //}
     }
 }

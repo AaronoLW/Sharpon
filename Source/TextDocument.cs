@@ -649,8 +649,8 @@ public class TextDocument(string text)
 
                 Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(Lines[i], PointSize).Y));
 
-                Kolor royalBlue = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 100);
-                renderer.RenderFilledRectangle(selectionRect, royalBlue.ToColor());
+                Kolor accentColor = new(Drip.AccentColor.R, Drip.AccentColor.G, Drip.AccentColor.B, 100);
+                renderer.RenderFilledRectangle(selectionRect, accentColor.ToColor());
             }
 
             renderer.RenderString(FontManager.FontRegular, PointSize, Lines[i], linePosition, Color.White);
@@ -664,17 +664,17 @@ public class TextDocument(string text)
         if (CaretStyle == CaretStyle.Beam)
         {
             Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
         }
         else if (CaretStyle == CaretStyle.Block)
         {
             Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", PointSize).X, FontManager.FontRegular.MeasureString("|", PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
         }
         else if (CaretStyle == CaretStyle.Underline)
         {
             Rectangle caret = new(caretPosition + new Vector2(0, PointSize), FontManager.FontRegular.MeasureString("|", PointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
         }
     }
 

@@ -125,7 +125,7 @@ public class FileManager : IPermutable, IRenderable
                     break;
 
                 string name = Path.GetFileName(_fileSystemEntries[i]);
-                Kolor color = Directory.Exists(_fileSystemEntries[i]) ? Drip.RoyalBlue : Drip.White;
+                Kolor color = Directory.Exists(_fileSystemEntries[i]) ? Drip.AccentColor : Drip.White;
 
                 if (Directory.Exists(_fileSystemEntries[i]))
                     name += Path.DirectorySeparatorChar;
