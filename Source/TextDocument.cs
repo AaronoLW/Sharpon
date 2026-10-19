@@ -630,7 +630,7 @@ public class TextDocument(string text)
 
     public void Render(Renderer renderer, Vector2 offset, Rectangle bounds, float scroll)
     {
-        RenderCaret(renderer, offset);
+        RenderCaret(renderer, offset - new Vector2(0, scroll));
 
         int startLineIndex = Math.Max((int)(scroll / LineSpacing) - 1, 0);
 
