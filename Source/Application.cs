@@ -14,8 +14,6 @@ public class App
 
     public const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
-    public const int LINE_SPACING = POINT_SIZE + LINE_SPACING_POINT_SIZE_INCREASE;
-
     public const int DEFAULT_PADDING = 20;
 
     private const int INITIAL_WINDOW_WIDTH = 800;
@@ -55,6 +53,9 @@ public class App
 
     private readonly ActivityBar _activityBar = new();
     private IActivityProvider _activityProvider;
+
+
+    private readonly Queue<float> _scheduledPointSizeDeletions = new();
 
     public App(string? initialFilePath)
     {
@@ -151,9 +152,22 @@ public class App
             {
                 _terminal.Opened = !_terminal.Opened;
             }
+
+            if (Program.IsKeyDown(SDL.Keycode.Plus))
+            {
+                _scheduledPointSizeDeletions.Enqueue(TextDocument.PointSize);
+                TextDocument.PointSize++;
+            }
+
+            if (Program.IsKeyDown(SDL.Keycode.Minus))
+            {
+                _scheduledPointSizeDeletions.Enqueue(TextDocument.PointSize);
+                TextDocument.PointSize--;
+            }
         }
 
         _activityBar.SetActivity(_activityProvider.ProvideActivity());
+
 
         foreach (IPermutable permutable in _permutables)
             permutable.Update(deltaTime);
@@ -168,7 +182,17 @@ public class App
 
         _renderer.RenderPresent();
 
-        _editor.AfterRender(_renderer);
+        if (_scheduledPointSizeDeletions.Count > 0)
+        {
+            _renderer.RefreshTextEngine();
+            FontManager.Reload(_renderer);
+        }
+
+        while (_scheduledPointSizeDeletions.Count > 0)
+        {
+            float pointSize = _scheduledPointSizeDeletions.Dequeue();
+            FontManager.FontRegular.DeleteSizeIfExists(pointSize);
+        }
     }
 
     public void End()

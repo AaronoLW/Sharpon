@@ -9,17 +9,19 @@ public class Terminal : IPermutable, IRenderable
     private bool _shouldRender = false;
     public bool ShouldRender { get => _shouldRender || Height >= 1; set => _shouldRender = value; }
 
+    public const int MAX_HEIGHT = 350;
+
     public float Height { get; private set; } = 0;
 
-    private TextDocument _document;
-    private IKeybindSet _keybindSet = new VimSet();
+    private readonly TextDocument _document;
+    private readonly IKeybindSet _keybindSet = new VimSet();
 
     public Vector2 Position => new(0, App.WindowHeight - Height);
     public Vector2 TextPosition => Position + new Vector2(App.DEFAULT_PADDING);
 
     public Terminal()
     {
-        _document = new("Was geht");
+        _document = new("");
     }
 
     public void Update(double deltaTime)
@@ -43,12 +45,13 @@ public class Terminal : IPermutable, IRenderable
 
         renderer.RenderLine(0, App.WindowHeight - Height, App.WindowWidth, App.WindowHeight - Height, Color.RoyalBlue);
 
-        _document.RenderCaret(renderer, _document.GetCaretPosition(TextPosition, App.POINT_SIZE, App.LINE_SPACING), App.POINT_SIZE);
+        Rectangle bounds = new(Position, App.WindowWidth, Height);
+        _document.Render(renderer, TextPosition, bounds, 1);
 
-        for (int i = 0; i < _document.Lines.Count; i++)
-        {
-            Vector2 position = TextPosition + new Vector2(0, i * App.LINE_SPACING);
-            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _document.Lines[i], position, Color.White);
-        }
+        //for (int i = 0; i < _document.Lines.Count; i++)
+        //{
+        //    Vector2 position = TextPosition + new Vector2(0, i * TextDocument.LineSpacing);
+        //    renderer.RenderString(FontManager.FontRegular, TextDocument.PointSize, _document.Lines[i], position, Color.White);
+        //}
     }
 }
