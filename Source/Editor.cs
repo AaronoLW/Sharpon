@@ -12,6 +12,8 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
     private const int MIN_POINT_SIZE = 4;
 
     private TextDocument _document = null!;
+    private int _previousLineIndex = 0;
+
     private PathManager _pathManager;
     private readonly Scroller _scroll = new(0, null);
 
@@ -81,6 +83,12 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
         if (_caretPosition != caretPosition)
         {
             _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
+        }
+
+        if (_previousLineIndex != _document.LineIndex)
+        {
+            _scroll.SetScroll((_document.LineIndex * _lineSpacing) - (App.WindowHeight / 2) + App.ACTIVITY_BAR_HEIGHT);
+            _previousLineIndex = _document.LineIndex;
         }
     }
 
@@ -159,6 +167,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
         _document = _pathManager.OpenFile(filePath);
         _document.CaretStyle = _keybindSet.GetCaretStyle();
         _scroll.Reset();
+        _previousLineIndex = 0;
         _unsavedChanges = false;
     }
 }

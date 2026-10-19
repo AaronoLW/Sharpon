@@ -32,6 +32,11 @@ public class Scroller(float? min = null, float? max = null)
         Scroll = MathHelper.Larp(Scroll, _preferredScroll, SCROLL_SPEED * (float)deltaTime);
     }
 
+    public void SetScroll(float scroll)
+    {
+        _preferredScroll = scroll;
+    }
+
     public void Reset()
     {
         Scroll = 0;
