@@ -69,7 +69,7 @@ public class App
             Directory.CreateDirectory(DATA_DIRECTORY_PATH);
         }
 
-        Drip.Load(Drip.DEFAULT_THEME_NAME);
+        Drip.Load(Drip.DefaultThemeName);
         FontManager.Init(_renderer);
 
         _renderer.SetVSyncEnabled(true);
