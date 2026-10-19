@@ -23,7 +23,7 @@ public class App
     public const int ACTIVITY_BAR_HEIGHT = 50;
     public const int TERMINAL_HEIGHT = 350;
 
-    public const int ANIMATION_SPEED = 40;
+    public const int ANIMATION_SPEED = 30;
 
     public const int SCROLL_SPEED_AMPLIFIER = 40;
 
