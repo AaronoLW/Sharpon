@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text;
+using KatziDrip;
 using SDL3;
 using SmashFramework;
 using Color = System.Drawing.Color;
@@ -8,6 +9,18 @@ public class TextDocument(string text)
 {
     public List<string> Lines => _lines;
     private readonly List<string> _lines = [.. text.Split('\n')];
+
+    public const int MIN_POINT_SIZE = 4;
+
+    private static int _pointSize = App.POINT_SIZE;
+
+    public static int PointSize
+    {
+        get => _pointSize;
+        set => _pointSize = Math.Max(value, MIN_POINT_SIZE);
+    }
+
+    public static int LineSpacing => PointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
 
     public static readonly char[] BracketsOpen = [
         '{',
@@ -57,10 +70,10 @@ public class TextDocument(string text)
 
     public int LineLength => GetLineLength(LineIndex);
 
-    public Vector2 GetCaretPosition(Vector2 offset, int pointSize, float lineSpacing)
+    public Vector2 GetCaretPosition(Vector2 offset)
     {
-        float x = FontManager.FontRegular.MeasureString(Line[0..CharIndex], pointSize).X;
-        float y = lineSpacing * LineIndex;
+        float x = FontManager.FontRegular.MeasureString(Line[0..CharIndex], PointSize).X;
+        float y = LineSpacing * LineIndex;
 
         return offset + new Vector2(x, y);
     }
@@ -531,11 +544,11 @@ public class TextDocument(string text)
         return null;
     }
 
-    public void JumpToMousePosition(Vector2 offset, int pointSize, float lineSpacing)
+    public void JumpToMousePosition(Vector2 offset)
     {
         Vector2 mousePosition = Input.MousePosition - offset;
 
-        int lineIndex = (int)(mousePosition.Y / lineSpacing);
+        int lineIndex = (int)(mousePosition.Y / LineSpacing);
         int charIndex = 0;
 
         if (lineIndex < 0)
@@ -543,7 +556,7 @@ public class TextDocument(string text)
 
         if (lineIndex < _lines.Count)
         {
-            charIndex = (int)(mousePosition.X / FontManager.FontRegular.MeasureString("W", pointSize).X);
+            charIndex = (int)(mousePosition.X / FontManager.FontRegular.MeasureString("W", PointSize).X);
         }
         else lineIndex = _lines.Count - 1;
 
@@ -615,25 +628,55 @@ public class TextDocument(string text)
         SDL.SetClipboardText(GetSelectedText());
     }
 
-    public void RenderCaret(Renderer renderer, Vector2 caretPosition, float pointSize)
+    public void Render(Renderer renderer, Vector2 offset, Rectangle bounds, float scroll)
     {
+        RenderCaret(renderer, offset);
+
+        int startLineIndex = Math.Max((int)(scroll / LineSpacing) - 1, 0);
+
+        for (int i = startLineIndex; i < Lines.Count; i++)
+        {
+            Vector2 linePosition = Vector2.Round(offset + new Vector2(0, (i * LineSpacing) - scroll));
+
+            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
+                break;
+
+            (int, int)? selectionRange = GetSelectionRangeOnLine(i);
+            if (selectionRange != null)
+            {
+                float fromWidth = FontManager.FontRegular.MeasureString(Lines[i][0..selectionRange.Value.Item1], PointSize).X;
+                float toWidth = FontManager.FontRegular.MeasureString(Lines[i][0..selectionRange.Value.Item2], PointSize).X - fromWidth;
+
+                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(Lines[i], PointSize).Y));
+
+                Kolor royalBlue = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 100);
+                renderer.RenderFilledRectangle(selectionRect, royalBlue.ToColor());
+            }
+
+            renderer.RenderString(FontManager.FontRegular, PointSize, Lines[i], linePosition, Color.White);
+        }
+    }
+
+    private void RenderCaret(Renderer renderer, Vector2 offset)
+    {
+        Vector2 caretPosition = GetCaretPosition(offset);
+
         if (CaretStyle == CaretStyle.Beam)
         {
-            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", pointSize).Y);
+            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", PointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
         else if (CaretStyle == CaretStyle.Block)
         {
-            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", pointSize).X, FontManager.FontRegular.MeasureString("|", pointSize).Y);
+            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", PointSize).X, FontManager.FontRegular.MeasureString("|", PointSize).Y);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
         else if (CaretStyle == CaretStyle.Underline)
         {
-            Rectangle caret = new(caretPosition + new Vector2(0, pointSize), FontManager.FontRegular.MeasureString("|", pointSize).X, 4);
+            Rectangle caret = new(caretPosition + new Vector2(0, PointSize), FontManager.FontRegular.MeasureString("|", PointSize).X, 4);
             renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
         }
     }
-
 
     private bool IsLineInSelection(int lineIndex)
     {

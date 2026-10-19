@@ -3,13 +3,9 @@ using KatziDrip;
 using SDL3;
 using SmashFramework;
 
-using Color = System.Drawing.Color;
-
 public class Editor : IPermutable, IRenderable, IActivityProvider
 {
     private const float CARET_SPEED = 40f;
-
-    private const int MIN_POINT_SIZE = 4;
 
     private TextDocument _document = null!;
     private int _previousLineIndex = 0;
@@ -19,16 +15,11 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
     private readonly IKeybindSet _keybindSet = new VimSet();
 
-    private int _pointSize = App.POINT_SIZE;
-    private float _lineSpacing => _pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
-
     private Vector2 _caretPosition = new();
 
     private bool _unsavedChanges = false;
 
     public bool ShouldRender { get; set; } = true;
-
-    private readonly Queue<float> _scheduledPointSizeDeletions = new();
 
     public Editor(string? initialFilePath)
     {
@@ -48,23 +39,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
                 if (_pathManager.SaveFile(_document))
                     _unsavedChanges = false;
             }
-
-            if (Program.IsKeyDown(SDL.Keycode.Plus))
-            {
-                _scheduledPointSizeDeletions.Enqueue(_pointSize);
-                _pointSize++;
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Minus))
-            {
-                if (_pointSize > MIN_POINT_SIZE)
-                {
-                    _scheduledPointSizeDeletions.Enqueue(_pointSize);
-                    _pointSize--;
-                }
-            }
         }
-
 
         if (Input.MouseX < App.WindowWidth - App.FILEMANAGER_WIDTH)
         {
@@ -72,14 +47,14 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
             if (Input.IsLeftMousePressed())
             {
-                _document.JumpToMousePosition(App.ActivityPosition - new Vector2(0, _scroll.Scroll), _pointSize, _lineSpacing);
+                _document.JumpToMousePosition(App.ActivityPosition - new Vector2(0, _scroll.Scroll));
             }
         }
 
         _scroll.Animate(deltaTime);
 
         Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
-        Vector2 caretPosition = _document.GetCaretPosition(documentOffset, _pointSize, _lineSpacing);
+        Vector2 caretPosition = _document.GetCaretPosition(documentOffset);
         if (_caretPosition != caretPosition)
         {
             _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
@@ -87,55 +62,15 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
         if (_previousLineIndex != _document.LineIndex)
         {
-            _scroll.SetScroll((_document.LineIndex * _lineSpacing) - (App.WindowHeight / 2) + App.ACTIVITY_BAR_HEIGHT);
+            _scroll.SetScroll((_document.LineIndex * TextDocument.LineSpacing) - (App.WindowHeight / 2) + App.ACTIVITY_BAR_HEIGHT);
             _previousLineIndex = _document.LineIndex;
         }
     }
 
     public void Render(Renderer renderer)
     {
-        _document.RenderCaret(renderer, _caretPosition, _pointSize);
-
-        List<string> lines = _document.Lines;
-
-        int startLineIndex = Math.Max((int)(_scroll.Scroll / _lineSpacing) - 1, 0);
-        for (int i = startLineIndex; i < lines.Count; i++)
-        {
-            Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _lineSpacing) - _scroll.Scroll));
-
-            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
-                break;
-
-            (int, int)? selectionRange = _document.GetSelectionRangeOnLine(i);
-            if (selectionRange != null)
-            {
-                float fromWidth = FontManager.FontRegular.MeasureString(lines[i][0..selectionRange.Value.Item1], _pointSize).X;
-                float toWidth = FontManager.FontRegular.MeasureString(lines[i][0..selectionRange.Value.Item2], _pointSize).X - fromWidth;
-
-                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(lines[i], _pointSize).Y));
-
-                Kolor royalBlue = new(Drip.RoyalBlue.R, Drip.RoyalBlue.G, Drip.RoyalBlue.B, 100);
-                renderer.RenderFilledRectangle(selectionRect, royalBlue.ToColor());
-            }
-
-            renderer.RenderString(FontManager.FontRegular, _pointSize, lines[i], linePosition, Color.White);
-        }
-    }
-
-    public void AfterRender(Renderer renderer)
-    {
-        if (_scheduledPointSizeDeletions.Count > 0)
-        {
-            renderer.RefreshTextEngine();
-            FontManager.Reload(renderer);
-        }
-
-
-        while (_scheduledPointSizeDeletions.Count > 0)
-        {
-            float pointSize = _scheduledPointSizeDeletions.Dequeue();
-            FontManager.FontRegular.DeleteSizeIfExists(pointSize);
-        }
+        Rectangle bounds = new(App.ActivityPosition, App.WindowWidth - App.FILEMANAGER_WIDTH, App.WindowHeight - App.ACTIVITY_BAR_HEIGHT);
+        _document.Render(renderer, App.ActivityPosition, bounds, _scroll.Scroll);
     }
 
     public Activity ProvideActivity()
