@@ -2,6 +2,7 @@ using System.Numerics;
 using System.Text;
 using SDL3;
 using SmashFramework;
+using Color = System.Drawing.Color;
 
 public class TextDocument(string text)
 {
@@ -613,6 +614,26 @@ public class TextDocument(string text)
 
         SDL.SetClipboardText(GetSelectedText());
     }
+
+    public void RenderCaret(Renderer renderer, Vector2 caretPosition, float pointSize)
+    {
+        if (CaretStyle == CaretStyle.Beam)
+        {
+            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", pointSize).Y);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+        else if (CaretStyle == CaretStyle.Block)
+        {
+            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", pointSize).X, FontManager.FontRegular.MeasureString("|", pointSize).Y);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+        else if (CaretStyle == CaretStyle.Underline)
+        {
+            Rectangle caret = new(caretPosition + new Vector2(0, pointSize), FontManager.FontRegular.MeasureString("|", pointSize).X, 4);
+            renderer.RenderFilledRectangle(caret, Color.RoyalBlue);
+        }
+    }
+
 
     private bool IsLineInSelection(int lineIndex)
     {
