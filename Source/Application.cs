@@ -64,6 +64,7 @@ public class App
     {
         _window = Window.Create("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, SDL.WindowFlags.Resizable);
         _renderer = new(_window);
+        _renderer.SetVSyncEnabled(true);
 
         _window.StartPollingTextInput();
 
