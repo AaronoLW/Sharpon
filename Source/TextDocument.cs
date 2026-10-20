@@ -483,6 +483,9 @@ public class TextDocument(string text)
             }
 
             LineIndex = startLine;
+            if (LineIndex > _lines.Count - 1)
+                LineIndex = _lines.Count - 1;
+
             ClampCaretIfNecessary();
         }
     }

@@ -7,7 +7,7 @@ internal static class Program
     private static readonly HashSet<SDL.Keycode> _downKeys = [];
     public static string? TextInput { get; private set; }
 
-    public const int FramesPerSecond = 180;
+    public const int FramesPerSecond = 400;
     private readonly static double _targetFrameTime = 1000.0 / FramesPerSecond;
 
     private static void Main(string[] args)
