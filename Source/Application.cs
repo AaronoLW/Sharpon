@@ -54,8 +54,11 @@ public class App
     private readonly ActivityBar _activityBar = new();
     private IActivityProvider _activityProvider;
 
-
     private readonly Queue<float> _scheduledPointSizeDeletions = new();
+
+    private IRequireTextEditing? _focusedTextEditor;
+
+    private readonly IKeybindSet _keybindSet = new VimSet();
 
     public App(string? initialFilePath)
     {
@@ -106,6 +109,7 @@ public class App
         ];
 
         _activityProvider = _editor;
+        _focusedTextEditor = _editor;
     }
 
     public void Update(double deltaTime)
@@ -151,6 +155,11 @@ public class App
             if (Input.IsKeyPressed(SDL.Keycode.T))
             {
                 _terminal.Opened = !_terminal.Opened;
+
+                if (_terminal.Opened)
+                    _focusedTextEditor = _terminal;
+                else
+                    _focusedTextEditor = _editor;
             }
 
             if (Program.IsKeyDown(SDL.Keycode.Plus))
@@ -168,6 +177,7 @@ public class App
 
         _activityBar.SetActivity(_activityProvider.ProvideActivity());
 
+        _focusedTextEditor?.TextEdit(_keybindSet);
 
         foreach (IPermutable permutable in _permutables)
             permutable.Update(deltaTime);

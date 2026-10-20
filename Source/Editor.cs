@@ -1,9 +1,8 @@
 using System.Numerics;
-using KatziDrip;
 using SDL3;
 using SmashFramework;
 
-public class Editor : IPermutable, IRenderable, IActivityProvider
+public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextEditing
 {
     private const float CARET_SPEED = 40f;
 
@@ -12,8 +11,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
 
     private PathManager _pathManager;
     private readonly Scroller _scroll = new(0, null);
-
-    private readonly IKeybindSet _keybindSet = new VimSet();
 
     private Vector2 _caretPosition = new();
 
@@ -27,10 +24,16 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
         OpenFile(initialFilePath);
     }
 
+    public void TextEdit(IKeybindSet keybindSet)
+    {
+        if (keybindSet.HandleKeybinds(_document))
+            _unsavedChanges = true;
+
+        _document.CaretStyle = keybindSet.GetCaretStyle();
+    }
+
     public void Update(double deltaTime)
     {
-        if (_keybindSet.HandleKeybinds(_document))
-            _unsavedChanges = true;
 
         if (Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
@@ -81,7 +84,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider
     public void OpenFile(string? filePath)
     {
         _document = _pathManager.OpenFile(filePath);
-        _document.CaretStyle = _keybindSet.GetCaretStyle();
         _scroll.Reset();
         _previousLineIndex = 0;
         _unsavedChanges = false;

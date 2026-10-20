@@ -3,7 +3,7 @@ using SmashFramework;
 using System.Numerics;
 using KatziDrip;
 
-public class Terminal : IPermutable, IRenderable
+public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 {
     public bool Opened;
 
@@ -35,8 +35,13 @@ public class Terminal : IPermutable, IRenderable
         {
             Height = MathHelper.Larp(Height, 0, App.ANIMATION_SPEED * (float)deltaTime);
         }
+    }
 
+    public void TextEdit(IKeybindSet keybindSet)
+    {
         _keybindSet.HandleKeybinds(_document);
+
+        _document.CaretStyle = _keybindSet.GetCaretStyle();
     }
 
     public void Render(Renderer renderer)
