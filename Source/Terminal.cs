@@ -14,15 +14,16 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     public float Height { get; private set; } = 0;
 
-    private readonly TextDocument _document;
-    private readonly IKeybindSet _keybindSet = new VimSet();
-
     public Vector2 Position => new(0, App.WindowHeight - Height);
     public Vector2 TextPosition => Position + new Vector2(App.DEFAULT_PADDING);
 
+    private readonly TerminalProcess _process;
+
     public Terminal()
     {
-        _document = new("");
+        _process = new();
+        _process.OutputData += ReceiveData;
+        _process.SendCommand("pwd");
     }
 
     public void Update(double deltaTime)
@@ -35,13 +36,12 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         {
             Height = MathHelper.Larp(Height, 0, App.ANIMATION_SPEED * (float)deltaTime);
         }
+
+        Console.WriteLine(_process.HasRunningChildProcess());
     }
 
     public void TextEdit(IKeybindSet keybindSet)
     {
-        _keybindSet.HandleKeybinds(_document);
-
-        _document.CaretStyle = _keybindSet.GetCaretStyle();
     }
 
     public void Render(Renderer renderer)
@@ -50,8 +50,10 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         renderer.RenderFilledRectangle(backgroundRectangle, Color.Black);
 
         renderer.RenderLine(0, App.WindowHeight - Height, App.WindowWidth, App.WindowHeight - Height, Drip.AccentColor.ToColor());
+    }
 
-        Rectangle bounds = new(Position, App.WindowWidth, Height);
-        _document.Render(renderer, TextPosition, bounds, 1);
+    private void ReceiveData(string data)
+    {
+        Console.WriteLine(data);
     }
 }
