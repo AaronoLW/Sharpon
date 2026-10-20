@@ -104,6 +104,17 @@ public class TextDocument(string text)
         ClampCaretIfNecessary();
     }
 
+    public void Append(string text)
+    {
+        _lines.Add(text);
+    }
+
+    public void Append(string[] texts)
+    {
+        foreach (string line in texts)
+            _lines.Add(line);
+    }
+
     public void RemoveBackwards(int count)
     {
         if (IsEnclosedInBrackets())
@@ -483,6 +494,7 @@ public class TextDocument(string text)
             }
 
             LineIndex = startLine;
+
             if (LineIndex > _lines.Count - 1)
                 LineIndex = _lines.Count - 1;
 
@@ -658,6 +670,20 @@ public class TextDocument(string text)
 
             renderer.RenderString(FontManager.FontRegular, PointSize, Lines[i], linePosition, Color.White);
         }
+    }
+
+    public void Clear()
+    {
+        _lines.Clear();
+        CharIndex = 0;
+        LineIndex = 0;
+        _lines.Add("");
+    }
+
+    public void JumpToEndOfFile()
+    {
+        LineIndex = _lines.Count - 1;
+        CharIndex = LineLength;
     }
 
     private void RenderCaret(Renderer renderer, Vector2 offset)
