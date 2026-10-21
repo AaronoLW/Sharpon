@@ -9,18 +9,28 @@ public static class FontManager
     {
         string[]? fontPaths = SystemFontResolver.ResolveByFamily(Drip.FontFamily);
 
-        if (fontPaths == null)
-            throw new Exception($"Font family {Drip.FontFamily} could not be found or is not installed");
-
-
-        foreach (string fontPath in fontPaths)
+        if (fontPaths != null)
         {
-            if (fontPath.EndsWith("-Medium.ttf"))
+            foreach (string fontPath in fontPaths)
             {
-                FontRegular = AssetManager.LoadFont(fontPath, renderer);
-                break;
+                if (fontPath.EndsWith("-Medium.ttf"))
+                {
+                    Console.WriteLine($"Fontpath: {fontPath}");
+                    FontRegular = AssetManager.LoadFont(fontPath, renderer);
+                    return;
+                }
             }
         }
+
+        string assetFontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", $"{Drip.FontFamily}-Medium.ttf");
+        if (File.Exists(assetFontPath))
+        {
+            Console.WriteLine($"Fontpath: {assetFontPath}");
+            FontRegular = AssetManager.LoadFont(assetFontPath, renderer);
+            return;
+        }
+
+        throw new Exception($"Font family {Drip.FontFamily} could not be found or is not installed");
     }
 
     public static void Reload(Renderer renderer)
