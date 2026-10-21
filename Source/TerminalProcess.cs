@@ -10,7 +10,7 @@ public class TerminalProcess : IDisposable
     {
         ProcessStartInfo startInfo = new()
         {
-            FileName = "/bin/bash",
+            FileName = "/usr/bin/bash",
             UseShellExecute = false,
             RedirectStandardError = true,
             RedirectStandardOutput = true,

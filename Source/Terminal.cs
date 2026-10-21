@@ -36,8 +36,6 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         {
             Height = MathHelper.Larp(Height, 0, App.ANIMATION_SPEED * (float)deltaTime);
         }
-
-        Console.WriteLine(_process.HasRunningChildProcess());
     }
 
     public void TextEdit(IKeybindSet keybindSet)
