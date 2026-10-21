@@ -386,7 +386,7 @@ public class TextDocument(string text)
     public void PasteClipboard()
     {
         string clipboardText = SDL.GetClipboardText();
-        string[] lines = clipboardText.Split('\n');
+        string[] lines = clipboardText.Split('\n').Where(s => s != string.Empty).ToArray();
         Insert(lines);
     }
 
