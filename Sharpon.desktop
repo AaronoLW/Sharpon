@@ -4,4 +4,5 @@ Comment=Code Editor
 Exec=Sharpon
 Terminal=false
 Type=Application
+Icon=Sharpon
 Categories=Development;
