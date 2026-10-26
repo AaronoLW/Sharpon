@@ -1,26 +1,15 @@
 using System.Numerics;
 using System.Text;
+using System.Xml.Serialization;
 using KatziDrip;
 using SDL3;
 using SmashFramework;
 using Color = System.Drawing.Color;
 
-public class TextDocument(string text)
+public class TextDocument(string text) : ITextContainer
 {
     public List<string> Lines => _lines;
     private readonly List<string> _lines = [.. text.Split('\n')];
-
-    public const int MIN_POINT_SIZE = 4;
-
-    private static int _pointSize = App.POINT_SIZE;
-
-    public static int PointSize
-    {
-        get => _pointSize;
-        set => _pointSize = Math.Max(value, MIN_POINT_SIZE);
-    }
-
-    public static int LineSpacing => PointSize + App.LINE_SPACING_POINT_SIZE_INCREASE;
 
     public static readonly char[] BracketsOpen = [
         '{',
@@ -45,6 +34,14 @@ public class TextDocument(string text)
         '\\',
     ];
 
+
+    public int PointSize { get; set; } = App.POINT_SIZE;
+
+    // WHY IS THIS GIVING ME A WARNING FUCK YOU
+#pragma warning disable CS9266
+    public int LineSpacing { get => PointSize + App.LINE_SPACING_POINT_SIZE_INCREASE; set; }
+#pragma warning restore CS9266
+
     public string Text => string.Join("\n", _lines);
 
     public int CharIndex { get; private set; }
@@ -62,7 +59,7 @@ public class TextDocument(string text)
         set { _caretStyle = value; ClampCaretIfNecessary(); }
     }
 
-    public string Line
+    public string SelectedLine
     {
         get => _lines[LineIndex];
         private set => _lines[LineIndex] = value;
@@ -72,7 +69,7 @@ public class TextDocument(string text)
 
     public Vector2 GetCaretPosition(Vector2 offset)
     {
-        float x = FontManager.FontRegular.MeasureString(Line[0..CharIndex], PointSize).X;
+        float x = FontManager.FontRegular.MeasureString(SelectedLine[0..CharIndex], PointSize).X;
         float y = LineSpacing * LineIndex;
 
         return offset + new Vector2(x, y);
@@ -80,7 +77,7 @@ public class TextDocument(string text)
 
     public void Insert(string text)
     {
-        Line = Line.Insert(CharIndex, text);
+        SelectedLine = SelectedLine.Insert(CharIndex, text);
         CharIndex += text.Length;
 
         if (CharIndex > LineLength)
@@ -94,7 +91,7 @@ public class TextDocument(string text)
     {
         for (int i = 0; i < lines.Length; i++)
         {
-            Line = Line.Insert(CharIndex, lines[i]);
+            SelectedLine = SelectedLine.Insert(CharIndex, lines[i]);
             CharIndex += lines[i].Length;
 
             if (i != lines.Length - 1)
@@ -129,7 +126,7 @@ public class TextDocument(string text)
             return;
         }
 
-        Line = Line.Remove(CharIndex - count, count);
+        SelectedLine = SelectedLine.Remove(CharIndex - count, count);
         CharIndex -= count;
     }
 
@@ -192,11 +189,11 @@ public class TextDocument(string text)
 
     public void InsertNewLine(bool fancyStuff = true)
     {
-        string text = Line[CharIndex..Line.Length];
+        string text = SelectedLine[CharIndex..SelectedLine.Length];
 
         if (!fancyStuff)
         {
-            Line = Line[0..CharIndex];
+            SelectedLine = SelectedLine[0..CharIndex];
             _lines.Insert(LineIndex + 1, text);
             LineIndex++;
             CharIndex = 0;
@@ -208,10 +205,10 @@ public class TextDocument(string text)
             if (App.CSharpBracketStyle)
             {
                 int indent = GetLineStartIndent();
-                char bracket = Line[CharIndex - 1];
+                char bracket = SelectedLine[CharIndex - 1];
 
                 CharIndex--;
-                Line = Line[0..CharIndex];
+                SelectedLine = SelectedLine[0..CharIndex];
                 Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
                 Lines.Insert(LineIndex + 1, "");
                 Lines.Insert(LineIndex + 1, GetSpacesString(indent) + bracket);
@@ -223,7 +220,7 @@ public class TextDocument(string text)
             {
                 int indent = GetLineStartIndent();
 
-                Line = Line[0..CharIndex];
+                SelectedLine = SelectedLine[0..CharIndex];
                 Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
                 Lines.Insert(LineIndex + 1, GetSpacesString(indent));
                 LineIndex++;
@@ -235,7 +232,7 @@ public class TextDocument(string text)
         {
             int indent = GetLineStartIndent();
 
-            Line = Line[0..CharIndex];
+            SelectedLine = SelectedLine[0..CharIndex];
             Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
             LineIndex++;
             CharIndex = indent;
@@ -268,10 +265,10 @@ public class TextDocument(string text)
         if (LineIndex == 0)
             return;
 
-        string lineContent = Line;
+        string lineContent = SelectedLine;
         DeleteLine();
 
-        CharIndex = Line.Length;
+        CharIndex = SelectedLine.Length;
         Insert(lineContent);
         CharIndex = LineLength - lineContent.Length;
     }
@@ -296,7 +293,7 @@ public class TextDocument(string text)
                 return 0;
         }
 
-        if (IsSpecialCharacter(Line[CharIndex - 1]))
+        if (IsSpecialCharacter(SelectedLine[CharIndex - 1]))
         {
             if (IsEnclosedInBrackets())
             {
@@ -307,13 +304,13 @@ public class TextDocument(string text)
         }
 
         bool foundWord = true;
-        if (char.IsWhiteSpace(Line[CharIndex - 1]))
+        if (char.IsWhiteSpace(SelectedLine[CharIndex - 1]))
             foundWord = false;
 
         int length = 0;
         for (int i = CharIndex - 1; i > 0; i--)
         {
-            if (IsSpecialOrWhiteSpaceCharacter(Line[i]))
+            if (IsSpecialOrWhiteSpaceCharacter(SelectedLine[i]))
             {
                 if (foundWord)
                     return length;
@@ -339,17 +336,17 @@ public class TextDocument(string text)
                 return 1;
         }
 
-        if (IsSpecialCharacter(Line[CharIndex]))
+        if (IsSpecialCharacter(SelectedLine[CharIndex]))
             return 1;
 
         bool foundWord = true;
-        if (char.IsWhiteSpace(Line[CharIndex]))
+        if (char.IsWhiteSpace(SelectedLine[CharIndex]))
             foundWord = false;
 
         int length = 0;
         for (int i = CharIndex; i < LineLength; i++)
         {
-            if (IsSpecialOrWhiteSpaceCharacter(Line[i]))
+            if (IsSpecialOrWhiteSpaceCharacter(SelectedLine[i]))
             {
                 if (foundWord)
                     return length;
@@ -372,7 +369,7 @@ public class TextDocument(string text)
 
         int index = 0;
 
-        while (Line[index] == ' ')
+        while (SelectedLine[index] == ' ')
         {
             index++;
 
@@ -427,7 +424,7 @@ public class TextDocument(string text)
                 int startChar = Math.Min(CharIndex, SelectionCharIndex);
                 int endChar = Math.Max(CharIndex, SelectionCharIndex);
 
-                Line = Line.Remove(startChar, endChar - startChar + 1);
+                SelectedLine = SelectedLine.Remove(startChar, endChar - startChar + 1);
                 if (CharIndex > SelectionCharIndex)
                 {
                     CharIndex -= endChar - startChar + 1;
@@ -460,14 +457,14 @@ public class TextDocument(string text)
 
                 if (SelectionLineIndex > LineIndex)
                 {
-                    Line += Lines[LineIndex + 1];
+                    SelectedLine += Lines[LineIndex + 1];
                     Lines.RemoveAt(LineIndex + 1);
                 }
                 else
                 {
                     LineIndex--;
                     CharIndex = LineLength;
-                    Line += Lines[LineIndex + 1];
+                    SelectedLine += Lines[LineIndex + 1];
                     Lines.RemoveAt(LineIndex + 1);
                     CharIndex++;
                 }
@@ -643,35 +640,6 @@ public class TextDocument(string text)
         SDL.SetClipboardText(GetSelectedText());
     }
 
-    public void Render(Renderer renderer, Vector2 offset, Rectangle bounds, float scroll)
-    {
-        RenderCaret(renderer, offset - new Vector2(0, scroll));
-
-        int startLineIndex = Math.Max((int)(scroll / LineSpacing) - 1, 0);
-
-        for (int i = startLineIndex; i < Lines.Count; i++)
-        {
-            Vector2 linePosition = Vector2.Round(offset + new Vector2(0, (i * LineSpacing) - scroll));
-
-            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
-                break;
-
-            (int, int)? selectionRange = GetSelectionRangeOnLine(i);
-            if (selectionRange != null)
-            {
-                float fromWidth = FontManager.FontRegular.MeasureString(Lines[i][0..selectionRange.Value.Item1], PointSize).X;
-                float toWidth = FontManager.FontRegular.MeasureString(Lines[i][0..selectionRange.Value.Item2], PointSize).X - fromWidth;
-
-                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(Lines[i], PointSize).Y));
-
-                Kolor accentColor = new(Drip.AccentColor.R, Drip.AccentColor.G, Drip.AccentColor.B, 100);
-                renderer.RenderFilledRectangle(selectionRect, accentColor.ToColor());
-            }
-
-            renderer.RenderString(FontManager.FontRegular, PointSize, Lines[i], linePosition, Color.White);
-        }
-    }
-
     public void Clear()
     {
         _lines.Clear();
@@ -684,27 +652,6 @@ public class TextDocument(string text)
     {
         LineIndex = _lines.Count - 1;
         CharIndex = LineLength;
-    }
-
-    private void RenderCaret(Renderer renderer, Vector2 offset)
-    {
-        Vector2 caretPosition = GetCaretPosition(offset);
-
-        if (CaretStyle == CaretStyle.Beam)
-        {
-            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
-        }
-        else if (CaretStyle == CaretStyle.Block)
-        {
-            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", PointSize).X, FontManager.FontRegular.MeasureString("|", PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
-        }
-        else if (CaretStyle == CaretStyle.Underline)
-        {
-            Rectangle caret = new(caretPosition + new Vector2(0, PointSize), FontManager.FontRegular.MeasureString("|", PointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
-        }
     }
 
     private bool IsLineInSelection(int lineIndex)
@@ -750,8 +697,8 @@ public class TextDocument(string text)
         if (CharIndex == 0)
             return false;
 
-        if (BracketsClosed.Contains(Line[CharIndex]) &&
-            BracketsOpen.Contains(Line[CharIndex - 1]))
+        if (BracketsClosed.Contains(SelectedLine[CharIndex]) &&
+            BracketsOpen.Contains(SelectedLine[CharIndex - 1]))
         {
             return true;
         }

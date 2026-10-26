@@ -17,7 +17,10 @@ public class Scroller(float? min = null, float? max = null)
         {
             _preferredScroll -= Input.ScrollWheelDelta * SCROLL_AMPLIFIER;
         }
+    }
 
+    public void Clamp()
+    {
         if (_minimum != null)
             if (_preferredScroll < _minimum)
                 _preferredScroll = (float)_minimum;

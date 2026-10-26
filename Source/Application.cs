@@ -162,18 +162,6 @@ public class App
                 else
                     _focusedTextEditor = _editor;
             }
-
-            if (Program.IsKeyDown(SDL.Keycode.Plus))
-            {
-                _scheduledPointSizeDeletions.Enqueue(TextDocument.PointSize);
-                TextDocument.PointSize++;
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Minus))
-            {
-                _scheduledPointSizeDeletions.Enqueue(TextDocument.PointSize);
-                TextDocument.PointSize--;
-            }
         }
 
         _activityBar.SetActivity(_activityProvider.ProvideActivity());
@@ -193,16 +181,11 @@ public class App
 
         _renderer.RenderPresent();
 
+        PointSizeDeleter.Flush();
         if (_scheduledPointSizeDeletions.Count > 0)
         {
             _renderer.RefreshTextEngine();
             FontManager.Reload(_renderer);
-        }
-
-        while (_scheduledPointSizeDeletions.Count > 0)
-        {
-            float pointSize = _scheduledPointSizeDeletions.Dequeue();
-            FontManager.FontRegular.DeleteSizeIfExists(pointSize);
         }
     }
 
