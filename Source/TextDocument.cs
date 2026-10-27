@@ -11,29 +11,7 @@ public class TextDocument(string text) : ITextContainer
     public List<string> Lines => _lines;
     private readonly List<string> _lines = [.. text.Split('\n')];
 
-    public static readonly char[] BracketsOpen = [
-        '{',
-        '(',
-        '[',
-        '"',
-        '<',
-    ];
-
-    public static readonly char[] BracketsClosed = [
-        '}',
-        ')',
-        ']',
-        '"',
-        '>',
-    ];
-
-    public static readonly char[] SpecialCharacters = [
-        '.',
-        ',',
-        '/',
-        '\\',
-    ];
-
+    public int LineCount => _lines.Count;
 
     public int PointSize { get; set; } = App.POINT_SIZE;
 
@@ -114,7 +92,7 @@ public class TextDocument(string text) : ITextContainer
 
     public void RemoveBackwards(int count)
     {
-        if (IsEnclosedInBrackets())
+        if (TextHelper.IsEnclosedInBrackets(this))
         {
             CharIndex++;
             count++;
@@ -200,7 +178,7 @@ public class TextDocument(string text) : ITextContainer
             return;
         }
 
-        if (IsEnclosedInBrackets())
+        if (TextHelper.IsEnclosedInBrackets(this))
         {
             if (App.CSharpBracketStyle)
             {
@@ -209,23 +187,23 @@ public class TextDocument(string text) : ITextContainer
 
                 CharIndex--;
                 SelectedLine = SelectedLine[0..CharIndex];
-                Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
+                Lines.Insert(LineIndex + 1, TextHelper.GetSpacesString(indent) + text);
                 Lines.Insert(LineIndex + 1, "");
-                Lines.Insert(LineIndex + 1, GetSpacesString(indent) + bracket);
+                Lines.Insert(LineIndex + 1, TextHelper.GetSpacesString(indent) + bracket);
                 LineIndex += 2;
                 CharIndex = 0;
-                Insert(GetSpacesString(indent + 4));
+                Insert(TextHelper.GetSpacesString(indent + 4));
             }
             else
             {
                 int indent = GetLineStartIndent();
 
                 SelectedLine = SelectedLine[0..CharIndex];
-                Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
-                Lines.Insert(LineIndex + 1, GetSpacesString(indent));
+                Lines.Insert(LineIndex + 1, TextHelper.GetSpacesString(indent) + text);
+                Lines.Insert(LineIndex + 1, TextHelper.GetSpacesString(indent));
                 LineIndex++;
                 CharIndex = 0;
-                Insert(GetSpacesString(indent + 4));
+                Insert(TextHelper.GetSpacesString(indent + 4));
             }
         }
         else
@@ -233,7 +211,7 @@ public class TextDocument(string text) : ITextContainer
             int indent = GetLineStartIndent();
 
             SelectedLine = SelectedLine[0..CharIndex];
-            Lines.Insert(LineIndex + 1, GetSpacesString(indent) + text);
+            Lines.Insert(LineIndex + 1, TextHelper.GetSpacesString(indent) + text);
             LineIndex++;
             CharIndex = indent;
         }
@@ -281,85 +259,6 @@ public class TextDocument(string text) : ITextContainer
     public void JumpToStartOfLine()
     {
         CharIndex = 0;
-    }
-
-    public int GetJumpLeftLength()
-    {
-        if (CharIndex == 0)
-        {
-            if (LineIndex > 0)
-                return 1;
-            else
-                return 0;
-        }
-
-        if (IsSpecialCharacter(SelectedLine[CharIndex - 1]))
-        {
-            if (IsEnclosedInBrackets())
-            {
-                CharIndex++;
-                return 2;
-            }
-            else return 1;
-        }
-
-        bool foundWord = true;
-        if (char.IsWhiteSpace(SelectedLine[CharIndex - 1]))
-            foundWord = false;
-
-        int length = 0;
-        for (int i = CharIndex - 1; i > 0; i--)
-        {
-            if (IsSpecialOrWhiteSpaceCharacter(SelectedLine[i]))
-            {
-                if (foundWord)
-                    return length;
-            }
-            else
-            {
-                foundWord = true;
-            }
-
-            length++;
-        }
-
-        return CharIndex;
-    }
-
-    public int GetJumpRightLength()
-    {
-        if (CharIndex == LineLength)
-        {
-            if (LineIndex == Lines.Count)
-                return 0;
-            else
-                return 1;
-        }
-
-        if (IsSpecialCharacter(SelectedLine[CharIndex]))
-            return 1;
-
-        bool foundWord = true;
-        if (char.IsWhiteSpace(SelectedLine[CharIndex]))
-            foundWord = false;
-
-        int length = 0;
-        for (int i = CharIndex; i < LineLength; i++)
-        {
-            if (IsSpecialOrWhiteSpaceCharacter(SelectedLine[i]))
-            {
-                if (foundWord)
-                    return length;
-            }
-            else
-            {
-                foundWord = true;
-            }
-
-            length++;
-        }
-
-        return length;
     }
 
     public int GetLineStartIndent()
@@ -669,51 +568,8 @@ public class TextDocument(string text) : ITextContainer
             CharIndex = LineLength;
     }
 
-    private bool IsSpecialCharacter(char character)
-    {
-        return BracketsOpen.Contains(character) ||
-               BracketsClosed.Contains(character) ||
-               SpecialCharacters.Contains(character);
-    }
-
     private int GetLineLength(int lineIndex)
     {
         return Math.Max(_lines[lineIndex].Length - ((CaretStyle == CaretStyle.Block || CaretStyle == CaretStyle.Underline) ? 1 : 0), 0);
-    }
-
-    private bool IsSpecialOrWhiteSpaceCharacter(char character)
-    {
-        return BracketsOpen.Contains(character) ||
-               BracketsClosed.Contains(character) ||
-               SpecialCharacters.Contains(character) ||
-               character == ' ';
-    }
-
-    private bool IsEnclosedInBrackets()
-    {
-        if (CharIndex >= LineLength)
-            return false;
-
-        if (CharIndex == 0)
-            return false;
-
-        if (BracketsClosed.Contains(SelectedLine[CharIndex]) &&
-            BracketsOpen.Contains(SelectedLine[CharIndex - 1]))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private string GetSpacesString(int amount)
-    {
-        StringBuilder fuckyou = new();
-        for (int i = 0; i < amount; i++)
-        {
-            fuckyou.Append(' ');
-        }
-
-        return fuckyou.ToString();
     }
 }

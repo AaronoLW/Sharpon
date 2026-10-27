@@ -16,8 +16,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.A,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.MoveRight(); },    VimMode.Normal),
         new(SDL.Keycode.I,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.JumpToStartOfLine(); },    VimMode.Normal, SDL.Keycode.LShift),
         new(SDL.Keycode.A,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.JumpToEndOfLine(); },      VimMode.Normal, SDL.Keycode.LShift),
-        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(document.GetJumpRightLength()),  VimMode.Normal),
-        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.Normal),
+        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(TextHelper.GetJumpRightLength(document)),  VimMode.Normal),
+        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(TextHelper.GetJumpLeftLength(document)),   VimMode.Normal),
         new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLine(); },   VimMode.Normal),
         new(SDL.Keycode.O,         (vimSet, document) => { vimSet.SetVimMode(VimMode.Insert, document); document.InsertNewLineOnPreviousLine(); },   VimMode.Normal, SDL.Keycode.LShift),
         new(SDL.Keycode.P,         (vimSet, document) => document.PasteClipboard(),           VimMode.Normal),
@@ -30,7 +30,7 @@ public class VimSet : IKeybindSet
 
         // Insert mode
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert),
-        new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(document.GetJumpLeftLength()),                   VimMode.Insert, SDL.Keycode.LCtrl),
+        new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(TextHelper.GetJumpLeftLength(document)),                   VimMode.Insert, SDL.Keycode.LCtrl),
         new(SDL.Keycode.Escape,    (vimSet, document) => { document.MoveLeft(); vimSet.SetVimMode(VimMode.Normal, document); },    VimMode.Insert),
         new(SDL.Keycode.Return,    (vimSet, document) => document.InsertNewLine(),                                                 VimMode.Insert),
         new(SDL.Keycode.Tab,       (vimSet, document) => document.InsertTab(),                                                     VimMode.Insert),
@@ -51,8 +51,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.K,         (vimSet, document) => document.MoveUp(),                   VimMode.Visual),
         new(SDL.Keycode.L,         (vimSet, document) => document.MoveRight(),                VimMode.Visual),
         new(SDL.Keycode.D,         (vimSet, document) => { document.DeleteSelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },                VimMode.Visual),
-        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(document.GetJumpRightLength()),  VimMode.Visual),
-        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.Visual),
+        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(TextHelper.GetJumpRightLength(document)),  VimMode.Visual),
+        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(TextHelper.GetJumpLeftLength(document)),   VimMode.Visual),
         new(SDL.Keycode.Y,         (vimSet, document) => { document.CopySelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },   VimMode.Visual),
 
         // Visual line mode
@@ -62,14 +62,14 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.K,         (vimSet, document) => document.MoveUp(),                   VimMode.VisualLine),
         new(SDL.Keycode.L,         (vimSet, document) => document.MoveRight(),                VimMode.VisualLine),
         new(SDL.Keycode.D,         (vimSet, document) => { document.DeleteSelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },                VimMode.VisualLine),
-        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(document.GetJumpRightLength()),  VimMode.VisualLine),
-        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.VisualLine),
+        new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(TextHelper.GetJumpRightLength(document)),  VimMode.VisualLine),
+        new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(TextHelper.GetJumpLeftLength(document)),   VimMode.VisualLine),
         new(SDL.Keycode.Y,         (vimSet, document) => { document.CopySelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },   VimMode.VisualLine),
     ];
 
     public CaretStyle DefaultCaretStyle { get; } = CaretStyle.Block;
 
-    public bool HandleKeybinds(TextDocument document)
+    public bool HandleKeybinds(ITextContainer document)
     {
         bool madeChanges = false;
 
@@ -120,7 +120,7 @@ public class VimSet : IKeybindSet
         return madeChanges;
     }
 
-    private void SetVimMode(VimMode vimMode, TextDocument document)
+    private void SetVimMode(VimMode vimMode, ITextContainer document)
     {
         _vimMode = vimMode;
 
