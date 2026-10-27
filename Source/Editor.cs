@@ -62,7 +62,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
             if (Program.IsKeyDown(SDL.Keycode.Minus))
             {
-                if (_document.PointSize > ITextContainer.MIN_POINT_SIZE)
+                if (_document.PointSize > TextContainer.MIN_POINT_SIZE)
                 {
                     PointSizeDeleter.Enqueue(_document.PointSize);
                     _document.PointSize--;
