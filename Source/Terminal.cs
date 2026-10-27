@@ -58,6 +58,8 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         renderer.RenderLine(0, Position.Y, App.WindowWidth, Position.Y, Drip.AccentColor.ToColor());
 
         renderer.RenderLine(InputFieldPosition, InputFieldPosition with { X = App.WindowWidth }, Drip.AccentColor.ToColor());
+
+        _inputField.RenderCaret(renderer);
         _inputField.Render(renderer);
     }
 
