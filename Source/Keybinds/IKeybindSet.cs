@@ -3,7 +3,7 @@ public interface IKeybindSet
     /// <summary>
     /// Returns if changes have been made to the text document
     /// </summary>
-    public bool HandleKeybinds(TextDocument document);
+    public bool HandleKeybinds(ITextContainer textContainer);
 
     /// <summary>
     /// Pretty self explanatory if you have a brain

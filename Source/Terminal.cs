@@ -63,7 +63,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     public void TextEdit(IKeybindSet keybindSet)
     {
-        _inputField.Text += Program.TextInput;
+        keybindSet.HandleKeybinds(_inputField);
     }
 
     private void ReceiveData(string data)

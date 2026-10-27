@@ -12,6 +12,8 @@ public interface ITextContainer
     public int CharIndex { get; }
     public int LineIndex { get; }
 
+    public int LineCount { get; }
+
     public SelectionMode SelectionMode { get; }
 
     public int SelectionCharIndex { get; }
@@ -40,8 +42,6 @@ public interface ITextContainer
     public void JoinLineUpwards();
     public void JumpToEndOfLine();
     public void JumpToStartOfLine();
-    public int GetJumpLeftLength();
-    public int GetJumpRightLength();
     public int GetLineStartIndent();
     public void PasteClipboard();
     public void StartSelection(SelectionMode selectionMode);
