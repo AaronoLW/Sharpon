@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text;
+using KatziDrip;
 using SDL3;
 using SmashFramework;
 
@@ -40,7 +41,7 @@ public abstract class TextContainer
     public int CharIndex { get; protected set; }
     public int LineIndex { get; protected set; }
 
-    public List<string> Lines { get; protected set; } = [];
+    public List<string> Lines { get; protected set; } = [""];
     public string SelectedLine
     {
         get => Lines[LineIndex];
