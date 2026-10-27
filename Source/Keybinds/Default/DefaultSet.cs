@@ -9,11 +9,11 @@ public class DefaultSet : IKeybindSet
         new(SDL.Keycode.Up,    (set, document) => document.MoveUp()),
         new(SDL.Keycode.Down,  (set, document) => document.MoveDown()),
 
-        new(SDL.Keycode.Left,  (set, document) => document.MoveLeft(TextHelper.GetJumpLeftLength(document)),   SDL.Keycode.LCtrl),
-        new(SDL.Keycode.Right, (set, document) => document.MoveRight(TextHelper.GetJumpRightLength(document)), SDL.Keycode.LCtrl),
+        new(SDL.Keycode.Left,  (set, document) => document.MoveLeft(document.GetJumpLeftLength()),   SDL.Keycode.LCtrl),
+        new(SDL.Keycode.Right, (set, document) => document.MoveRight(document.GetJumpRightLength()), SDL.Keycode.LCtrl),
 
         new(SDL.Keycode.Backspace, (set, document) => document.RemoveBackwards(1)),
-        new(SDL.Keycode.Backspace, (set, document) => document.RemoveBackwards(TextHelper.GetJumpLeftLength(document)), SDL.Keycode.LCtrl),
+        new(SDL.Keycode.Backspace, (set, document) => document.RemoveBackwards(document.GetJumpLeftLength()), SDL.Keycode.LCtrl),
 
         new(SDL.Keycode.Return, (set, document) => document.InsertNewLine()),
         new(SDL.Keycode.Return, (set, document) => document.InsertNewLineOnPreviousLine(), SDL.Keycode.LShift),
@@ -23,7 +23,7 @@ public class DefaultSet : IKeybindSet
 
     public CaretStyle DefaultCaretStyle { get; } = CaretStyle.Beam;
 
-    public bool HandleKeybinds(ITextContainer document)
+    public bool HandleKeybinds(TextContainer document)
     {
         if (Program.TextInput != null)
         {
