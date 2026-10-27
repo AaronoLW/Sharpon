@@ -8,9 +8,11 @@ public class TerminalProcess : IDisposable
 
     public TerminalProcess()
     {
+        string? bashPath = FindBash();
+
         ProcessStartInfo startInfo = new()
         {
-            FileName = "/usr/bin/bash",
+            FileName = bashPath ?? "/bin/bash",
             UseShellExecute = false,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
@@ -38,6 +40,24 @@ public class TerminalProcess : IDisposable
     public void SendCommand(string command)
     {
         _shell.StandardInput.WriteLine(command);
+    }
+
+    private string? FindBash()
+    {
+        string? path = Environment.GetEnvironmentVariable("PATH");
+
+        if (string.IsNullOrEmpty(path))
+            return null;
+
+        foreach (string dir in path.Split(Path.PathSeparator))
+        {
+            string candidate = Path.Combine(dir, "bash");
+
+            if (File.Exists(candidate))
+                return candidate;
+        }
+
+        return null;
     }
 
     public bool HasRunningChildProcess()
