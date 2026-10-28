@@ -1,6 +1,7 @@
 using System.Drawing;
+using XTerm.Common;
 
-public static class XtermEx
+public static class XTermEx
 {
     public static Color XtermColor(int index)
     {
@@ -49,5 +50,16 @@ public static class XtermEx
         int gray = 8 + (index - 232) * 10;
 
         return Color.FromArgb(gray, gray, gray);
+    }
+
+    public static CaretStyle ToCaretStyle(CursorStyle cursorStyle)
+    {
+        return cursorStyle switch
+        {
+            CursorStyle.Block => CaretStyle.Block,
+            CursorStyle.Bar => CaretStyle.Beam,
+            CursorStyle.Underline => CaretStyle.Underline,
+            _ => CaretStyle.Beam
+        };
     }
 }
