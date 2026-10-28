@@ -4,7 +4,6 @@ using System.Numerics;
 using KatziDrip;
 using Ghostflyby.Pty;
 using XTerm.Buffer;
-using XTerm.Common;
 using SDL3;
 
 public class Terminal : IPermutable, IRenderable, IRequireTextEditing
@@ -71,8 +70,20 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         if (_previousWindowSize != App.WindowSize)
         {
             _previousWindowSize = App.WindowSize;
-            _terminal.Resize((int)(App.WindowWidth / _characterWidth - 2), (int)(MAX_HEIGHT / _characterWidth));
+            _terminal.Resize((int)(App.WindowWidth / _characterWidth - 2), (int)(MAX_HEIGHT / _characterWidth - 2));
         }
+
+        if ((_terminal.Buffer.Y + 2) * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) >= Height)
+        {
+            _scroll.SetScroll((_terminal.Buffer.Y + 2) * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) - MAX_HEIGHT);
+        }
+        else
+        {
+            _scroll.SetScroll(0);
+        }
+
+        _scroll.Update();
+        _scroll.Animate(deltaTime);
     }
 
     public void Render(Renderer renderer)
@@ -81,10 +92,15 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         renderer.RenderFilledRectangle(backgroundRectangle, Color.Black);
         renderer.RenderLine(0, Position.Y, App.WindowWidth, Position.Y, Drip.AccentColor.ToColor());
 
+        Rectangle clipRect = new(Position + new Vector2(0, 1), App.WindowSize);
+        SDL.SetRenderClipRect(renderer.Handle, clipRect.ToSDLRect());
+
         RenderTerminal(renderer);
 
         _inputField.RenderCaret(renderer);
         _inputField.Render(renderer);
+
+        SDL.SetRenderClipRect(renderer.Handle, 0);
     }
 
     private void RenderTerminal(Renderer renderer)
@@ -112,7 +128,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
                 else
                     color = XtermEx.XtermColor(cell.Attributes.Fg);
 
-                Vector2 position = TextPosition + new Vector2(_characterWidth * col, (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) * row);
+                Vector2 position = TextPosition + new Vector2(_characterWidth * col, ((App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) * row) - _scroll.Scroll);
                 renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, character, position, color);
             }
         }
@@ -120,6 +136,11 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     public void TextEdit(IKeybindSet keybindSet)
     {
+        if (Input.IsKeyDown(SDL.Keycode.Tab))
+        {
+            return;
+        }
+
         _inputField.CaretStyle = keybindSet.GetCaretStyle();
         keybindSet.HandleKeybinds(_inputField);
     }
@@ -132,7 +153,8 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     private Vector2 GetInputFieldPosition()
     {
-        return TextPosition + new Vector2(((_terminal.Buffer.Lines[_terminal.Buffer.Y] ?? new(0)).GetTrimmedLength() + 1) * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE));
+        Console.WriteLine(_terminal.Buffer.Y);
+        return TextPosition + new Vector2(((_terminal.Buffer.Lines[_terminal.Buffer.Y] ?? new(0)).GetTrimmedLength() + 1) * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) - _scroll.Scroll);
     }
 
     private async Task ReadPty()
