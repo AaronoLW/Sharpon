@@ -33,8 +33,11 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
     {
         _characterWidth = FontManager.FontRegular.MeasureString("W", App.POINT_SIZE).X;
 
-        _pty = PtyProcess.Start("bash", []);
-        _pty.Input.AutoFlush = true;
+        PtyStartInfo ptyInfo = new("/usr/bin/bash")
+        {
+            Environment = new Dictionary<string, string?> { ["TERM"] = "xterm-256color" }
+        };
+        _pty = PtyProcess.Start(ptyInfo);
 
         _terminal = new();
 
