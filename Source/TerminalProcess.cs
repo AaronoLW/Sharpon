@@ -8,9 +8,20 @@ public class TerminalProcess : IDisposable
 
     public TerminalProcess()
     {
+        string terminalFileName;
+
+        if(OperatingSystem.IsWindows())
+        {
+            terminalFileName = "cmd.exe";
+        }
+        else
+        {
+            terminalFileName = Environment.GetEnvironmentVariable("SHELL") ?? "/bin/bash";
+        }
+
         ProcessStartInfo startInfo = new()
         {
-            FileName = "/usr/bin/bash",
+            FileName = terminalFileName,
             UseShellExecute = false,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
