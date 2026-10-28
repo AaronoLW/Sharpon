@@ -3,7 +3,8 @@ using SmashFramework;
 using System.Numerics;
 using KatziDrip;
 using Ghostflyby.Pty;
-using System.Text;
+using XTerm.Buffer;
+using XTerm.Common;
 using SDL3;
 
 public class Terminal : IPermutable, IRenderable, IRequireTextEditing
@@ -24,15 +25,23 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
     public const int INPUT_FIELD_HEIGHT = 60;
     private readonly InputField _inputField;
 
-    private readonly TextDocument _document;
     private readonly Scroller _scroll = new();
 
     private readonly PtyProcess _pty;
+    private readonly XTerm.Terminal _terminal;
+
+    private readonly float _characterWidth;
+
+    private Vector2 _previousWindowSize = App.WindowSize;
 
     public Terminal()
     {
-        _pty = PtyProcess.Start("bash", ["--noprofile", "-norc", "-i"]);
+        _characterWidth = FontManager.FontRegular.MeasureString("W", App.POINT_SIZE).X;
+
+        _pty = PtyProcess.Start("bash", []);
         _pty.Input.AutoFlush = true;
+
+        _terminal = new();
 
         _ = ReadPty();
 
@@ -44,8 +53,6 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         };
 
         _inputField.OnEnter += InputFieldEnter;
-
-        _document = new(null);
     }
 
     public void Update(double deltaTime)
@@ -60,6 +67,12 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         }
 
         _inputField.Position = InputFieldPosition;
+
+        if (_previousWindowSize != App.WindowSize)
+        {
+            _previousWindowSize = App.WindowSize;
+            _terminal.Resize((int)(App.WindowWidth / _characterWidth - 2), (int)(MAX_HEIGHT / _characterWidth));
+        }
     }
 
     public void Render(Renderer renderer)
@@ -68,35 +81,40 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         renderer.RenderFilledRectangle(backgroundRectangle, Color.Black);
         renderer.RenderLine(0, Position.Y, App.WindowWidth, Position.Y, Drip.AccentColor.ToColor());
 
-        RenderDocument(renderer);
+        RenderTerminal(renderer);
 
         _inputField.RenderCaret(renderer);
         _inputField.Render(renderer);
     }
 
-    private void RenderDocument(Renderer renderer)
+    private void RenderTerminal(Renderer renderer)
     {
-        int startLineIndex = Math.Max((int)(_scroll.Scroll / _document.LineSpacing) - 1, 0);
-        for (int i = startLineIndex; i < _document.Lines.Count; i++)
+        var buffer = _terminal.Buffer;
+
+        for (int row = 0; row < buffer.Rows; row++)
         {
-            Vector2 linePosition = Vector2.Round(TextPosition + new Vector2(0, (i * _document.LineSpacing) - _scroll.Scroll));
+            var line = buffer.Lines[buffer.YDisp + row];
+            if (line == null)
+                continue;
 
-            if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
-                break;
-
-            (int, int)? selectionRange = _document.GetSelectionRangeOnLine(i);
-            if (selectionRange != null)
+            for (int col = 0; col < buffer.Cols; col++)
             {
-                float fromWidth = FontManager.FontRegular.MeasureString(_document.Lines[i][0..selectionRange.Value.Item1], _document.PointSize).X;
-                float toWidth = FontManager.FontRegular.MeasureString(_document.Lines[i][0..selectionRange.Value.Item2], _document.PointSize).X - fromWidth;
+                BufferCell cell = line[col];
 
-                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(_document.Lines[i], _document.PointSize).Y));
+                if (cell.Width == 0)
+                    continue;
 
-                Kolor accentColor = new(Drip.AccentColor.R, Drip.AccentColor.G, Drip.AccentColor.B, 100);
-                renderer.RenderFilledRectangle(selectionRect, accentColor.ToColor());
+                string character = cell.Content;
+
+                Color color;
+                if (cell.Attributes.Fg == 256)
+                    color = Color.White;
+                else
+                    color = XtermEx.XtermColor(cell.Attributes.Fg);
+
+                Vector2 position = TextPosition + new Vector2(_characterWidth * col, (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) * row);
+                renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, character, position, color);
             }
-
-            renderer.RenderString(FontManager.FontRegular, _document.PointSize, _document.Lines[i], linePosition, Color.White);
         }
     }
 
@@ -108,15 +126,13 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     private void InputFieldEnter()
     {
-        _document.Insert(_inputField.Text);
         _pty.Input.WriteLine(_inputField.Text);
         _inputField.Clear();
     }
 
     private Vector2 GetInputFieldPosition()
     {
-        Vector2 textSize = FontManager.FontRegular.MeasureString(_document.Lines[_document.LineIndex], _document.PointSize);
-        return TextPosition + new Vector2(textSize.X, _document.LineSpacing * _document.LineIndex);
+        return TextPosition + new Vector2(((_terminal.Buffer.Lines[_terminal.Buffer.Y] ?? new(0)).GetTrimmedLength() + 1) * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE));
     }
 
     private async Task ReadPty()
@@ -128,8 +144,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
             char[] buffer = new char[1024];
             int bytesRead = await stream.ReadAsync(buffer);
 
-            _document.Append(new string(buffer[0..bytesRead]));
-            _document.JumpToEndOfFile();
+            _terminal.Write(new string(buffer[0..bytesRead]));
         }
     }
 }

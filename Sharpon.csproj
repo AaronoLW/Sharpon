@@ -16,6 +16,7 @@
     <PackageReference Include="Ghostflyby.Pty" Version="1.0.1" />
     <PackageReference Include="SmashFramework" Version="2.1.4" />
     <PackageReference Include="KatziDrip" Version="1.0.8" />
+    <PackageReference Include="XTerm.NET" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
