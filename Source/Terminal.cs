@@ -19,10 +19,6 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     public Vector2 Position => new(0, App.WindowHeight - Height);
     public Vector2 TextPosition => Position + new Vector2(App.DEFAULT_PADDING);
-    public Vector2 InputFieldPosition => GetInputFieldPosition();
-
-    public const int INPUT_FIELD_HEIGHT = 60;
-    private readonly InputField _inputField;
 
     private readonly Scroller _scroll = new();
 
@@ -43,15 +39,6 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         _terminal = new();
 
         _ = ReadPty();
-
-        _inputField = new()
-        {
-            Prefix = null,
-            Width = App.WindowWidth,
-            Height = INPUT_FIELD_HEIGHT,
-        };
-
-        _inputField.OnEnter += InputFieldEnter;
     }
 
     public void Update(double deltaTime)
@@ -64,8 +51,6 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         {
             Height = MathHelper.Larp(Height, 0, App.ANIMATION_SPEED * (float)deltaTime);
         }
-
-        _inputField.Position = InputFieldPosition;
 
         if (_previousWindowSize != App.WindowSize)
         {
@@ -95,12 +80,32 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
         Rectangle clipRect = new(Position + new Vector2(0, 1), App.WindowSize);
         SDL.SetRenderClipRect(renderer.Handle, clipRect.ToSDLRect());
 
+        RenderCaret(renderer);
         RenderTerminal(renderer);
 
-        _inputField.RenderCaret(renderer);
-        _inputField.Render(renderer);
-
         SDL.SetRenderClipRect(renderer.Handle, 0);
+    }
+
+    private void RenderCaret(Renderer renderer)
+    {
+        Vector2 caretPosition = TextPosition + new Vector2(_terminal.Buffer.X * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE));
+        CaretStyle caretStyle = XTermEx.ToCaretStyle(_terminal.Options.CursorStyle);
+
+        if (caretStyle == CaretStyle.Beam)
+        {
+            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).Y);
+            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+        }
+        else if (caretStyle == CaretStyle.Block)
+        {
+            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).X, FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).Y);
+            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+        }
+        else if (caretStyle == CaretStyle.Underline)
+        {
+            Rectangle caret = new(caretPosition + new Vector2(0, App.POINT_SIZE), FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).X, 4);
+            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+        }
     }
 
     private void RenderTerminal(Renderer renderer)
@@ -126,7 +131,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
                 if (cell.Attributes.Fg == 256)
                     color = Color.White;
                 else
-                    color = XtermEx.XtermColor(cell.Attributes.Fg);
+                    color = XTermEx.XtermColor(cell.Attributes.Fg);
 
                 Vector2 position = TextPosition + new Vector2(_characterWidth * col, ((App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) * row) - _scroll.Scroll);
                 renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, character, position, color);
@@ -136,24 +141,21 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     public void TextEdit(IKeybindSet keybindSet)
     {
-        if (Input.IsKeyDown(SDL.Keycode.Tab))
+        _pty.Input.Write(Program.TextInput);
+
+        if (Program.IsKeyDown(SDL.Keycode.Return))
+            _pty.Input.Write("\n");
+
+        if (Program.IsKeyDown(SDL.Keycode.Tab))
+            _pty.Input.Write("\t");
+
+        if (Program.IsKeyDown(SDL.Keycode.Backspace))
         {
-            return;
+            if (Input.IsKeyDown(SDL.Keycode.LCtrl))
+                _pty.Input.Write("\x1b\x7f");
+            else
+                _pty.Input.Write("\b");
         }
-
-        _inputField.CaretStyle = keybindSet.GetCaretStyle();
-        keybindSet.HandleKeybinds(_inputField);
-    }
-
-    private void InputFieldEnter()
-    {
-        _pty.Input.WriteLine(_inputField.Text);
-        _inputField.Clear();
-    }
-
-    private Vector2 GetInputFieldPosition()
-    {
-        return TextPosition + new Vector2(((_terminal.Buffer.Lines[_terminal.Buffer.Y] ?? new(0)).GetTrimmedLength() + 1) * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) - _scroll.Scroll);
     }
 
     private async Task ReadPty()
