@@ -2,9 +2,12 @@ public class TextDocument : TextContainer
 {
     public override string Text => string.Join("\n", Lines);
 
-    public TextDocument(string text)
+    public TextDocument(string? text)
     {
-        Lines = [.. text.Split('\n')];
+        if (text == null)
+            Lines = [];
+        else
+            Lines = [.. text.Split('\n')];
     }
 
     // hiiiiiii

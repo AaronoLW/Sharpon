@@ -1,6 +1,5 @@
 using System.Numerics;
 using System.Text;
-using KatziDrip;
 using SDL3;
 using SmashFramework;
 
@@ -84,7 +83,7 @@ public abstract class TextContainer
 
     public virtual void Append(string text)
     {
-        Lines.Add(text);
+        Append(text.Split('\n'));
     }
 
     public virtual void Append(string[] texts)

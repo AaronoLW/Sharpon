@@ -7,7 +7,7 @@ using System.Text;
 public class InputField : TextContainer
 {
     public override string Text => SelectedLine;
-    public string Prefix = "";
+    public string? Prefix = "";
 
     public Vector2 PrefixOffset => GetPrefixOffset();
     public Vector2 TextOffset => GetTextOffset();
@@ -28,11 +28,14 @@ public class InputField : TextContainer
         set { Width = value.X; Height = value.Y; }
     }
 
+    public float Padding = 0;
+
+    public event Action? OnEnter;
+
     public void Render(Renderer renderer)
     {
-        if (Prefix != string.Empty)
+        if (Prefix != null && Prefix != string.Empty)
         {
-
             renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, Prefix, Vector2.Round(Position + PrefixOffset), Color.White);
         }
 
@@ -62,8 +65,7 @@ public class InputField : TextContainer
 
     private Vector2 GetTextOffset()
     {
-        Vector2 textSize = FontManager.FontRegular.MeasureString(Text != string.Empty ? Text : "|", App.POINT_SIZE);
-        Vector2 textOffset = new(App.DEFAULT_PADDING, (Height / 2) - (textSize.Y / 2));
+        Vector2 textOffset = new(Padding);
 
         textOffset += new Vector2(PrefixOffset.X, 0);
 
@@ -72,8 +74,10 @@ public class InputField : TextContainer
 
     private Vector2 GetPrefixOffset()
     {
-        Vector2 prefixTextSize = FontManager.FontRegular.MeasureString(Prefix, App.POINT_SIZE);
-        Vector2 prefixOffset = new(App.DEFAULT_PADDING, (Height / 2) - (prefixTextSize.Y / 2));
+        if (Prefix == null)
+            return Vector2.Zero;
+
+        Vector2 prefixOffset = new(Padding);
 
         return prefixOffset;
     }
@@ -85,6 +89,6 @@ public class InputField : TextContainer
         Insert(sb.ToString());
     }
 
-    public override void InsertNewLine(bool fancyStuff = true) { }
+    public override void InsertNewLine(bool fancyStuff = true) { OnEnter?.Invoke(); }
     public override void InsertNewLineOnPreviousLine() { }
 }
