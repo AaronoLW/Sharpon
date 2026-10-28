@@ -143,18 +143,32 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
     {
         _pty.Input.Write(Program.TextInput);
 
-        if (Program.IsKeyDown(SDL.Keycode.Return))
-            _pty.Input.Write("\n");
-
-        if (Program.IsKeyDown(SDL.Keycode.Tab))
-            _pty.Input.Write("\t");
-
-        if (Program.IsKeyDown(SDL.Keycode.Backspace))
+        if (!Input.IsKeyDown(SDL.Keycode.LCtrl))
         {
-            if (Input.IsKeyDown(SDL.Keycode.LCtrl))
-                _pty.Input.Write("\x1b\x7f");
-            else
+            if (Program.IsKeyDown(SDL.Keycode.Return))
+                _pty.Input.Write("\n");
+
+            if (Program.IsKeyDown(SDL.Keycode.Tab))
+                _pty.Input.Write("\t");
+
+            if (Program.IsKeyDown(SDL.Keycode.Backspace))
                 _pty.Input.Write("\b");
+        }
+        else
+        {
+            if (Program.IsKeyDown(SDL.Keycode.Backspace))
+                _pty.Input.Write("\x1b\x7f");
+
+            if (Program.IsKeyDown(SDL.Keycode.C))
+                _pty.Input.Write("\x3");
+
+            if (Input.IsKeyDown(SDL.Keycode.LShift))
+            {
+                if (Program.IsKeyDown(SDL.Keycode.V))
+                {
+                    _pty.Input.Write(SDL.GetClipboardText());
+                }
+            }
         }
     }
 
