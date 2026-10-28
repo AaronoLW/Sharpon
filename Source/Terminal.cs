@@ -153,7 +153,6 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     private Vector2 GetInputFieldPosition()
     {
-        Console.WriteLine(_terminal.Buffer.Y);
         return TextPosition + new Vector2(((_terminal.Buffer.Lines[_terminal.Buffer.Y] ?? new(0)).GetTrimmedLength() + 1) * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) - _scroll.Scroll);
     }
 
