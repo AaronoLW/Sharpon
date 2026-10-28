@@ -106,7 +106,8 @@ public class App
             _window,
             _renderer,
             _richPresence,
-            playtimeCounter
+            playtimeCounter,
+            _terminal
         ];
 
         _activityProvider = _editor;

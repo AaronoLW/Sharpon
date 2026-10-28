@@ -4,6 +4,7 @@ using KatziDrip;
 public static class FontManager
 {
     public static Font FontRegular { get; private set; } = null!;
+    public static readonly string FontSize = "Medium";
 
     public static void Init(Renderer renderer)
     {
@@ -13,7 +14,7 @@ public static class FontManager
         {
             foreach (string fontPath in fontPaths)
             {
-                if (fontPath.EndsWith("-Medium.ttf"))
+                if (fontPath.EndsWith($"-{FontSize}.ttf"))
                 {
                     Console.WriteLine($"Fontpath: {fontPath}");
                     FontRegular = AssetManager.LoadFont(fontPath, renderer);
@@ -22,7 +23,7 @@ public static class FontManager
             }
         }
 
-        string assetFontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", $"{Drip.FontFamily}-Medium.ttf");
+        string assetFontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", $"{Drip.FontFamily}-{FontSize}.ttf");
         if (File.Exists(assetFontPath))
         {
             Console.WriteLine($"Fontpath: {assetFontPath}");

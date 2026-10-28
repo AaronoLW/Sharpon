@@ -6,7 +6,7 @@ using Ghostflyby.Pty;
 using XTerm.Buffer;
 using SDL3;
 
-public class Terminal : IPermutable, IRenderable, IRequireTextEditing
+public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposable
 {
     public bool Opened;
 
@@ -29,14 +29,17 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     private Vector2 _previousWindowSize = App.WindowSize;
 
+    private readonly float _pointSize = 17;
+
     public Terminal()
     {
-        _characterWidth = FontManager.FontRegular.MeasureString("W", App.POINT_SIZE).X;
+        _characterWidth = FontManager.FontRegular.MeasureString("W", _pointSize).X;
 
         PtyStartInfo ptyInfo = new("/usr/bin/bash")
         {
             Environment = new Dictionary<string, string?> { ["TERM"] = "xterm-256color" }
         };
+
         _pty = PtyProcess.Start(ptyInfo);
 
         _terminal = new();
@@ -61,9 +64,9 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
             _terminal.Resize((int)(App.WindowWidth / _characterWidth - 2), (int)(MAX_HEIGHT / _characterWidth - 2));
         }
 
-        if ((_terminal.Buffer.Y + 2) * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) >= Height)
+        if ((_terminal.Buffer.Y + 2) * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) >= Height)
         {
-            _scroll.SetScroll((_terminal.Buffer.Y + 2) * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) - MAX_HEIGHT);
+            _scroll.SetScroll((_terminal.Buffer.Y + 2) * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) - MAX_HEIGHT);
         }
         else
         {
@@ -91,22 +94,22 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
     private void RenderCaret(Renderer renderer)
     {
-        Vector2 caretPosition = TextPosition + new Vector2(_terminal.Buffer.X * _characterWidth, _terminal.Buffer.Y * (App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE));
+        Vector2 caretPosition = TextPosition + new Vector2(_terminal.Buffer.X * _characterWidth, _terminal.Buffer.Y * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE));
         CaretStyle caretStyle = XTermEx.ToCaretStyle(_terminal.Options.CursorStyle);
 
         if (caretStyle == CaretStyle.Beam)
         {
-            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).Y);
+            Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
         }
         else if (caretStyle == CaretStyle.Block)
         {
-            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).X, FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).Y);
+            Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", _pointSize).X, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
             renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
         }
         else if (caretStyle == CaretStyle.Underline)
         {
-            Rectangle caret = new(caretPosition + new Vector2(0, App.POINT_SIZE), FontManager.FontRegular.MeasureString("|", App.POINT_SIZE).X, 4);
+            Rectangle caret = new(caretPosition + new Vector2(0, _pointSize), FontManager.FontRegular.MeasureString("|", _pointSize).X, 4);
             renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
         }
     }
@@ -136,8 +139,8 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
                 else
                     color = XTermEx.XtermColor(cell.Attributes.Fg);
 
-                Vector2 position = TextPosition + new Vector2(_characterWidth * col, ((App.POINT_SIZE + App.LINE_SPACING_POINT_SIZE_INCREASE) * row) - _scroll.Scroll);
-                renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, character, position, color);
+                Vector2 position = TextPosition + new Vector2(_characterWidth * col, ((_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) * row) - _scroll.Scroll);
+                renderer.RenderString(FontManager.FontRegular, _pointSize, character, position, color);
             }
         }
     }
@@ -186,5 +189,12 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing
 
             _terminal.Write(new string(buffer[0..bytesRead]));
         }
+    }
+
+    public void Dispose()
+    {
+        _terminal.Dispose();
+        _pty.Dispose();
+        _pty.Dispose();
     }
 }
