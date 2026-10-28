@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="DiscordRPC" Version="1.0.0" />
+    <PackageReference Include="Ghostflyby.Pty" Version="1.0.1" />
     <PackageReference Include="SmashFramework" Version="2.1.4" />
     <PackageReference Include="KatziDrip" Version="1.0.8" />
   </ItemGroup>
