@@ -35,7 +35,18 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
     {
         _characterWidth = FontManager.FontRegular.MeasureString("W", _pointSize).X;
 
-        PtyStartInfo ptyInfo = new("/usr/bin/bash")
+        string shellPath;
+
+        if (OperatingSystem.IsWindows())
+        {
+            shellPath = "cmd.exe";
+        }
+        else
+        {
+            shellPath = Environment.GetEnvironmentVariable("SHELL") ?? "/bin/bash";
+        }
+
+        PtyStartInfo ptyInfo = new(shellPath)
         {
             Environment = new Dictionary<string, string?> { ["TERM"] = "xterm-256color" }
         };
