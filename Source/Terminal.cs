@@ -52,6 +52,8 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
         };
 
         _pty = PtyProcess.Start(ptyInfo);
+        _pty.Input.WriteLine("HIIIIII");
+        _pty.Input.WriteLine("clear");
 
         _terminal = new();
 
