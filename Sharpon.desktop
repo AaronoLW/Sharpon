@@ -1,8 +1,9 @@
 [Desktop Entry]
 Name=Sharpon
-Comment=Code Editor
+StartupWMClass=sharpon
+Comment=Katzi approves of this code editor
+GenericName=Code Editor
 Exec=Sharpon
-Terminal=false
-Type=Application
 Icon=Sharpon
-Categories=Development;
+Type=Application
+Categories=Utility;
