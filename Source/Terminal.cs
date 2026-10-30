@@ -20,7 +20,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
     public Vector2 Position => new(0, App.WindowHeight - Height);
     public Vector2 TextPosition => Position + new Vector2(App.DEFAULT_PADDING);
 
-    private readonly Scroller _scroll = new();
+    private readonly Scroller _scroll = new(0);
 
     private readonly PtyProcess _pty;
     private readonly XTerm.Terminal _terminal;
@@ -58,6 +58,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
         _terminal = new();
 
         _ = ReadPty();
+        ScrollTerminal();
     }
 
     public void Update(double deltaTime)
@@ -77,16 +78,12 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
             _terminal.Resize((int)(App.WindowWidth / _characterWidth - 2), (int)(MAX_HEIGHT / _characterWidth - 2));
         }
 
-        if ((_terminal.Buffer.Y + 2) * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) >= Height)
+        if (Opened && Input.MouseY > (App.WindowHeight - Height))
         {
-            _scroll.SetScroll((_terminal.Buffer.Y + 2) * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) - MAX_HEIGHT);
-        }
-        else
-        {
-            _scroll.SetScroll(0);
+            _scroll.Update();
         }
 
-        _scroll.Update();
+        _scroll.Clamp();
         _scroll.Animate(deltaTime);
     }
 
@@ -107,7 +104,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
 
     private void RenderCaret(Renderer renderer)
     {
-        Vector2 caretPosition = TextPosition + new Vector2(_terminal.Buffer.X * _characterWidth, _terminal.Buffer.Y * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE));
+        Vector2 caretPosition = TextPosition + new Vector2(_terminal.Buffer.X * _characterWidth, _terminal.Buffer.Y * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) - _scroll.Scroll);
         CaretStyle caretStyle = XTermEx.ToCaretStyle(_terminal.Options.CursorStyle);
 
         if (caretStyle == CaretStyle.Beam)
@@ -201,6 +198,19 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
             int bytesRead = await stream.ReadAsync(buffer);
 
             _terminal.Write(new string(buffer[0..bytesRead]));
+            ScrollTerminal();
+        }
+    }
+
+    private void ScrollTerminal()
+    {
+        if ((_terminal.Buffer.Y + 2) * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) >= Height)
+        {
+            _scroll.SetScroll((_terminal.Buffer.Y + 2) * (_pointSize + App.LINE_SPACING_POINT_SIZE_INCREASE) - MAX_HEIGHT);
+        }
+        else
+        {
+            _scroll.SetScroll(0);
         }
     }
 

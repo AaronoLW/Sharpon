@@ -32,6 +32,8 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
             _unsavedChanges = true;
 
         _document.CaretStyle = keybindSet.GetCaretStyle();
+        _scroll.Update();
+
     }
 
     public void Update(double deltaTime)
@@ -47,8 +49,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
         if (Input.MouseX < App.WindowWidth - App.FILEMANAGER_WIDTH)
         {
-            _scroll.Update();
-
             if (Input.IsLeftMousePressed())
             {
                 _document.JumpToMousePosition(App.ActivityPosition - new Vector2(0, _scroll.Scroll));
