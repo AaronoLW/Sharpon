@@ -1,5 +1,5 @@
 pkgname=Sharpon-git
-pkgver=6
+pkgver=7
 pkgrel=1
 pkgdesc="Peak description"
 arch=('x86_64')
@@ -18,7 +18,7 @@ build() {
 }
 
 package() {
-    install -Dm755 "$srcdir/publish/Sharpon" \
+    install -Dm755 "$srcdir/Sharpon/publish/Sharpon" \
         "$pkgdir/usr/bin/Sharpon"
 
     install -Dm644 "$srcdir/Sharpon/LICENSE" \
@@ -26,4 +26,7 @@ package() {
 
     install -Dm644 "$srcdir/Sharpon/Sharpon.desktop" \
             "$pkgdir/usr/share/applications/Sharpon.desktop"
+
+    install -Dm644 "$srcdir/Sharpon/Sharpon.png" \
+            "$pkgdir/usr/share/icons/hicolor/256x256/apps/Sharpon.png"
 }
