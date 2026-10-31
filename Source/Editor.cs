@@ -54,18 +54,21 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
                 _document.JumpToMousePosition(App.ActivityPosition - new Vector2(0, _scroll.Scroll));
             }
 
-            if (Program.IsKeyDown(SDL.Keycode.Plus))
+            if (Input.IsKeyDown(SDL.Keycode.LCtrl))
             {
-                PointSizeDeleter.Enqueue(_document.PointSize);
-                _document.PointSize++;
-            }
-
-            if (Program.IsKeyDown(SDL.Keycode.Minus))
-            {
-                if (_document.PointSize > TextContainer.MIN_POINT_SIZE)
+                if (Program.IsKeyDown(SDL.Keycode.Plus))
                 {
                     PointSizeDeleter.Enqueue(_document.PointSize);
-                    _document.PointSize--;
+                    _document.PointSize++;
+                }
+
+                if (Program.IsKeyDown(SDL.Keycode.Minus))
+                {
+                    if (_document.PointSize > TextContainer.MIN_POINT_SIZE)
+                    {
+                        PointSizeDeleter.Enqueue(_document.PointSize);
+                        _document.PointSize--;
+                    }
                 }
             }
         }
