@@ -14,15 +14,17 @@
   <ItemGroup>
     <PackageReference Include="DiscordRPC" Version="1.0.0" />
     <PackageReference Include="Ghostflyby.Pty" Version="1.0.1" />
-    <PackageReference Include="SmashFramework" Version="2.1.5" />
+    <PackageReference Include="SmashFramework" Version="2.2.0" />
     <PackageReference Include="KatziDrip" Version="1.0.8" />
-    <PackageReference Include="XTerm.NET" Version="3.0.0" />
+    <PackageReference Include="XTerm.NET" Version="3.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-      <Content Include="Assets\**\*">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+  <PropertyGroup>
+      <IncludeAssets Condition="'$(IncludeAssets)' == ''">false</IncludeAssets>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IncludeAssets)' == 'true'">
+      <EmbeddedResource Include="Assets/**/*" />
   </ItemGroup>
 
 </Project>
