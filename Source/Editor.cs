@@ -7,6 +7,7 @@ using SmashFramework;
 public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextEditing
 {
     private const float CARET_SPEED = 40f;
+    private const int HORIZONTAL_EDITOR_OFFSET = 80;
 
     private TextDocument _document = null!;
     private int _previousLineIndex = 0;
@@ -92,12 +93,22 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
     public void Render(Renderer renderer)
     {
-        RenderCaret(renderer, App.ActivityPosition - new Vector2(0, _scroll.Scroll));
+        RenderCaret(renderer, App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll));
 
         int startLineIndex = Math.Max((int)(_scroll.Scroll / _document.LineSpacing) - 1, 0);
         for (int i = startLineIndex; i < _document.Lines.Count; i++)
         {
-            Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _document.LineSpacing) - _scroll.Scroll));
+            // Line numbers
+            {
+                Vector2 lineNumberPosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _document.LineSpacing) - _scroll.Scroll));
+
+                Color color = _document.LineIndex == i ? Drip.AccentColor.ToColor() : Color.White;
+                renderer.RenderString(FontManager.FontRegular, _document.PointSize, (i + 1).ToString(), lineNumberPosition, color);
+
+                renderer.RenderLine(HORIZONTAL_EDITOR_OFFSET, 0, HORIZONTAL_EDITOR_OFFSET, App.WindowHeight, Drip.VeryLightColor.ToColor());
+            }
+
+            Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(HORIZONTAL_EDITOR_OFFSET, (i * _document.LineSpacing) - _scroll.Scroll));
 
             if (linePosition.Y < 0 || linePosition.Y > App.WindowHeight)
                 break;
