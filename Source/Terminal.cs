@@ -91,7 +91,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
     {
         Rectangle backgroundRectangle = new(Position, App.WindowWidth, App.TERMINAL_HEIGHT);
         renderer.RenderFilledRectangle(backgroundRectangle, Color.Black);
-        renderer.RenderLine(0, Position.Y, App.WindowWidth, Position.Y, Drip.AccentColor.ToColor());
+        renderer.RenderLine(0, Position.Y, App.WindowWidth, Position.Y, Drip.PrimaryAccentColor.ToColor());
 
         Rectangle clipRect = new(Position + new Vector2(0, 1), App.WindowSize);
         SDL.SetRenderClipRect(renderer.Handle, clipRect.ToSDLRect());
@@ -110,17 +110,17 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
         if (caretStyle == CaretStyle.Beam)
         {
             Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
         }
         else if (caretStyle == CaretStyle.Block)
         {
             Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", _pointSize).X, FontManager.FontRegular.MeasureString("|", _pointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
         }
         else if (caretStyle == CaretStyle.Underline)
         {
             Rectangle caret = new(caretPosition + new Vector2(0, _pointSize), FontManager.FontRegular.MeasureString("|", _pointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
         }
     }
 
