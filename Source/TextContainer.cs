@@ -163,8 +163,9 @@ public abstract class TextContainer
             if (LineIndex == LineCount)
             {
                 LineIndex--;
-                ClampCaretIfNecessary();
             }
+
+            ClampCaretIfNecessary();
         }
     }
 
@@ -307,7 +308,10 @@ public abstract class TextContainer
 
     public virtual Vector2 GetCaretPosition(Vector2 offset)
     {
-        float x = FontManager.FontRegular.MeasureString(SelectedLine[0..CharIndex], PointSize).X;
+        float x = 0;
+        if (CharIndex != 0)
+            x = FontManager.FontRegular.MeasureString(SelectedLine[0..CharIndex], PointSize).X;
+
         float y = LineSpacing * LineIndex;
 
         return offset + new Vector2(x, y);
