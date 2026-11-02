@@ -33,8 +33,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
             _unsavedChanges = true;
 
         _document.CaretStyle = keybindSet.GetCaretStyle();
-        _scroll.Update();
-
     }
 
     public void Update(double deltaTime)
@@ -72,6 +70,8 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
                     }
                 }
             }
+
+            _scroll.Update();
         }
 
         _scroll.Clamp();
@@ -95,6 +95,9 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
     {
         RenderCaret(renderer, App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll));
 
+        // Separator line between the line numbers and text
+        renderer.RenderLine(HORIZONTAL_EDITOR_OFFSET, 0, HORIZONTAL_EDITOR_OFFSET, App.WindowHeight, Drip.VeryLightColor.ToColor());
+
         int startLineIndex = Math.Max((int)(_scroll.Scroll / _document.LineSpacing) - 1, 0);
         for (int i = startLineIndex; i < _document.Lines.Count; i++)
         {
@@ -104,8 +107,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
                 Color color = _document.LineIndex == i ? Drip.AccentColor.ToColor() : Color.White;
                 renderer.RenderString(FontManager.FontRegular, _document.PointSize, (i + 1).ToString(), lineNumberPosition, color);
-
-                renderer.RenderLine(HORIZONTAL_EDITOR_OFFSET, 0, HORIZONTAL_EDITOR_OFFSET, App.WindowHeight, Drip.VeryLightColor.ToColor());
             }
 
             Vector2 linePosition = Vector2.Round(App.ActivityPosition + new Vector2(HORIZONTAL_EDITOR_OFFSET, (i * _document.LineSpacing) - _scroll.Scroll));

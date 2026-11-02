@@ -54,10 +54,10 @@ public class FileManager : IPermutable, IRenderable
     public void Update(double deltaTime)
     {
         if (Input.MouseX > App.WindowWidth - App.FILEMANAGER_WIDTH)
+        {
             _scroll.Update();
-
-        if (_scroll.Scroll < 0)
-            _scroll.Reset();
+            _scroll.Clamp();
+        }
 
         _scroll.Animate(deltaTime);
 
