@@ -125,7 +125,30 @@ public class FileManager : IPermutable, IRenderable
                     break;
 
                 string name = Path.GetFileName(_fileSystemEntries[i]);
-                Kolor color = Directory.Exists(_fileSystemEntries[i]) ? Drip.PrimaryAccentColor : Drip.White;
+
+                Kolor color;
+                if (Directory.Exists(_fileSystemEntries[i]))
+                {
+                    color = Drip.PrimaryAccentColor;
+                }
+                else
+                {
+                    color = Drip.White;
+                    if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD())
+                    {
+                        if ((File.GetUnixFileMode(_fileSystemEntries[i]) & (UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute)) != 0)
+                        {
+                            color = Drip.SecondaryAccentColor;
+                        }
+                    }
+                    else if (OperatingSystem.IsWindows())
+                    {
+                        if (Path.GetExtension(_fileSystemEntries[i]).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            color = Drip.SecondaryAccentColor;
+                        }
+                    }
+                }
 
                 if (Directory.Exists(_fileSystemEntries[i]))
                     name += Path.DirectorySeparatorChar;
