@@ -39,7 +39,7 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
 
         if (OperatingSystem.IsWindows())
         {
-            shellPath = "cmd.exe";
+            shellPath = @"C:\Program Files\Git\bin\bash.exe";
         }
         else
         {
