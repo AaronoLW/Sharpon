@@ -52,7 +52,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
         {
             if (Input.IsLeftMousePressed())
             {
-                _document.JumpToMousePosition(App.ActivityPosition - new Vector2(0, _scroll.Scroll));
+                _document.JumpToMousePosition(App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll));
             }
 
             if (Input.IsKeyDown(SDL.Keycode.LCtrl))
