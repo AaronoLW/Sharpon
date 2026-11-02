@@ -163,7 +163,7 @@ public abstract class TextContainer
             if (LineIndex == LineCount)
             {
                 LineIndex--;
-                CharIndex = LineLength;
+                ClampCaretIfNecessary();
             }
         }
     }
