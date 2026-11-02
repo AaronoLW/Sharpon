@@ -105,7 +105,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
             {
                 Vector2 lineNumberPosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _document.LineSpacing) - _scroll.Scroll));
 
-                Color color = _document.LineIndex == i ? Drip.AccentColor.ToColor() : Color.White;
+                Color color = _document.LineIndex == i ? Drip.PrimaryAccentColor.ToColor() : Color.White;
                 renderer.RenderString(FontManager.FontRegular, _document.PointSize, (i + 1).ToString(), lineNumberPosition, color);
             }
 
@@ -122,7 +122,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
                 Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(_document.Lines[i], _document.PointSize).Y));
 
-                Kolor accentColor = new(Drip.AccentColor.R, Drip.AccentColor.G, Drip.AccentColor.B, 100);
+                Kolor accentColor = new(Drip.PrimaryAccentColor.R, Drip.PrimaryAccentColor.G, Drip.PrimaryAccentColor.B, 100);
                 renderer.RenderFilledRectangle(selectionRect, accentColor.ToColor());
             }
 
@@ -137,17 +137,17 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
         if (_document.CaretStyle == CaretStyle.Beam)
         {
             Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", _document.PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
         }
         else if (_document.CaretStyle == CaretStyle.Block)
         {
             Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", _document.PointSize).X, FontManager.FontRegular.MeasureString("|", _document.PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
         }
         else if (_document.CaretStyle == CaretStyle.Underline)
         {
             Rectangle caret = new(caretPosition + new Vector2(0, _document.PointSize), FontManager.FontRegular.MeasureString("|", _document.PointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Drip.AccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
         }
     }
 
