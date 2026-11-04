@@ -134,13 +134,9 @@ public abstract class TextContainer
         if (CharIndex == 0)
         {
             JoinLineUpwards();
-            if (LineIndex != 0)
-            {
-                CharIndex = LineLength;
-            }
 
-            if (LineIndex != LineCount - 1)
-                LineIndex--;
+            if (LineIndex != 0)
+                CharIndex = LineLength;
 
             return;
         }
@@ -168,10 +164,7 @@ public abstract class TextContainer
         else
         {
             Lines.RemoveAt(LineIndex);
-            if (LineIndex == LineCount)
-            {
-                LineIndex--;
-            }
+            LineIndex--;
 
             ClampCaretIfNecessary();
         }
