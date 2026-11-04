@@ -136,9 +136,11 @@ public abstract class TextContainer
             JoinLineUpwards();
             if (LineIndex != 0)
             {
-                LineIndex--;
                 CharIndex = LineLength;
             }
+
+            if (LineIndex != LineCount - 1)
+                LineIndex--;
 
             return;
         }
