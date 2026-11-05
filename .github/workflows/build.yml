@@ -56,11 +56,11 @@ jobs:
           
       - name: Delete Linux Debug Symbols
         if: runner.os == 'Linux'
-        run: rm ./publish/Sharpon.dbg
+        run: rm ./publish/${{ matrix.rid }}/Sharpon.dbg
         
       - name: Delete Windows Debug Symbols
         if: runner.os == 'Windows'
-        run: rm ./publish/Sharpon.pdb
+        run: rm ./publish/${{ matrix.rid }}/Sharpon.pdb
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
