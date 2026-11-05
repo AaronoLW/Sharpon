@@ -11,6 +11,7 @@ public class App
     public const int POINT_SIZE = 21;
     public const int SMALL_POINT_SIZE = 18;
     public const int VERY_SMALL_POINT_SIZE = 16;
+    public const int BIG_POINT_SIZE = 30;
 
     public const int LINE_SPACING_POINT_SIZE_INCREASE = 6;
 
