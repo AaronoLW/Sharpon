@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Numerics;
 using SmashFramework;
 
 public class Config : IActivityProvider, IRenderable
