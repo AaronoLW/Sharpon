@@ -168,9 +168,12 @@ public class App
                     _focusedTextEditor = _editor;
             }
 
-            if (Input.IsKeyPressed(SDL.Keycode.E))
+            if (Input.IsKeyDown(SDL.Keycode.LShift))
             {
-                _fileManager.Opened = !_fileManager.Opened;
+                if (Input.IsKeyPressed(SDL.Keycode.E))
+                {
+                    _fileManager.Opened = !_fileManager.Opened;
+                }
             }
         }
 
