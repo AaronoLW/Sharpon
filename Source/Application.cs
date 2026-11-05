@@ -26,7 +26,7 @@ public class App
 
     public const int ANIMATION_SPEED = 30;
 
-    public const int SCROLL_SPEED_AMPLIFIER = 70;
+    public const int SCROLL_SPEED_AMPLIFIER = 55;
 
     public static readonly bool CSharpBracketStyle = true;
 
@@ -94,14 +94,15 @@ public class App
             _editor,
             _fileManager,
             playtimeCounter,
-            _terminal
+            _terminal,
+            _config
         ];
 
         _renderables = [
             _editor,
+            _config,
             _activityBar,
             _fileManager,
-            _config,
             _terminal
         ];
 

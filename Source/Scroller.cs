@@ -2,7 +2,6 @@ using SmashFramework;
 
 public class Scroller(float? min = null, float? max = null)
 {
-    public const int SCROLL_AMPLIFIER = 40;
     public const int SCROLL_SPEED = 30;
 
     private readonly float? _minimum = min;
@@ -15,7 +14,7 @@ public class Scroller(float? min = null, float? max = null)
     {
         if (Input.ScrollWheelDelta != 0)
         {
-            _preferredScroll -= Input.ScrollWheelDelta * SCROLL_AMPLIFIER;
+            _preferredScroll -= Input.ScrollWheelDelta * App.SCROLL_SPEED_AMPLIFIER;
         }
     }
 
