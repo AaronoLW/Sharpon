@@ -19,15 +19,17 @@ public class App
     private const int INITIAL_WINDOW_WIDTH = 800;
     private const int INITIAL_WINDOW_HEIGHT = 600;
 
-    public const int FILEMANAGER_WIDTH = 250;
+    public const int MAX_FILEMANAGER_WIDTH = 250;
     public const int ACTIVITY_BAR_HEIGHT = 50;
     public const int TERMINAL_HEIGHT = 350;
 
     public const int ANIMATION_SPEED = 30;
 
-    public const int SCROLL_SPEED_AMPLIFIER = 40;
+    public const int SCROLL_SPEED_AMPLIFIER = 70;
 
     public static readonly bool CSharpBracketStyle = true;
+
+    public static float FileManagerWidth => _fileManager.Width;
 
     public static int WindowWidth = INITIAL_WINDOW_WIDTH;
     public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
@@ -41,7 +43,7 @@ public class App
     private static bool _windowFullscreen = false;
 
     private readonly Editor _editor;
-    private readonly FileManager _fileManager;
+    private static FileManager _fileManager = null!;
     private readonly Config _config;
     private readonly Terminal _terminal;
 
@@ -80,7 +82,7 @@ public class App
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
-        _fileManager = new(FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
+        _fileManager = new(MAX_FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
         _richPresence = new();
 
         PlaytimeCounter playtimeCounter = new();
@@ -120,7 +122,7 @@ public class App
 
         if (Input.IsLeftMousePressed())
         {
-            if (Input.MouseX > WindowWidth - FILEMANAGER_WIDTH)
+            if (Input.MouseX > WindowWidth - FileManagerWidth)
             {
                 string? entry = _fileManager.HandleClick();
                 if (entry != null)
@@ -162,6 +164,11 @@ public class App
                     _focusedTextEditor = _terminal;
                 else
                     _focusedTextEditor = _editor;
+            }
+
+            if (Input.IsKeyPressed(SDL.Keycode.E))
+            {
+                _fileManager.Opened = !_fileManager.Opened;
             }
         }
 

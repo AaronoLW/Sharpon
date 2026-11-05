@@ -8,6 +8,8 @@ public class FileManager : IPermutable, IRenderable
     private const float ENTRY_SPACING = App.VERY_SMALL_POINT_SIZE * 2;
     private const float AUTO_REFRESH_INTERVAL = 0.5f;
 
+    public bool Opened = true;
+
     public float Width;
     public float Height;
 
@@ -18,7 +20,7 @@ public class FileManager : IPermutable, IRenderable
     private readonly Scroller _scroll = new(0, null);
 
     private const int BACK_BUTTON_SIZE = 40;
-    private Rectangle _backButtonRectangle => new(new Vector2(App.WindowWidth - App.DEFAULT_PADDING / 1.5f - BACK_BUTTON_SIZE, App.DEFAULT_PADDING / 1.5f), BACK_BUTTON_SIZE, BACK_BUTTON_SIZE);
+    private Rectangle _backButtonRectangle => new(new Vector2(App.WindowWidth - App.DEFAULT_PADDING / 1.5f - BACK_BUTTON_SIZE - (Width - App.MAX_FILEMANAGER_WIDTH), App.DEFAULT_PADDING / 1.5f), BACK_BUTTON_SIZE, BACK_BUTTON_SIZE);
     private Kolor _backButtonColor = Drip.LightColor;
 
     private string[]? _fileSystemEntries;
@@ -53,13 +55,23 @@ public class FileManager : IPermutable, IRenderable
 
     public void Update(double deltaTime)
     {
-        if (Input.MouseX > App.WindowWidth - App.FILEMANAGER_WIDTH)
+        if (Input.MouseX > App.WindowWidth - Width)
         {
             _scroll.Update();
             _scroll.Clamp();
         }
 
         _scroll.Animate(deltaTime);
+
+        if (Opened)
+        {
+            Width = MathHelper.Larp(Width, App.MAX_FILEMANAGER_WIDTH, App.ANIMATION_SPEED * (float)deltaTime);
+        }
+        else
+        {
+            Width = MathHelper.Larp(Width, 0, App.ANIMATION_SPEED * (float)deltaTime);
+        }
+
 
         if (_backButtonRectangle.IsPositionInRectangle(Input.MousePosition))
         {
