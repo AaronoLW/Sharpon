@@ -615,14 +615,13 @@ public abstract class TextContainer
         int length = 0;
         for (int i = CharIndex - 1; i > 0; i--)
         {
+            if (!foundWord && !char.IsWhiteSpace(SelectedLine[i]))
+                foundWord = true;
+
             if (IsSpecialOrWhiteSpaceCharacter(SelectedLine[i]))
             {
                 if (foundWord)
                     return length;
-            }
-            else
-            {
-                foundWord = true;
             }
 
             length++;
