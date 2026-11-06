@@ -672,6 +672,26 @@ public abstract class TextContainer
         return length;
     }
 
+    public virtual void JumpUp(int count)
+    {
+        LineIndex += count;
+
+        if (LineIndex >= LineCount)
+            LineIndex = LineCount - 1;
+
+        ClampCaretIfNecessary();
+    }
+
+    public virtual void JumpDown(int count)
+    {
+        LineIndex -= count;
+
+        if (LineIndex < 0)
+            LineIndex = 0;
+
+        ClampCaretIfNecessary();
+    }
+
     protected int GetLineLength(int lineIndex)
     {
         return Math.Max(Lines[lineIndex].Length - ((CaretStyle == CaretStyle.Block || CaretStyle == CaretStyle.Underline) ? 1 : 0), 0);

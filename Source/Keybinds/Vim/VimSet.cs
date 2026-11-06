@@ -27,6 +27,8 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.Right,     (vimSet, document) => document.MoveRight(),            VimMode.Normal),
         new(SDL.Keycode.V,     (vimSet, document) => { document.StartSelection(SelectionMode.Default); vimSet.SetVimMode(VimMode.Visual, document); },            VimMode.Normal),
         new(SDL.Keycode.V,     (vimSet, document) => { document.StartSelection(SelectionMode.Linewise); vimSet.SetVimMode(VimMode.VisualLine, document); },            VimMode.Normal, SDL.Keycode.LShift),
+        new(SDL.Keycode.D,     (vimSet, document) => document.JumpUp(24),            VimMode.Normal, SDL.Keycode.LCtrl),
+        new(SDL.Keycode.U,     (vimSet, document) => document.JumpDown(24),            VimMode.Normal, SDL.Keycode.LCtrl),
 
         // Insert mode
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert),
