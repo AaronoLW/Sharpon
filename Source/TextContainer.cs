@@ -134,9 +134,7 @@ public abstract class TextContainer
         if (CharIndex == 0)
         {
             JoinLineUpwards();
-
-            if (LineIndex != 0)
-                CharIndex = LineLength;
+            ClampCaretIfNecessary();
 
             return;
         }
@@ -145,7 +143,7 @@ public abstract class TextContainer
         CharIndex -= count;
     }
 
-    public virtual void DeleteLine()
+    public virtual void DeleteLine(bool clampLineIndex = false)
     {
         if (LineIndex == 0)
         {
@@ -164,9 +162,16 @@ public abstract class TextContainer
         else
         {
             Lines.RemoveAt(LineIndex);
-            LineIndex--;
 
-            ClampCaretIfNecessary();
+            if (clampLineIndex)
+            {
+                if (LineIndex >= LineCount)
+                {
+                    LineIndex = LineCount - 1;
+                }
+
+                ClampCaretIfNecessary();
+            }
         }
     }
 
@@ -177,6 +182,7 @@ public abstract class TextContainer
 
         string lineContent = SelectedLine;
         DeleteLine();
+        LineIndex--;
 
         CharIndex = SelectedLine.Length;
         Insert(lineContent);

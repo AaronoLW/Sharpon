@@ -41,7 +41,7 @@ public class VimSet : IKeybindSet
 
         // Delete mode
         new(SDL.Keycode.D,     (vimSet, document) => vimSet.SetVimMode(VimMode.Delete, document),               VimMode.Normal),
-        new(SDL.Keycode.D,     (vimSet, document) => { document.DeleteLine(); vimSet.SetVimMode(VimMode.Normal, document); },               VimMode.Delete),
+        new(SDL.Keycode.D,     (vimSet, document) => { document.DeleteLine(true); vimSet.SetVimMode(VimMode.Normal, document); },               VimMode.Delete),
         new(SDL.Keycode.Escape,     (vimSet, document) => vimSet.SetVimMode(VimMode.Normal, document),               VimMode.Delete),
 
         // Visual mode
