@@ -473,7 +473,7 @@ public abstract class TextContainer
                         if (lineIndex < LineIndex)
                             return (SelectionCharIndex, Lines[lineIndex].Length);
                         else
-                            return (0, SelectionCharIndex + 1);
+                            return (0, Math.Min(SelectionCharIndex + 1, Lines[lineIndex].Length));
                     }
                     else
                         return (0, Lines[lineIndex].Length);
