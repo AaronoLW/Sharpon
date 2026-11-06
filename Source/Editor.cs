@@ -120,7 +120,11 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
                 float fromWidth = FontManager.FontRegular.MeasureString(_document.Lines[i][0..selectionRange.Value.Item1], _document.PointSize).X;
                 float toWidth = FontManager.FontRegular.MeasureString(_document.Lines[i][0..selectionRange.Value.Item2], _document.PointSize).X - fromWidth;
 
-                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString(_document.Lines[i], _document.PointSize).Y));
+                // If there are no characters on the line set a minimum
+                if (toWidth == 0)
+                    toWidth = 5;
+
+                Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString("|", _document.PointSize).Y));
 
                 Kolor accentColor = new(Drip.PrimaryAccentColor.R, Drip.PrimaryAccentColor.G, Drip.PrimaryAccentColor.B, 100);
                 renderer.RenderFilledRectangle(selectionRect, accentColor.ToColor());
