@@ -246,9 +246,9 @@ public abstract class TextContainer
     {
         if (LineIndex > 0)
         {
-            LineIndex--;
-            CharIndex = LineLength;
-            InsertNewLine();
+            int indent = GetLineStartIndent();
+            Lines.Insert(LineIndex, GetSpacesString(indent));
+            ClampCaretIfNecessary();
         }
         else
         {
@@ -537,7 +537,7 @@ public abstract class TextContainer
             int endChar = Math.Max(CharIndex, SelectionCharIndex);
 
             if (SelectionMode == SelectionMode.Linewise)
-                return Lines[startLine][0..Lines[startLine].Length];
+                return Lines[startLine][0..Lines[startLine].Length] + (startLine != LineCount - 1 ? "\n" : "");
             else
                 return Lines[startLine][startChar..endChar];
         }
@@ -563,7 +563,7 @@ public abstract class TextContainer
                 sb.Append(Lines[i]);
             }
 
-            if (i != Lines.Count - 1)
+            if (i != LineCount - 1)
             {
                 sb.Append('\n');
             }
