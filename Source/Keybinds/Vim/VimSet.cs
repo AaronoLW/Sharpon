@@ -1,5 +1,4 @@
 using SDL3;
-using SmashFramework;
 
 public class VimSet : IKeybindSet
 {
@@ -32,6 +31,7 @@ public class VimSet : IKeybindSet
 
         // Insert mode
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert),
+        new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(1),                                              VimMode.Insert, SDL.Keycode.LShift),
         new(SDL.Keycode.Backspace, (vimSet, document) => document.RemoveBackwards(document.GetJumpLeftLength()),                   VimMode.Insert, SDL.Keycode.LCtrl),
         new(SDL.Keycode.Escape,    (vimSet, document) => { document.MoveLeft(); vimSet.SetVimMode(VimMode.Normal, document); },    VimMode.Insert),
         new(SDL.Keycode.Return,    (vimSet, document) => document.InsertNewLine(),                                                 VimMode.Insert),
