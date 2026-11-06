@@ -6,20 +6,24 @@ using SmashFramework;
 
 public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextEditing
 {
-    private const float CARET_SPEED = 40f;
     private const int HORIZONTAL_EDITOR_OFFSET = 80;
 
     private TextDocument _document = null!;
-    private int _previousLineIndex = 0;
 
     private PathManager _pathManager;
     private readonly Scroller _scroll = new(0, null);
 
-    private Vector2 _caretPosition = new();
-
     private bool _unsavedChanges = false;
 
+    public Vector2 TextPosition => App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll);
+    public Vector2 CaretPosition => _document.GetCaretPosition(TextPosition);
+
     public bool ShouldRender { get; set; } = true;
+
+    private float _minCaretPosition => App.ACTIVITY_BAR_HEIGHT + FontManager.FontRegular.MeasureString("|", _document.PointSize).Y * 5;
+    private float _maxCaretPosition => App.WindowHeight - FontManager.FontRegular.MeasureString("|", _document.PointSize).Y * 7;
+
+    private int _previousLineIndex = 0;
 
     public Editor(string? initialFilePath)
     {
@@ -77,23 +81,25 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
         _scroll.Clamp();
         _scroll.Animate(deltaTime);
 
-        Vector2 documentOffset = App.ActivityPosition with { Y = App.ActivityPosition.Y - _scroll.Scroll };
-        Vector2 caretPosition = _document.GetCaretPosition(documentOffset);
-        if (_caretPosition != caretPosition)
-        {
-            _caretPosition = MathHelper.LarpVector(_caretPosition, caretPosition, CARET_SPEED * (float)deltaTime);
-        }
-
         if (_previousLineIndex != _document.LineIndex)
         {
-            _scroll.SetScroll((_document.LineIndex * _document.LineSpacing) - (App.WindowHeight / 2) + App.ACTIVITY_BAR_HEIGHT);
+            if (CaretPosition.Y < _minCaretPosition)
+            {
+                _scroll.SetScroll(_scroll.Scroll + (CaretPosition.Y - _minCaretPosition));
+            }
+
+            if (CaretPosition.Y > _maxCaretPosition)
+            {
+                _scroll.SetScroll(_scroll.Scroll + (CaretPosition.Y - _maxCaretPosition));
+            }
+
             _previousLineIndex = _document.LineIndex;
         }
     }
 
     public void Render(Renderer renderer)
     {
-        RenderCaret(renderer, App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll));
+        RenderCaret(renderer, TextPosition);
 
         // Separator line between the line numbers and text
         renderer.RenderLine(HORIZONTAL_EDITOR_OFFSET, 0, HORIZONTAL_EDITOR_OFFSET, App.WindowHeight, Drip.VeryLightColor.ToColor());
@@ -136,7 +142,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
     private void RenderCaret(Renderer renderer, Vector2 offset)
     {
-        Vector2 caretPosition = _document.GetCaretPosition(offset);
+        Vector2 caretPosition = CaretPosition;
 
         if (_document.CaretStyle == CaretStyle.Beam)
         {
@@ -164,7 +170,6 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
     {
         _document = _pathManager.OpenFile(filePath);
         _scroll.Reset();
-        _previousLineIndex = 0;
         _unsavedChanges = false;
     }
 }
