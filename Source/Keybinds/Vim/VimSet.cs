@@ -106,6 +106,9 @@ public class VimSet : IKeybindSet
             if (_vimMode != keybind.VimMode)
                 continue;
 
+            if (pressedModifiers.Length == 0 && keybind.Modifiers.Length > 0)
+                continue;
+
             if (!pressedModifiers.All(p => keybind.Modifiers.Contains(p)))
                 continue;
 
