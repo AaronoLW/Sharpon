@@ -66,7 +66,7 @@ public class VimSet : IKeybindSet
         new(SDL.Keycode.D,         (vimSet, document) => { document.DeleteSelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },                VimMode.VisualLine),
         new(SDL.Keycode.E,         (vimSet, document) => document.MoveRight(document.GetJumpRightLength()),  VimMode.VisualLine),
         new(SDL.Keycode.B,         (vimSet, document) => document.MoveLeft(document.GetJumpLeftLength()),   VimMode.VisualLine),
-        new(SDL.Keycode.Y,         (vimSet, document) => { document.CopySelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); },   VimMode.VisualLine),
+        new(SDL.Keycode.Y,         (vimSet, document) => { document.CopySelection(); document.EndSelection(); vimSet.SetVimMode(VimMode.Normal, document); document.JumpToStartOfLine(); },   VimMode.VisualLine),
     ];
 
     public CaretStyle DefaultCaretStyle { get; } = CaretStyle.Block;
