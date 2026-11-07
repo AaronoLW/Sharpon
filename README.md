@@ -1,6 +1,7 @@
 # Sharpon
 
 The worst code editor of this generation (it has jiggle physics tho)
+Sharpon is not a phase, Sharpon is a lifestyle
 
 ## Demo
 
