@@ -25,6 +25,9 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
     private int _previousLineIndex = 0;
 
+    private bool _leftMouseDownForSelecting = false;
+    private (int, int)? _lastMouseDocumentPosition;
+
     public Editor(string? initialFilePath)
     {
         _pathManager = new("No file opened");
@@ -52,10 +55,28 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
 
         if (Input.MouseX < App.WindowWidth - App.FileManagerWidth)
         {
-            if (Input.IsLeftMousePressed())
+            if (Input.IsLeftMouseDown())
             {
                 _document.JumpToMousePosition(App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll));
+
+                if (!_leftMouseDownForSelecting)
+                {
+                    if (_document.SelectionMode != SelectionMode.None)
+                        _document.EndSelection();
+
+                    if (_document.GetPositionAtMouse(App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll)) != _lastMouseDocumentPosition)
+                    {
+                        _leftMouseDownForSelecting = true;
+                        _document.StartSelection(SelectionMode.Default, _lastMouseDocumentPosition);
+                    }
+                }
             }
+            else
+            {
+                _leftMouseDownForSelecting = false;
+            }
+
+            _lastMouseDocumentPosition = _document.GetPositionAtMouse(App.ActivityPosition - new Vector2(-HORIZONTAL_EDITOR_OFFSET, _scroll.Scroll));
 
             if (Input.IsKeyDown(SDL.Keycode.LCtrl))
             {

@@ -279,9 +279,16 @@ public abstract class TextContainer
         Insert(lines);
     }
 
-    public virtual void StartSelection(SelectionMode selectionMode)
+    public virtual void StartSelection(SelectionMode selectionMode, (int, int)? position = null)
     {
         SelectionMode = selectionMode;
+        if (position.HasValue)
+        {
+            SelectionCharIndex = position.Value.Item1;
+            SelectionLineIndex = position.Value.Item2;
+            return;
+        }
+
         SelectionCharIndex = CharIndex;
         SelectionLineIndex = LineIndex;
     }
@@ -496,7 +503,10 @@ public abstract class TextContainer
         return null;
     }
 
-    public virtual void JumpToMousePosition(Vector2 offset)
+    /// <summary>
+    /// Returns: CharIndex, LineIndex
+    /// </summary>
+    public virtual (int, int)? GetPositionAtMouse(Vector2 offset)
     {
         Vector2 mousePosition = Input.MousePosition - offset;
 
@@ -504,7 +514,7 @@ public abstract class TextContainer
         int charIndex = 0;
 
         if (lineIndex < 0)
-            return;
+            return null;
 
         if (lineIndex < Lines.Count)
         {
@@ -518,8 +528,19 @@ public abstract class TextContainer
         if (charIndex < 0)
             charIndex = 0;
 
-        LineIndex = lineIndex;
-        CharIndex = charIndex;
+        return (charIndex, lineIndex);
+    }
+
+
+    public virtual void JumpToMousePosition(Vector2 offset)
+    {
+        (int, int)? pos = GetPositionAtMouse(offset);
+
+        if (!pos.HasValue)
+            return;
+
+        LineIndex = pos.Value.Item2;
+        CharIndex = pos.Value.Item1;
     }
 
     public virtual string GetSelectedText()

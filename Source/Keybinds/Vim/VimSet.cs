@@ -75,6 +75,11 @@ public class VimSet : IKeybindSet
     {
         bool madeChanges = false;
 
+        if (document.SelectionMode != SelectionMode.None)
+        {
+            SetVimMode(VimMode.Visual, document);
+        }
+
         if (_vimMode == VimMode.Insert)
         {
             if (Program.TextInput != null)
