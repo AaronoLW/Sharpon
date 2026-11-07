@@ -389,7 +389,7 @@ public abstract class TextContainer
 
                     if (i == endLine)
                     {
-                        Lines[i] = Lines[i].Remove(0, SelectionCharIndex + 1);
+                        Lines[i] = Lines[i].Remove(0, Math.Min(SelectionCharIndex + 1, Lines[i].Length));
                         continue;
                     }
 
