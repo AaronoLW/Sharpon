@@ -1,6 +1,6 @@
 # Sharpon
 
-The worst code editor of this generation (it has jiggle physics)
+The worst code editor of this generation (it has jiggle physics tho)
 
 ## Demo
 
