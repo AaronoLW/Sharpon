@@ -39,15 +39,26 @@ public struct PathManager(string placeholderText = "Placeholder path text")
             fullPath = fullPath.TrimEnd(System.IO.Path.DirectorySeparatorChar);
         }
 
-        Path = fullPath;
         if (!File.Exists(fullPath))
         {
             return new("");
         }
 
+        try
+        {
+            string fileContent = File.ReadAllText(fullPath);
+            Path = fullPath;
+            return new(fileContent);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine(ex.Message);
 
-        string fileContent = File.ReadAllText(fullPath);
-        return new(fileContent);
+            if (Path == null)
+                return new("");
+
+            return new(File.ReadAllText(Path));
+        }
     }
 
     public bool SaveFile(TextDocument document)
