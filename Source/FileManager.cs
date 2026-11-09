@@ -42,6 +42,9 @@ public class FileManager : IPermutable, IRenderable
         Height = height;
         _window = window;
 
+        if (initialPath == null)
+            initialPath = Directory.GetCurrentDirectory();
+
         OpenDirectory(initialPath);
     }
 
