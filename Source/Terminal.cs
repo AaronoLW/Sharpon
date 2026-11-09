@@ -170,6 +170,12 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
 
             if (Program.IsKeyDown(SDL.Keycode.Backspace))
                 _pty.Input.Write("\b");
+
+            if (Program.IsKeyDown(SDL.Keycode.Up))
+                _pty.Input.Write("\x1b[A");
+
+            if (Program.IsKeyDown(SDL.Keycode.Down))
+                _pty.Input.Write("\x1b[B");
         }
         else
         {
