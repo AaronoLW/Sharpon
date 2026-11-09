@@ -167,12 +167,12 @@ public class FileManager : IPermutable, IRenderable
 
                 string name = Path.GetFileName(_fileSystemEntries[i]);
 
-                Kolor color;
+                Kolor color = Drip.White;
                 if (Directory.Exists(_fileSystemEntries[i]))
                 {
                     color = Drip.PrimaryAccentColor;
                 }
-                else
+                else if (File.Exists(_fileSystemEntries[i]))
                 {
                     color = Drip.White;
                     if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD())
