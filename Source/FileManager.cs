@@ -2,6 +2,7 @@ using System.Numerics;
 using SmashFramework;
 using SDL3;
 using KatziDrip;
+using Color = System.Drawing.Color;
 
 public class FileManager : IPermutable, IRenderable
 {
@@ -29,10 +30,16 @@ public class FileManager : IPermutable, IRenderable
 
     public bool ShouldRender { get; set; } = true;
 
-    public FileManager(int width, int height, string? initialPath)
+    private Window? _contextWindow = null;
+    private Renderer? _contextRenderer = null;
+
+    private Window _window;
+
+    public FileManager(int width, int height, string? initialPath, Window window)
     {
         Width = width;
         Height = height;
+        _window = window;
 
         OpenDirectory(initialPath);
     }
@@ -59,6 +66,12 @@ public class FileManager : IPermutable, IRenderable
         {
             _scroll.Update();
             _scroll.Clamp();
+
+
+            if (Input.IsRightMousePressed())
+            {
+                OpenContextMenu(_window);
+            }
         }
 
         _scroll.Animate(deltaTime);
@@ -71,7 +84,6 @@ public class FileManager : IPermutable, IRenderable
         {
             Width = MathHelper.Larp(Width, 0, App.ANIMATION_SPEED * (float)deltaTime);
         }
-
 
         if (_backButtonRectangle.IsPositionInRectangle(Input.MousePosition))
         {
@@ -173,6 +185,14 @@ public class FileManager : IPermutable, IRenderable
 
             SDL.SetRenderClipRect(renderer.Handle, 0);
         }
+
+        if (_contextWindow != null && _contextRenderer != null)
+        {
+            _contextRenderer.Clear(Drip.BaseColor.ToColor());
+            _contextRenderer.RenderRectangle(new(0, 0, _contextWindow.Width, _contextWindow.Height), Drip.VeryLightColor.ToColor());
+
+            _contextRenderer.RenderPresent();
+        }
     }
 
     private Vector2 GetEntryOffset(int index)
@@ -217,6 +237,33 @@ public class FileManager : IPermutable, IRenderable
             return null;
 
         return parent.FullName;
+    }
+
+    private void OpenContextMenu(Window mainWindow)
+    {
+        if (_contextWindow != null)
+        {
+            _contextWindow.Dispose();
+            _contextRenderer!.Dispose();
+        }
+
+        _contextWindow = new(SDL.CreatePopupWindow(mainWindow.Handle, (int)Input.MouseX, (int)Input.MouseY, 100, 200, SDL.WindowFlags.PopupMenu));
+        _contextRenderer = new(_contextWindow);
+    }
+
+    public void TryCloseContextMenu()
+    {
+        if (_contextWindow != null)
+        {
+            if (_contextWindow.Handle == SDL.GetMouseFocus())
+                return;
+
+            _contextWindow.Dispose();
+            _contextRenderer!.Dispose();
+
+            _contextWindow = null;
+            _contextRenderer = null;
+        }
     }
 
     public void OpenDirectory(string? path, bool resetScroll = true)

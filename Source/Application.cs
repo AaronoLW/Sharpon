@@ -83,7 +83,7 @@ public class App
         _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
-        _fileManager = new(MAX_FILEMANAGER_WIDTH, WindowHeight, initialFilePath);
+        _fileManager = new(MAX_FILEMANAGER_WIDTH, WindowHeight, initialFilePath, _window);
         _richPresence = new();
 
         PlaytimeCounter playtimeCounter = new();
@@ -124,6 +124,8 @@ public class App
 
         if (Input.IsLeftMousePressed())
         {
+            _fileManager.TryCloseContextMenu();
+
             if (Input.MouseX > WindowWidth - FileManagerWidth)
             {
                 string? entry = _fileManager.HandleClick();
