@@ -32,6 +32,7 @@ public class FileManager : IPermutable, IRenderable
 
     private Window? _contextWindow = null;
     private Renderer? _contextRenderer = null;
+    private int? _contextSelectedEntry = null;
 
     private Window _window;
 
@@ -67,10 +68,23 @@ public class FileManager : IPermutable, IRenderable
             _scroll.Update();
             _scroll.Clamp();
 
-
             if (Input.IsRightMousePressed())
             {
                 OpenContextMenu(_window);
+            }
+        }
+
+        if (_contextWindow != null && SDL.GetMouseFocus() == _contextWindow.Handle)
+        {
+            if (Input.IsLeftMousePressed())
+            {
+                int? entry = GetHoveredContextEntry();
+                if (entry.HasValue)
+                {
+                    Console.WriteLine(GetContextEntryText(entry.Value));
+                }
+
+                CloseContextMenu();
             }
         }
 
@@ -177,7 +191,7 @@ public class FileManager : IPermutable, IRenderable
                 if (Directory.Exists(_fileSystemEntries[i]))
                     name += Path.DirectorySeparatorChar;
 
-                if (hoveredEntry == i)
+                if (hoveredEntry == i || _contextSelectedEntry == i)
                     renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.VeryLightColor.ToColor());
 
                 renderer.RenderString(FontManager.FontRegular, App.VERY_SMALL_POINT_SIZE, name, position, color.ToColor());
@@ -190,6 +204,23 @@ public class FileManager : IPermutable, IRenderable
         {
             _contextRenderer.Clear(Drip.BaseColor.ToColor());
             _contextRenderer.RenderRectangle(new(0, 0, _contextWindow.Width, _contextWindow.Height), Drip.VeryLightColor.ToColor());
+
+            float entryHeight = 40;
+
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 position = GetContextEntryPosition(i);
+                _contextRenderer.RenderLine(position + new Vector2(0, entryHeight), position + new Vector2(150, entryHeight), Drip.VeryLightColor.ToColor());
+
+                if (GetHoveredContextEntry() == i)
+                {
+                    _contextRenderer.RenderFilledRectangle(new(position, new Vector2(150, entryHeight)), Drip.VeryLightColor.ToColor());
+                }
+
+                string text = GetContextEntryText(i);
+                Vector2 textSize = FontManager.FontRegular.MeasureString(text, 17);
+                _contextRenderer.RenderString(FontManager.FontRegular, 17, text, position + new Vector2(App.DEFAULT_PADDING / 2, textSize.Y / 2), Color.White);
+            }
 
             _contextRenderer.RenderPresent();
         }
@@ -207,6 +238,51 @@ public class FileManager : IPermutable, IRenderable
         entryPosition.Y -= ENTRY_SPACING / 4;
 
         return new(entryPosition, Width, ENTRY_SPACING);
+    }
+
+    private Vector2 GetContextEntryPosition(int index)
+    {
+        float entryHeight = 40;
+        return new(0, index * entryHeight);
+    }
+
+    private int? GetHoveredContextEntry()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            Rectangle rectangle = new(GetContextEntryPosition(i), 150, 40);
+
+            if (rectangle.IsPositionInRectangle(Input.MousePosition))
+            {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
+    private string GetContextEntryText(int index)
+    {
+        if (_contextSelectedEntry != null)
+        {
+            return index switch
+            {
+                0 => "New File",
+                1 => "New Directory",
+                2 => "Delete",
+                3 => "Rename",
+                _ => ""
+            };
+        }
+        else
+        {
+            return index switch
+            {
+                0 => "New File",
+                1 => "New Directory",
+                _ => ""
+            };
+        }
     }
 
     private int? GetHoveredEntryIndex()
@@ -247,8 +323,23 @@ public class FileManager : IPermutable, IRenderable
             _contextRenderer!.Dispose();
         }
 
-        _contextWindow = new(SDL.CreatePopupWindow(mainWindow.Handle, (int)Input.MouseX, (int)Input.MouseY, 100, 200, SDL.WindowFlags.PopupMenu));
+        _contextWindow = new(SDL.CreatePopupWindow(mainWindow.Handle, (int)Input.MouseX, (int)Input.MouseY, 150, 200, SDL.WindowFlags.PopupMenu));
         _contextRenderer = new(_contextWindow);
+        _contextSelectedEntry = GetHoveredEntryIndex();
+    }
+
+    private void CloseContextMenu()
+    {
+        if (_contextWindow != null)
+        {
+            _contextWindow.Dispose();
+            _contextRenderer!.Dispose();
+
+            _contextWindow = null;
+            _contextRenderer = null;
+
+            _contextSelectedEntry = null;
+        }
     }
 
     public void TryCloseContextMenu()
@@ -258,11 +349,7 @@ public class FileManager : IPermutable, IRenderable
             if (_contextWindow.Handle == SDL.GetMouseFocus())
                 return;
 
-            _contextWindow.Dispose();
-            _contextRenderer!.Dispose();
-
-            _contextWindow = null;
-            _contextRenderer = null;
+            CloseContextMenu();
         }
     }
 
