@@ -96,12 +96,16 @@ public abstract class TextContainer
     {
         if (CharIndex - (count - 1) > 0)
             CharIndex -= count;
+
+        ClampCaretIfNecessary();
     }
 
     public virtual void MoveRight(int count = 1)
     {
         if (CharIndex + (count - 1) < LineLength)
             CharIndex += count;
+
+        ClampCaretIfNecessary();
     }
 
     public virtual void MoveUp()
@@ -248,13 +252,21 @@ public abstract class TextContainer
         {
             int indent = GetLineStartIndent();
             Lines.Insert(LineIndex, GetSpacesString(indent));
-            ClampCaretIfNecessary();
+            CharIndex = indent;
         }
         else
         {
             Lines.Insert(0, "");
             CharIndex = 0;
         }
+    }
+
+    public virtual void ForceInsertNewLine()
+    {
+        int indent = GetLineStartIndent();
+        Lines.Insert(LineIndex + 1, GetSpacesString(indent));
+        LineIndex++;
+        CharIndex = indent;
     }
 
     public virtual void InsertTab()
@@ -276,7 +288,23 @@ public abstract class TextContainer
     {
         string clipboardText = SDL.GetClipboardText();
         string[] lines = clipboardText.Split('\n');
-        Insert(lines);
+
+        int indent = GetLineStartIndent();
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i].TrimStart();
+            lines[i] = GetSpacesString(indent) + line;
+        }
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i];
+
+            Lines.Insert(LineIndex + 1, line);
+
+            if (i != lines.Length - 1)
+                LineIndex++;
+        }
     }
 
     public virtual void StartSelection(SelectionMode selectionMode, (int, int)? position = null)
@@ -558,35 +586,47 @@ public abstract class TextContainer
             int endChar = Math.Max(CharIndex, SelectionCharIndex);
 
             if (SelectionMode == SelectionMode.Linewise)
-                return Lines[startLine][0..Lines[startLine].Length] + (startLine != LineCount - 1 ? "\n" : "");
+                sb.Append(Lines[startLine][0..Lines[startLine].Length] + (startLine != LineCount - 1 ? "\n" : ""));
             else
-                return Lines[startLine][startChar..endChar];
+                sb.Append(Lines[startLine][startChar..(endChar + 1)]);
         }
-
-        for (int i = startLine; i <= endLine; i++)
+        else if (SelectionMode == SelectionMode.Default)
         {
-            if (i == startLine)
+            for (int i = startLine; i <= endLine; i++)
             {
-                if (LineIndex < SelectionLineIndex)
-                    sb.Append(Lines[i][CharIndex..Lines[i].Length]);
+                if (i == startLine)
+                {
+                    if (LineIndex < SelectionLineIndex)
+                        sb.Append(Lines[i][CharIndex..Lines[i].Length]);
+                    else
+                        sb.Append(Lines[i]);
+                }
+                else if (i == endLine)
+                {
+                    if (LineIndex > SelectionLineIndex)
+                        sb.Append(Lines[i][SelectionCharIndex..Lines[i].Length]);
+                    else
+                        sb.Append(Lines[i][0..(SelectionCharIndex + 1)]);
+                }
                 else
-                    sb.Append(Lines[i][0..CharIndex]);
+                {
+                    sb.Append(Lines[i]);
+                }
+
+                if (i != endLine)
+                {
+                    sb.Append('\n');
+                }
             }
-            else if (i == endLine)
-            {
-                if (LineIndex > SelectionLineIndex)
-                    sb.Append(Lines[i][SelectionCharIndex..Lines[i].Length]);
-                else
-                    sb.Append(Lines[i][0..(SelectionCharIndex + 1)]);
-            }
-            else
+        }
+        else if (SelectionMode == SelectionMode.Linewise)
+        {
+            for (int i = startLine; i <= endLine; i++)
             {
                 sb.Append(Lines[i]);
-            }
 
-            if (i != LineCount - 1)
-            {
-                sb.Append('\n');
+                if (i != endLine)
+                    sb.Append("\n");
             }
         }
 
@@ -599,6 +639,12 @@ public abstract class TextContainer
             return;
 
         SDL.SetClipboardText(GetSelectedText());
+    }
+
+    public virtual void CutSelection()
+    {
+        CopySelection();
+        DeleteSelection();
     }
 
     public virtual void Clear()
