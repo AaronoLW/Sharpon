@@ -176,6 +176,12 @@ public class Terminal : IPermutable, IRenderable, IRequireTextEditing, IDisposab
 
             if (Program.IsKeyDown(SDL.Keycode.Down))
                 _pty.Input.Write("\x1b[B");
+
+            if (Program.IsKeyDown(SDL.Keycode.Right))
+                _pty.Input.Write("\x1b[C");
+
+            if (Program.IsKeyDown(SDL.Keycode.Left))
+                _pty.Input.Write("\x1b[D");
         }
         else
         {
