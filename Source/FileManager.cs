@@ -189,7 +189,7 @@ public class FileManager : IPermutable, IRenderable
 
         if (_backButtonRectangle.IsPositionInRectangle(Input.MousePosition))
         {
-            _backButtonColor = new(255, 255, 255, 255);
+            _backButtonColor = Drip.PrimaryAccentColor;
             if (Input.IsLeftMousePressed())
             {
                 string? parentDirectory = GetParentDirectory();
