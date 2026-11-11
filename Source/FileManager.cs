@@ -279,10 +279,14 @@ public class FileManager : IPermutable, IRenderable
                     color = Drip.White;
                     if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD())
                     {
-                        if ((File.GetUnixFileMode(_fileSystemEntries[i]) & (UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute)) != 0)
+                        try
                         {
-                            color = Drip.SecondaryAccentColor;
+                            if ((File.GetUnixFileMode(_fileSystemEntries[i]) & (UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute)) != 0)
+                            {
+                                color = Drip.SecondaryAccentColor;
+                            }
                         }
+                        catch (Exception) { }
                     }
                     else if (OperatingSystem.IsWindows())
                     {
