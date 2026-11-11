@@ -221,6 +221,7 @@ public class FileManager : IPermutable, IRenderable
     public void Render(Renderer renderer)
     {
         // This really is just starting to look like zed
+        // This really is just starting to look like spaghetti
 
         renderer.RenderFilledRectangle(new(Position, Width, Height), Drip.DarkColor.ToColor());
         renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, Drip.VeryLightColor.ToColor());
@@ -295,7 +296,10 @@ public class FileManager : IPermutable, IRenderable
                     name += Path.DirectorySeparatorChar;
 
                 if (hoveredEntry == i || _contextSelectedEntry == i)
-                    renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.VeryLightColor.ToColor());
+                {
+                    renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.LightColor.ToColor());
+                    renderer.RenderRectangle(GetEntryRectangle(i), Drip.PrimaryAccentColor.ToColor());
+                }
 
                 renderer.RenderString(FontManager.FontRegular, App.VERY_SMALL_POINT_SIZE, name, position, color.ToColor());
             }
@@ -319,11 +323,13 @@ public class FileManager : IPermutable, IRenderable
             for (int i = 0; i < 5; i++)
             {
                 Vector2 position = GetContextEntryPosition(i);
+
                 _contextRenderer.RenderLine(position + new Vector2(0, entryHeight), position + new Vector2(150, entryHeight), Drip.VeryLightColor.ToColor());
 
                 if (GetHoveredContextEntry() == i)
                 {
-                    _contextRenderer.RenderFilledRectangle(new(position, new Vector2(150, entryHeight)), Drip.VeryLightColor.ToColor());
+                    _contextRenderer.RenderFilledRectangle(new(position, new Vector2(150, entryHeight)), Drip.LightColor.ToColor());
+                    _contextRenderer.RenderRectangle(new(position, new Vector2(150, entryHeight)), Drip.PrimaryAccentColor.ToColor());
                 }
 
                 string text = GetContextEntryText(i);
