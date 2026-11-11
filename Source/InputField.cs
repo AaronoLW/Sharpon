@@ -3,9 +3,12 @@ using System.Numerics;
 using SmashFramework;
 using KatziDrip;
 using System.Text;
+using SDL3;
 
 public class InputField : TextContainer
 {
+    public static InputField? SelectedInputField = null;
+
     public override string Text => SelectedLine;
     public string? Prefix = "";
 
@@ -31,15 +34,28 @@ public class InputField : TextContainer
     public float Padding = 0;
 
     public event Action? OnEnter;
+    public event Action? OnEscape;
+
+    private DefaultSet _keybindSet = new();
+
+    public void TextEdit()
+    {
+        if (Input.IsKeyPressed(SDL.Keycode.Escape))
+        {
+            OnEscape?.Invoke();
+        }
+
+        _keybindSet.HandleKeybinds(this);
+    }
 
     public void Render(Renderer renderer)
     {
         if (Prefix != null && Prefix != string.Empty)
         {
-            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, Prefix, Vector2.Round(Position + PrefixOffset), Color.White);
+            renderer.RenderString(FontManager.FontRegular, PointSize, Prefix, Vector2.Round(Position + PrefixOffset), Color.White);
         }
 
-        renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, Text, Vector2.Round(Position + TextOffset), Color.White);
+        renderer.RenderString(FontManager.FontRegular, PointSize, Text, Vector2.Round(Position + TextOffset), Color.White);
     }
 
     public void RenderCaret(Renderer renderer)

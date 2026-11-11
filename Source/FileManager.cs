@@ -15,7 +15,8 @@ public class FileManager : IPermutable, IRenderable
     public float Height;
 
     private Vector2 Position => new(App.WindowWidth - Width, 0);
-    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 2) - new Vector2(0, _scroll.Scroll);
+    private Vector2 EntryBasePosition => Position + new Vector2(App.DEFAULT_PADDING * 1.2f, App.DEFAULT_PADDING * 2) - new Vector2(0, _scroll.Scroll) + EntryBaseOffset;
+    private Vector2 EntryBaseOffset = Vector2.Zero;
 
     private PathManager _pathManager = new("No directory opened");
     private readonly Scroller _scroll = new(0, null);
@@ -36,6 +37,11 @@ public class FileManager : IPermutable, IRenderable
 
     private Window _window;
 
+    private InputField _inputField = new() { PointSize = App.VERY_SMALL_POINT_SIZE };
+    private bool _inputFielding = false;
+    private FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.None;
+    private int? _renamingEntryIndex = null;
+
     public FileManager(int width, int height, string? initialPath, Window window)
     {
         Width = width;
@@ -46,6 +52,84 @@ public class FileManager : IPermutable, IRenderable
             initialPath = Directory.GetCurrentDirectory();
 
         OpenDirectory(initialPath);
+
+        _inputField.OnEnter += () =>
+        {
+            if (_contextAction == FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.CreateFile)
+            {
+                try
+                {
+                    using (File.Create(Path.Combine(_pathManager.Path!, _inputField.Text))) { }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+
+                    InputField.SelectedInputField = null;
+                    _inputFielding = false;
+                    _autoRefreshTimer = 0;
+                    EntryBaseOffset = Vector2.Zero;
+                    _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.None;
+                }
+            }
+            else if (_contextAction == FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.CreateDirectory)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(_pathManager.Path!, _inputField.Text));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+
+                    InputField.SelectedInputField = null;
+                    _inputFielding = false;
+                    _autoRefreshTimer = 0;
+                    EntryBaseOffset = Vector2.Zero;
+                    _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.None;
+                }
+            }
+            else if (_contextAction == FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.Rename)
+            {
+                string path = _fileSystemEntries![_renamingEntryIndex!.Value];
+
+                try
+                {
+                    if (File.Exists(path))
+                        File.Move(path, Path.Combine(Path.GetDirectoryName(path)!, _inputField.Text));
+                    if (Directory.Exists(path))
+                        Directory.Move(path, Path.Combine(Path.GetDirectoryName(path)!, _inputField.Text));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    InputField.SelectedInputField = null;
+                    _inputFielding = false;
+                    _autoRefreshTimer = 0;
+                    EntryBaseOffset = Vector2.Zero;
+                    _renamingEntryIndex = null;
+                    _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.None;
+                }
+            }
+        };
+
+        _inputField.OnEscape += () =>
+        {
+            InputField.SelectedInputField = null;
+            EntryBaseOffset = Vector2.Zero;
+            _inputFielding = false;
+            _renamingEntryIndex = null;
+            _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.None;
+        };
     }
 
     public string? HandleClick()
@@ -84,7 +168,7 @@ public class FileManager : IPermutable, IRenderable
                 int? entry = GetHoveredContextEntry();
                 if (entry.HasValue)
                 {
-                    Console.WriteLine(GetContextEntryText(entry.Value));
+                    ExecuteContextCommand(GetContextEntryText(entry.Value));
                 }
 
                 CloseContextMenu();
@@ -110,6 +194,15 @@ public class FileManager : IPermutable, IRenderable
                 string? parentDirectory = GetParentDirectory();
                 if (parentDirectory != null)
                     OpenDirectory(parentDirectory);
+
+                if (_inputFielding)
+                {
+                    _inputFielding = false;
+                    InputField.SelectedInputField = null;
+                    EntryBaseOffset = Vector2.Zero;
+                    _renamingEntryIndex = null;
+                    _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.None;
+                }
             }
         }
         else
@@ -160,6 +253,13 @@ public class FileManager : IPermutable, IRenderable
             int startIndex = Math.Max((int)(_scroll.Scroll / ENTRY_SPACING), 0);
             for (int i = startIndex; i < _fileSystemEntries.Length; i++)
             {
+                if (_contextAction == FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.Rename
+                    && _renamingEntryIndex != null)
+                {
+                    if (_renamingEntryIndex.Value == i)
+                        continue;
+                }
+
                 Vector2 position = EntryBasePosition + GetEntryOffset(i);
 
                 if (position.Y > App.WindowHeight)
@@ -201,6 +301,12 @@ public class FileManager : IPermutable, IRenderable
             }
 
             SDL.SetRenderClipRect(renderer.Handle, 0);
+        }
+
+        if (_inputFielding)
+        {
+            _inputField.Render(renderer);
+            _inputField.RenderCaret(renderer);
         }
 
         if (_contextWindow != null && _contextRenderer != null)
@@ -342,6 +448,67 @@ public class FileManager : IPermutable, IRenderable
             _contextRenderer = null;
 
             _contextSelectedEntry = null;
+        }
+    }
+
+    private void ExecuteContextCommand(string command)
+    {
+        if (command == "New File")
+        {
+            if (_pathManager.Path != null)
+            {
+                _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.CreateFile;
+                _inputFielding = true;
+                InputField.SelectedInputField = _inputField;
+                _inputField.Clear();
+                _inputField.Insert("File");
+                EntryBaseOffset = new(0, ENTRY_SPACING);
+                _inputField.Position = EntryBasePosition;
+            }
+        }
+
+        if (command == "New Directory")
+        {
+            if (_pathManager.Path != null)
+            {
+                _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.CreateDirectory;
+                _inputFielding = true;
+                InputField.SelectedInputField = _inputField;
+                _inputField.Clear();
+                _inputField.Insert("Directory");
+                EntryBaseOffset = new(0, ENTRY_SPACING);
+                _inputField.Position = EntryBasePosition;
+            }
+        }
+
+        if (command == "Delete")
+        {
+            try
+            {
+                string path = _fileSystemEntries![_contextSelectedEntry!.Value];
+
+                if (File.Exists(path))
+                    File.Delete(path);
+                else if (Directory.Exists(path))
+                    Directory.Delete(path);
+
+                _autoRefreshTimer = 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        if (command == "Rename")
+        {
+            _contextAction = FileManagerContextActionIntentWhyDoesThisSoundSoAndroidHelpMeICantKeepMaintainingSuchBadCode.Rename;
+            _inputFielding = true;
+            InputField.SelectedInputField = _inputField;
+            _inputField.Clear();
+            _inputField.Insert(Path.GetFileName(_fileSystemEntries![_contextSelectedEntry!.Value]));
+            _renamingEntryIndex = _contextSelectedEntry!.Value;
+            _inputField.Position = EntryBasePosition + new Vector2(0, (_contextSelectedEntry!.Value + 1) * ENTRY_SPACING);
         }
     }
 

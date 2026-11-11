@@ -181,7 +181,10 @@ public class App
 
         _activityBar.SetActivity(_activityProvider.ProvideActivity());
 
-        _focusedTextEditor?.TextEdit(_keybindSet);
+        if (InputField.SelectedInputField == null)
+            _focusedTextEditor?.TextEdit(_keybindSet);
+        else
+            InputField.SelectedInputField.TextEdit();
 
         foreach (IPermutable permutable in _permutables)
             permutable.Update(deltaTime);
