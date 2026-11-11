@@ -184,6 +184,7 @@ public class FileManager : IPermutable, IRenderable
         else
         {
             Width = MathHelper.Larp(Width, 0, App.ANIMATION_SPEED * (float)deltaTime);
+            TryCloseContextMenu();
         }
 
         if (_backButtonRectangle.IsPositionInRectangle(Input.MousePosition))
