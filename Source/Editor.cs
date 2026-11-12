@@ -53,7 +53,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
             }
         }
 
-        if (Input.MouseX < App.WindowWidth - App.FileManagerWidth)
+        if (Input.MouseX < App.WindowWidth - App.FileManagerWidth && App.MainWindowHasFocus && Input.MouseY < App.WindowHeight - App.TerminalHeight)
         {
             if (Input.IsLeftMouseDown())
             {

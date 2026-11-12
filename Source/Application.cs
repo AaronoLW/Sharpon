@@ -31,6 +31,7 @@ public class App
     public static readonly bool CSharpBracketStyle = true;
 
     public static float FileManagerWidth => _fileManager.Width;
+    public static float TerminalHeight => _terminal.Height;
 
     public static int WindowWidth = INITIAL_WINDOW_WIDTH;
     public static int WindowHeight = INITIAL_WINDOW_HEIGHT;
@@ -41,12 +42,14 @@ public class App
     private static Window _window = null!;
     private static Renderer _renderer = null!;
 
+    public static bool MainWindowHasFocus => _window.Handle == SDL.GetMouseFocus();
+
     private static bool _windowFullscreen = false;
 
     private readonly Editor _editor;
     private static FileManager _fileManager = null!;
     private readonly Config _config;
-    private readonly Terminal _terminal;
+    private static Terminal _terminal = null!;
 
     private readonly RichPresence _richPresence;
 
@@ -124,8 +127,6 @@ public class App
 
         if (Input.IsLeftMousePressed())
         {
-            _fileManager.TryCloseContextMenu();
-
             if (Input.MouseX > WindowWidth - FileManagerWidth)
             {
                 string? entry = _fileManager.HandleClick();
@@ -145,6 +146,9 @@ public class App
                     }
                 }
             }
+
+            _fileManager.TryCloseContextMenu();
+
         }
 
         if (Input.IsKeyPressed(SDL.Keycode.F11))

@@ -134,8 +134,15 @@ public class FileManager : IPermutable, IRenderable
 
     public string? HandleClick()
     {
-        if (_fileSystemEntries != null)
+        if (_contextWindow != null)
         {
+            CloseContextMenu();
+            return null;
+        }
+
+        if (_fileSystemEntries != null && App.MainWindowHasFocus)
+        {
+
             for (int i = 0; i < _fileSystemEntries.Length; i++)
             {
                 Rectangle rect = GetEntryRectangle(i);
@@ -150,7 +157,7 @@ public class FileManager : IPermutable, IRenderable
 
     public void Update(double deltaTime)
     {
-        if (Input.MouseX > App.WindowWidth - Width)
+        if (Input.MouseX > App.WindowWidth - Width && Input.MouseY < App.WindowHeight - App.TerminalHeight)
         {
             _scroll.Update();
             _scroll.Clamp();
