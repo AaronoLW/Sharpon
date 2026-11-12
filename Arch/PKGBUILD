@@ -1,5 +1,5 @@
 pkgname=Sharpon-git
-pkgver=7.1
+pkgver=7.2
 pkgrel=1
 pkgdesc="Peak description"
 arch=('x86_64')
