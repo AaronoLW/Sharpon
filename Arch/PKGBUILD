@@ -1,11 +1,11 @@
 pkgname=Sharpon-git
-pkgver=7.2
+pkgver=r381.ebee1d2
 pkgrel=1
 pkgdesc="Peak description"
 arch=('x86_64')
 url="https://github.com/AaronoLW/Sharpon"
 license=('MIT')
-depends=('ttf-iosevka' 'sdl3' 'sdl3_image' 'sdl3_ttf' 'fontconfig')
+depends=('sdl3' 'sdl3_image' 'sdl3_ttf' 'fontconfig')
 makedepends=('dotnet-sdk' 'git')
 source=("git+$url.git")
 sha256sums=('SKIP')
@@ -29,4 +29,12 @@ package() {
 
     install -Dm644 "$srcdir/Sharpon/Sharpon.png" \
             "$pkgdir/usr/share/icons/hicolor/256x256/apps/Sharpon.png"
+}
+
+pkgver() {
+    cd "$srcdir/Sharpon"
+
+    printf "r%s.%s" \
+        "$(git rev-list --count HEAD)" \
+        "$(git rev-parse --short HEAD)"
 }
