@@ -47,7 +47,6 @@ jobs:
           -r ${{ matrix.rid }}
           --no-restore
           -o ./publish/${{ matrix.rid }}
-          -p:IncludeAssets=true
           
       - name: Delete Linux Debug Symbols
         if: runner.os == 'Linux'
