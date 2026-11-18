@@ -47,14 +47,6 @@ jobs:
           -r ${{ matrix.rid }}
           --no-restore
           -o ./publish/${{ matrix.rid }}
-          
-      - name: Delete Linux Debug Symbols
-        if: runner.os == 'Linux'
-        run: rm ./publish/${{ matrix.rid }}/Sharpon.dbg
-        
-      - name: Delete Windows Debug Symbols
-        if: runner.os == 'Windows'
-        run: rm ./publish/${{ matrix.rid }}/Sharpon.pdb
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
