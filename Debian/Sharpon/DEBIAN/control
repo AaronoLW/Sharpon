@@ -1,0 +1,7 @@
+Package: Sharpon
+Version: 7.2
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: AaronoLW <aaronl.waechter@proton.me>
+Description: Sharpon!

@@ -9,8 +9,31 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <InvariantGlobalization>true</InvariantGlobalization>
   	<PublishDir>publish</PublishDir>
+   <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Portable Condition="'$(Portable)' == ''">false</Portable>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="'$(Portable)' == 'true'">
+    <EmbeddedResource Include="Assets/**/*" />
+    
+    <DirectPInvoke Include="SDL3" />
+    <NativeLibrary Include="libSDL3.a" />
+    
+    <DirectPInvoke Include="SDL3_image" />
+    <NativeLibrary Include="libSDL3_image.a" />
+    
+    <DirectPInvoke Include="SDL3_ttf" />
+    <NativeLibrary Include="libSDL3_ttf.a" />
+    
+    <LinkerArg Include="-lpng" />
+    <LinkerArg Include="-lfreetype" />
+    <LinkerArg Include="-lharfbuzz" />
+    <LinkerArg Include="-Wl,--unresolved-symbols=ignore-in-object-files" />
+  </ItemGroup>
+    
   <ItemGroup>
     <PackageReference Include="DiscordRPC" Version="1.0.0" />
     <PackageReference Include="Ghostflyby.Pty" Version="1.0.1" />
@@ -18,13 +41,4 @@
     <PackageReference Include="KatziDrip" Version="1.1.1" />
     <PackageReference Include="XTerm.NET" Version="3.0.2" />
   </ItemGroup>
-
-  <PropertyGroup>
-      <IncludeAssets Condition="'$(IncludeAssets)' == ''">false</IncludeAssets>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(IncludeAssets)' == 'true'">
-      <EmbeddedResource Include="Assets/**/*" />
-  </ItemGroup>
-
 </Project>
