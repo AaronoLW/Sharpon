@@ -1,4 +1,3 @@
-using System.Drawing;
 using SmashFramework;
 
 public class Config : IActivityProvider, IRenderable, IPermutable

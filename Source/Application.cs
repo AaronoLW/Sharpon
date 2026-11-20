@@ -68,9 +68,8 @@ public class App
 
     public App(string? initialFilePath)
     {
-        _window = Window.Create("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, SDL.WindowFlags.Resizable);
-        _renderer = new(_window);
-        _renderer.SetVSyncEnabled(true);
+        _window = new("Sharpon!", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, WindowFlag.Resizable);
+        _renderer = new(_window) { Vsync = true, BlendMode = BlendMode.Blend };
 
         _window.StartPollingTextInput();
 
@@ -81,9 +80,6 @@ public class App
 
         Drip.Load(Drip.DefaultThemeName);
         FontManager.Init(_renderer);
-
-        _renderer.SetVSyncEnabled(true);
-        _renderer.SetRenderBlendMode(BlendMode.Blend);
 
         _editor = new(initialFilePath);
         _fileManager = new(MAX_FILEMANAGER_WIDTH, WindowHeight, initialFilePath, _window);
@@ -196,12 +192,12 @@ public class App
 
     public void Render()
     {
-        _renderer.Clear(Drip.BaseColor.ToColor());
+        _renderer.Clear(ColorTranslator.Get(Drip.BaseColor));
 
         foreach (IRenderable renderable in _renderables)
             if (renderable.ShouldRender) renderable.Render(_renderer);
 
-        _renderer.RenderPresent();
+        _renderer.Present();
 
         PointSizeDeleter.Flush();
         if (_scheduledPointSizeDeletions.Count > 0)

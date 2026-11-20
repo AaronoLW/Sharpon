@@ -1,4 +1,4 @@
-using System.Drawing;
+using SmashFramework;
 using XTerm.Common;
 
 public static class XTermEx
@@ -7,22 +7,22 @@ public static class XTermEx
     {
         Color[] ansiColors =
         [
-            Color.FromArgb(0, 0, 0),
-            Color.FromArgb(205, 0, 0),
-            Color.FromArgb(0, 205, 0),
-            Color.FromArgb(205, 205, 0),
-            Color.FromArgb(0, 0, 238),
-            Color.FromArgb(205, 0, 205),
-            Color.FromArgb(0, 205, 205),
-            Color.FromArgb(229, 229, 229),
-            Color.FromArgb(127, 127, 127),
-            Color.FromArgb(255, 0, 0),
-            Color.FromArgb(0, 255, 0),
-            Color.FromArgb(255, 255, 0),
-            Color.FromArgb(92, 92, 255),
-            Color.FromArgb(255, 0, 255),
-            Color.FromArgb(0, 255, 255),
-            Color.FromArgb(255, 255, 255)
+            new(0, 0, 0),
+            new(205, 0, 0),
+            new(0, 205, 0),
+            new(205, 205, 0),
+            new(0, 0, 238),
+            new(205, 0, 205),
+            new(0, 205, 205),
+            new(229, 229, 229),
+            new(127, 127, 127),
+            new(255, 0, 0),
+            new(0, 255, 0),
+            new(255, 255, 0),
+            new(92, 92, 255),
+            new(255, 0, 255),
+            new(0, 255, 255),
+            new(255, 255, 255)
         ];
 
         if (index < 0 || index > 255)
@@ -41,15 +41,15 @@ public static class XTermEx
 
             int[] levels = [0, 95, 135, 175, 215, 255];
 
-            return Color.FromArgb(
-                levels[r],
-                levels[g],
-                levels[b]);
+            return new(
+                (byte)levels[r],
+                (byte)levels[g],
+                (byte)levels[b]);
         }
 
         int gray = 8 + (index - 232) * 10;
 
-        return Color.FromArgb(gray, gray, gray);
+        return new((byte)gray, (byte)gray, (byte)gray);
     }
 
     public static CaretStyle ToCaretStyle(CursorStyle cursorStyle)

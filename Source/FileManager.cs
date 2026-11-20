@@ -2,7 +2,6 @@ using System.Numerics;
 using SmashFramework;
 using SDL3;
 using KatziDrip;
-using Color = System.Drawing.Color;
 
 public class FileManager : IPermutable, IRenderable
 {
@@ -231,21 +230,21 @@ public class FileManager : IPermutable, IRenderable
         // This really is just starting to look like zed
         // This really is just starting to look like spaghetti
 
-        renderer.RenderFilledRectangle(new(Position, Width, Height), Drip.DarkColor.ToColor());
-        renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, Drip.VeryLightColor.ToColor());
+        renderer.RenderFilledRectangle(new(Position, Width, Height), ColorTranslator.Get(Drip.DarkColor));
+        renderer.RenderLine(Position, Position with { Y = App.WindowHeight }, ColorTranslator.Get(Drip.VeryLightColor));
 
         string directoryName = _pathManager.DisplayPath;
 
         if (directoryName.Length != 1)
             directoryName = _pathManager.DisplayPath[(_pathManager.DisplayPath.LastIndexOf(Path.DirectorySeparatorChar) + 1).._pathManager.DisplayPath.Length];
 
-        renderer.RenderString(FontManager.FontRegular, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Drip.White.ToColor());
+        renderer.RenderString(FontManager.FontRegular, App.SMALL_POINT_SIZE, directoryName, Position + new Vector2(App.DEFAULT_PADDING), Color.White);
 
-        renderer.RenderFilledRectangle(_backButtonRectangle, Drip.LightColor.ToColor());
-        renderer.RenderRectangle(_backButtonRectangle, _backButtonColor.ToColor());
+        renderer.RenderFilledRectangle(_backButtonRectangle, ColorTranslator.Get(Drip.LightColor));
+        renderer.RenderRectangle(_backButtonRectangle, ColorTranslator.Get(_backButtonColor));
 
         Vector2 buttonTextSize = FontManager.FontRegular.MeasureString("<", App.SMALL_POINT_SIZE);
-        renderer.RenderString(FontManager.FontRegular, App.SMALL_POINT_SIZE, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), Drip.White.ToColor());
+        renderer.RenderString(FontManager.FontRegular, App.SMALL_POINT_SIZE, "<", Vector2.Round(_backButtonRectangle.Position + _backButtonRectangle.Size / 2 - buttonTextSize / 2), Color.White);
 
         if (_fileSystemEntries != null)
         {
@@ -309,11 +308,11 @@ public class FileManager : IPermutable, IRenderable
 
                 if (hoveredEntry == i || _contextSelectedEntry == i)
                 {
-                    renderer.RenderFilledRectangle(GetEntryRectangle(i), Drip.LightColor.ToColor());
-                    renderer.RenderRectangle(GetEntryRectangle(i), Drip.PrimaryAccentColor.ToColor());
+                    renderer.RenderFilledRectangle(GetEntryRectangle(i), ColorTranslator.Get(Drip.LightColor));
+                    renderer.RenderRectangle(GetEntryRectangle(i), ColorTranslator.Get(Drip.PrimaryAccentColor));
                 }
 
-                renderer.RenderString(FontManager.FontRegular, App.VERY_SMALL_POINT_SIZE, name, position, color.ToColor());
+                renderer.RenderString(FontManager.FontRegular, App.VERY_SMALL_POINT_SIZE, name, position, ColorTranslator.Get(color));
             }
 
             SDL.SetRenderClipRect(renderer.Handle, 0);
@@ -327,8 +326,8 @@ public class FileManager : IPermutable, IRenderable
 
         if (_contextWindow != null && _contextRenderer != null)
         {
-            _contextRenderer.Clear(Drip.BaseColor.ToColor());
-            _contextRenderer.RenderRectangle(new(0, 0, _contextWindow.Width, _contextWindow.Height), Drip.VeryLightColor.ToColor());
+            _contextRenderer.Clear(ColorTranslator.Get(Drip.BaseColor));
+            _contextRenderer.RenderRectangle(new(0, 0, _contextWindow.Width, _contextWindow.Height), ColorTranslator.Get(Drip.VeryLightColor));
 
             float entryHeight = 40;
 
@@ -336,12 +335,12 @@ public class FileManager : IPermutable, IRenderable
             {
                 Vector2 position = GetContextEntryPosition(i);
 
-                _contextRenderer.RenderLine(position + new Vector2(0, entryHeight), position + new Vector2(150, entryHeight), Drip.VeryLightColor.ToColor());
+                _contextRenderer.RenderLine(position + new Vector2(0, entryHeight), position + new Vector2(150, entryHeight), ColorTranslator.Get(Drip.VeryLightColor));
 
                 if (GetHoveredContextEntry() == i)
                 {
-                    _contextRenderer.RenderFilledRectangle(new(position, new Vector2(150, entryHeight)), Drip.LightColor.ToColor());
-                    _contextRenderer.RenderRectangle(new(position, new Vector2(150, entryHeight)), Drip.PrimaryAccentColor.ToColor());
+                    _contextRenderer.RenderFilledRectangle(new(position, new Vector2(150, entryHeight)), ColorTranslator.Get(Drip.LightColor));
+                    _contextRenderer.RenderRectangle(new(position, new Vector2(150, entryHeight)), ColorTranslator.Get(Drip.PrimaryAccentColor));
                 }
 
                 string text = GetContextEntryText(i);
@@ -349,7 +348,7 @@ public class FileManager : IPermutable, IRenderable
                 _contextRenderer.RenderString(FontManager.FontRegular, 17, text, position + new Vector2(App.DEFAULT_PADDING / 2, textSize.Y / 2), Color.White);
             }
 
-            _contextRenderer.RenderPresent();
+            _contextRenderer.Present();
         }
     }
 

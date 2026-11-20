@@ -37,8 +37,8 @@
   <ItemGroup>
     <PackageReference Include="DiscordRPC" Version="1.0.0" />
     <PackageReference Include="Ghostflyby.Pty" Version="1.0.1" />
-    <PackageReference Include="SmashFramework" Version="2.2.0" />
+    <PackageReference Include="SmashFramework" Version="2.2.1" />
     <PackageReference Include="KatziDrip" Version="1.1.1" />
-    <PackageReference Include="XTerm.NET" Version="3.0.2" />
+    <PackageReference Include="XTerm.NET" Version="3.0.3" />
   </ItemGroup>
 </Project>

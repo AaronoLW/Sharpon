@@ -1,4 +1,3 @@
-using System.Drawing;
 using SmashFramework;
 
 public class TextElement(string text, Font font, float pointSize, Color textColor) : GUIElement

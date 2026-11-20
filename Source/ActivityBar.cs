@@ -11,21 +11,21 @@ public class ActivityBar : IRenderable
 
     public void Render(Renderer renderer)
     {
-        renderer.RenderFilledRectangle(new(0, 0, App.WindowWidth, App.ACTIVITY_BAR_HEIGHT), Drip.BaseColor.ToColor());
-        renderer.RenderLine(new(0, App.ACTIVITY_BAR_HEIGHT), new(App.WindowWidth, App.ACTIVITY_BAR_HEIGHT), Drip.VeryLightColor.ToColor());
+        renderer.RenderFilledRectangle(new(0, 0, App.WindowWidth, App.ACTIVITY_BAR_HEIGHT), ColorTranslator.Get(Drip.BaseColor));
+        renderer.RenderLine(new(0, App.ACTIVITY_BAR_HEIGHT), new(App.WindowWidth, App.ACTIVITY_BAR_HEIGHT), ColorTranslator.Get(Drip.VeryLightColor));
 
         // Main text
         {
             Vector2 textSize = FontManager.FontRegular.MeasureString(_mainText, App.POINT_SIZE);
             Vector2 textPosition = new(App.DEFAULT_PADDING, (App.ACTIVITY_BAR_HEIGHT / 2) - (textSize.Y / 2.5f));
-            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _mainText, textPosition, Drip.White.ToColor());
+            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _mainText, textPosition, Color.White);
         }
 
         // Sub text
         {
             Vector2 textSize = FontManager.FontRegular.MeasureString(_subText, App.POINT_SIZE);
             Vector2 textPosition = new(App.WindowWidth - App.FileManagerWidth - textSize.X - App.DEFAULT_PADDING, (App.ACTIVITY_BAR_HEIGHT / 2) - (textSize.Y / 2.5f));
-            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _subText, textPosition, Drip.White.ToColor());
+            renderer.RenderString(FontManager.FontRegular, App.POINT_SIZE, _subText, textPosition, Color.White);
         }
     }
 

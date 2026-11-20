@@ -1,4 +1,3 @@
-using Color = System.Drawing.Color;
 using System.Numerics;
 using KatziDrip;
 using SDL3;
@@ -123,7 +122,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
         RenderCaret(renderer, TextPosition);
 
         // Separator line between the line numbers and text
-        renderer.RenderLine(HORIZONTAL_EDITOR_OFFSET, 0, HORIZONTAL_EDITOR_OFFSET, App.WindowHeight, Drip.VeryLightColor.ToColor());
+        renderer.RenderLine(HORIZONTAL_EDITOR_OFFSET, 0, HORIZONTAL_EDITOR_OFFSET, App.WindowHeight, ColorTranslator.Get(Drip.VeryLightColor));
 
         int startLineIndex = Math.Max((int)(_scroll.Scroll / _document.LineSpacing) - 1, 0);
         for (int i = startLineIndex; i < _document.Lines.Count; i++)
@@ -132,7 +131,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
             {
                 Vector2 lineNumberPosition = Vector2.Round(App.ActivityPosition + new Vector2(0, (i * _document.LineSpacing) - _scroll.Scroll));
 
-                Color color = _document.LineIndex == i ? Drip.PrimaryAccentColor.ToColor() : Color.White;
+                Color color = _document.LineIndex == i ? ColorTranslator.Get(Drip.PrimaryAccentColor) : Color.White;
                 renderer.RenderString(FontManager.FontRegular, _document.PointSize, (i + 1).ToString(), lineNumberPosition, color);
             }
 
@@ -154,7 +153,7 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
                 Rectangle selectionRect = new(linePosition + new Vector2(fromWidth, 0), new Vector2(toWidth, FontManager.FontRegular.MeasureString("|", _document.PointSize).Y));
 
                 Kolor accentColor = new(Drip.PrimaryAccentColor.R, Drip.PrimaryAccentColor.G, Drip.PrimaryAccentColor.B, 100);
-                renderer.RenderFilledRectangle(selectionRect, accentColor.ToColor());
+                renderer.RenderFilledRectangle(selectionRect, ColorTranslator.Get(accentColor));
             }
 
             renderer.RenderString(FontManager.FontRegular, _document.PointSize, _document.Lines[i], linePosition, Color.White);
@@ -168,17 +167,17 @@ public class Editor : IPermutable, IRenderable, IActivityProvider, IRequireTextE
         if (_document.CaretStyle == CaretStyle.Beam)
         {
             Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", _document.PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, ColorTranslator.Get(Drip.PrimaryAccentColor));
         }
         else if (_document.CaretStyle == CaretStyle.Block)
         {
             Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", _document.PointSize).X, FontManager.FontRegular.MeasureString("|", _document.PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, ColorTranslator.Get(Drip.PrimaryAccentColor));
         }
         else if (_document.CaretStyle == CaretStyle.Underline)
         {
             Rectangle caret = new(caretPosition + new Vector2(0, _document.PointSize), FontManager.FontRegular.MeasureString("|", _document.PointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, ColorTranslator.Get(Drip.PrimaryAccentColor));
         }
     }
 

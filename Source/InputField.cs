@@ -1,4 +1,3 @@
-using Color = System.Drawing.Color;
 using System.Numerics;
 using SmashFramework;
 using KatziDrip;
@@ -65,17 +64,17 @@ public class InputField : TextContainer
         if (CaretStyle == CaretStyle.Beam)
         {
             Rectangle caret = new(caretPosition, 2, FontManager.FontRegular.MeasureString("|", PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, ColorTranslator.Get(Drip.PrimaryAccentColor));
         }
         else if (CaretStyle == CaretStyle.Block)
         {
             Rectangle caret = new(caretPosition, FontManager.FontRegular.MeasureString("|", PointSize).X, FontManager.FontRegular.MeasureString("|", PointSize).Y);
-            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, ColorTranslator.Get(Drip.PrimaryAccentColor));
         }
         else if (CaretStyle == CaretStyle.Underline)
         {
             Rectangle caret = new(caretPosition + new Vector2(0, PointSize), FontManager.FontRegular.MeasureString("|", PointSize).X, 4);
-            renderer.RenderFilledRectangle(caret, Drip.PrimaryAccentColor.ToColor());
+            renderer.RenderFilledRectangle(caret, ColorTranslator.Get(Drip.PrimaryAccentColor));
         }
     }
 
